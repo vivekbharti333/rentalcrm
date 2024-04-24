@@ -15,6 +15,7 @@ public class UserRequestObject {
 	private String loginId;
 	private String password;
 	private String status;
+	private String roleTypeIds;
 	private String roleType;
 	private String firstName;
 	private String lastName;

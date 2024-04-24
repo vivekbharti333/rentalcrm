@@ -1,7 +1,9 @@
 package com.datfusrental.services;
 
 import java.util.List;
+
 import javax.transaction.Transactional;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
 import com.datfusrental.entities.UserDetails;
-import com.datfusrental.enums.RoleType;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AddressHelper;
@@ -226,7 +227,7 @@ public class UserService {
 			return userRequest;
 		} else {
 			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			userRequest.setRespMesg(Constant.USER_NOT_EXIST);
+			userRequest.setRespMesg(Constant.NOT_EXIST);
 			return userRequest;
 		}
 //		}else {
@@ -255,7 +256,7 @@ public class UserService {
 			return userRequest;
 		}else {
 			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			userRequest.setRespMesg(Constant.USER_NOT_EXIST);
+			userRequest.setRespMesg(Constant.NOT_EXIST);
 			return userRequest;
 		}
 	}
