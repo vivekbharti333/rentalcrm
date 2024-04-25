@@ -2,7 +2,7 @@ package com.datfusrental.constant;
 
 public class Constant {
 	 /* Document path */
-	 public static final String docLocation = "/opt/tomcat-8.5/webapps/DonationDocument";
+//	 public static final String docLocation = "/opt/tomcat-8.5/webapps/DonationDocument";
 //	 public static final String docLocation = "D:\\DonationDocument";
 	 
 	 public static final String invoiceImage = "/InvoiceImage";	
