@@ -21,8 +21,8 @@ public class CategoryMaster {
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "category_name")
-	private String categoryName;
+	@Column(name = "category")
+	private String category;
 	
 	@Column(name = "status")
 	private String status;

@@ -1,6 +1,8 @@
 package com.datfusrental.object.request;
 
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -11,7 +13,7 @@ public class ItemRequestObject {
 	private Long categoryId;
 	private String category;
 	private String subCategory;
-	private String categoryName;
+	private String categoryAndSubCategoryIds;
 	
 	private String requestedFor;
 	private String token;

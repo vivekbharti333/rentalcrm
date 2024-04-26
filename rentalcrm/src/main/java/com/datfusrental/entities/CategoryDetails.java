@@ -1,6 +1,7 @@
 package com.datfusrental.entities;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,8 +28,8 @@ public class CategoryDetails {
 	@Column(name = "category_id")
 	private Long categoryId;
 	
-	@Column(name = "category_name")
-	private String categoryName;
+	@Column(name = "category_and_subcategory_ids")
+	private String categoryAndSubCategoryIds;
 	
 	@Column(name = "status")
 	private String status;

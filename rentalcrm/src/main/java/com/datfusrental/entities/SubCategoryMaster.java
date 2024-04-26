@@ -21,8 +21,8 @@ public class SubCategoryMaster {
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "sub_category_name")
-	private String subCategoryName;
+	@Column(name = "sub_category")
+	private String subCategory;
 	
 	@Column(name = "status")
 	private String status;
