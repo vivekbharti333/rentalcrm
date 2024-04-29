@@ -139,8 +139,8 @@ public class CategoryHelper {
 //				results.addAll(result);
 //			}
 //			return results;
-//		}
-//		return null;
+		}
+		return null;
 	}
 
 	public SubCategoryMaster getSubCategoryMasterByReqObj(ItemRequestObject itemRequest) {

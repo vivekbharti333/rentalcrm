@@ -359,7 +359,7 @@ public class UserService {
 
 	public List<UserDetails> getUserDetails(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		List<UserDetails> userList = userHelper.getUserDetails(userRequest);
+		List<UserDetails> userList = userHelper.getUserDetails(userRequest);  		
 		return userList;
 	}
 	
