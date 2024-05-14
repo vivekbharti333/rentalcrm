@@ -39,6 +39,23 @@ public class GenricResponse <T> {
         return  response;
     }
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Response<T> createListResponse( List<T> responseObject ,Integer responseCode, String totalNum)
+	{
+        Response<T> response = new Response();
+        if(!responseObject.isEmpty()) {
+            response.setListPayload(responseObject);
+            response.setComments(totalNum);
+            response.setResponseCode(responseCode);
+            response.setResponseMessage("Fetch Successfully");
+        }else {
+        	response.setResponseCode(Constant.NO_CONTENT_CODE);
+        	response.setResponseMessage(Constant.DATA_NOT_FOUND);
+        }
+        
+        return  response;
+    }
+	
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Response<T> createMapResponse(Map reponseList, Integer responseCode) {

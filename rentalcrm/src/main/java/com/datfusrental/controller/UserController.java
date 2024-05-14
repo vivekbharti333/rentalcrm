@@ -186,7 +186,9 @@ public class UserController {
 		GenricResponse<UserDetails> response = new GenricResponse<UserDetails>();
 		try {
 			List<UserDetails> userList = userService.getUserDetails(userRequestObject);
-			return response.createListResponse(userList, 200);
+			int totalNum = userList.size();
+			System.out.println(totalNum+": tyt");
+			return response.createListResponse(userList, 200, String.valueOf(userList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
