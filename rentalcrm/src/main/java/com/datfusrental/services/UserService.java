@@ -128,6 +128,7 @@ public class UserService {
 //		String password = userHelper.generateRandomChars("ABCD145pqrs678abcdef90EF9GHxyzIJKL5MNOPQRghijS1234560TUVWXYlmnoZ1234567tuvw890", 10);
 //		userRequest.setPassword("test@123");
 			
+		System.out.println(userRequest.getFirstName());
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
 //		if (isValid) {
