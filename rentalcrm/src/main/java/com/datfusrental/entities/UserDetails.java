@@ -76,6 +76,24 @@ public class UserDetails {
 	@Column(name = "email_id")
 	private String emailId;
 	
+	@Column(name = "emergency_contact_relation1")
+	private String emergencyContactRelation1;
+	
+	@Column(name = "emergency_contact_name1")
+	private String emergencyContactName1;
+	
+	@Column(name = "emergency_contact_no1")
+	private String emergencyContactNo1;
+	
+	@Column(name = "emergency_contact_relation2")
+	private String emergencyContactRelation2;
+	
+	@Column(name = "emergency_contact_name2")
+	private String emergencyContactName2;
+	
+	@Column(name = "emergency_contact_no2")
+	private String emergencyContactNo2;
+	
 	@Column(name = "id_document_type")
 	private String idDocumentType;
 	

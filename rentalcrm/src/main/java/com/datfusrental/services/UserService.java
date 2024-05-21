@@ -92,7 +92,6 @@ public class UserService {
 				return userRequest;
 			}
 		} else {
-			System.out.println("ENter hia : "+userRequest);
 			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
 			userRequest.setRespMesg(Constant.INVALID_LOGIN);
 			return userRequest;
@@ -140,17 +139,17 @@ public class UserService {
 				String password = BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt());
 				userRequest.setPassword(password);
 				
-				if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {
-					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-					userRequest.setRespMesg("Enter First Name");
-					return userRequest;
-				}
-				
-				if(userRequest.getLastName() == null || userRequest.getLastName().equalsIgnoreCase("")) {
-					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-					userRequest.setRespMesg("Enter Last Name");
-					return userRequest;
-				}
+//				if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {
+//					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//					userRequest.setRespMesg("Enter First Name");
+//					return userRequest;
+//				}
+//				
+//				if(userRequest.getLastName() == null || userRequest.getLastName().equalsIgnoreCase("")) {
+//					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//					userRequest.setRespMesg("Enter Last Name");
+//					return userRequest;
+//				}
 				
 //				String userCode = userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1);
 

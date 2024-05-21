@@ -26,6 +26,13 @@ public class UserRequestObject {
 	private String idDocumentPicture;
 	private String panNumber;
 	
+	private String emergencyContactRelation1;
+	private String emergencyContactName1;
+	private String emergencyContactNo1;
+	private String emergencyContactRelation2;
+	private String emergencyContactName2;
+	private String emergencyContactNo2;
+	
 	public List<AddressRequestObject> addressList;
 	
 	private String service;

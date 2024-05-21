@@ -37,9 +37,18 @@ public class UserHelper {
 	@Autowired
 	private UserDetailsDao userDetailsDao;
 	
-	public void validateUserRequest(UserRequestObject userRequestObject) throws BizException {
-		if (userRequestObject == null) {
+	public void validateUserRequest(UserRequestObject userRequest) throws BizException {
+		if (userRequest == null) {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
+		}
+		if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter First Name");
+		}
+		if(userRequest.getLastName() == null || userRequest.getLastName().equalsIgnoreCase("")) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Last Name");
+		}
+		if(userRequest.getMobileNo() == null || userRequest.getMobileNo().equalsIgnoreCase("")) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Mobile No");
 		}
 	}
 
@@ -128,6 +137,12 @@ public class UserHelper {
 		userDetails.setFirstName(userRequest.getFirstName());
 		userDetails.setLastName(userRequest.getLastName());
 		userDetails.setMobileNo(userRequest.getMobileNo());
+		userDetails.setEmergencyContactRelation1(userRequest.getEmergencyContactRelation1());
+		userDetails.setEmergencyContactName1(userRequest.getEmergencyContactName1());
+		userDetails.setEmergencyContactNo1(userRequest.getEmergencyContactNo1());
+		userDetails.setEmergencyContactRelation2(userRequest.getEmergencyContactRelation2());
+		userDetails.setEmergencyContactName2(userRequest.getEmergencyContactName2());
+		userDetails.setEmergencyContactNo2(userRequest.getEmergencyContactNo2());
 		userDetails.setAlternateMobile(userRequest.getAlternateMobile());
 		userDetails.setEmailId(userRequest.getEmailId());
 		userDetails.setIdDocumentType(userRequest.getIdDocumentType());
