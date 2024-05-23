@@ -170,7 +170,7 @@ public class UserHelper {
 			UserDetails existsUserDetails = this.getUserDetailsByLoginId(userRequest.getSuperadminId());
 			
 			userDetails.setSuperadminId(userRequest.getSuperadminId());
-			userDetails.setValidityExpireOn(existsUserDetails.getValidityExpireOn());
+//			userDetails.setValidityExpireOn(existsUserDetails.getValidityExpireOn());
 		}
 	
 		return userDetails;

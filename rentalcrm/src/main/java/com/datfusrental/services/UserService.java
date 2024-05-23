@@ -157,18 +157,18 @@ public class UserService {
 				userDetails = userHelper.saveUserDetails(userDetails);
 				
 				// Save Address
-				if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
+//				if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
 					for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
 						addressRequest.setUserType(userRequest.getRoleType());
 						addressService.saveAddressDetailsByRequest(addressRequest, userDetails.getId(), userRequest.getSuperadminId());
 					}
-				}else {
-					
-					AddressRequestObject addressRequestObj = addressHelper.setAddressRequestObjectByUserReqObj(userRequest);
-					
-					AddressDetails addressDetails = addressHelper.getAddressDetailsByReqObj(addressRequestObj, userDetails.getId(), userDetails.getSuperadminId());
-					addressHelper.saveAddressDetails(addressDetails);
-				}
+//				}else {
+//					
+//					AddressRequestObject addressRequestObj = addressHelper.setAddressRequestObjectByUserReqObj(userRequest);
+//					
+//					AddressDetails addressDetails = addressHelper.getAddressDetailsByReqObj(addressRequestObj, userDetails.getId(), userDetails.getSuperadminId());
+//					addressHelper.saveAddressDetails(addressDetails);
+//				}
 				// send sms
 
 				userRequest.setRespCode(Constant.SUCCESS_CODE);
