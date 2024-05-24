@@ -45,7 +45,7 @@ public class GenricResponse <T> {
         Response<T> response = new Response();
         if(!responseObject.isEmpty()) {
             response.setListPayload(responseObject);
-            response.setComments(totalNum);
+            response.setTotalNumber(totalNum);
             response.setResponseCode(responseCode);
             response.setResponseMessage("Fetch Successfully");
         }else {

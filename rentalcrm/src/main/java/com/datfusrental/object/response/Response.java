@@ -3,10 +3,13 @@ package com.datfusrental.object.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,6 +24,7 @@ public class Response<T> implements Serializable {
     private String responseMessage;
     private String status;
     private String comments;
+    private String totalNumber;
     private Throwable throwable;
 
 
