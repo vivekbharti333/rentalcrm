@@ -139,36 +139,18 @@ public class UserService {
 				String password = BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt());
 				userRequest.setPassword(password);
 				
-//				if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {
-//					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-//					userRequest.setRespMesg("Enter First Name");
-//					return userRequest;
-//				}
-//				
-//				if(userRequest.getLastName() == null || userRequest.getLastName().equalsIgnoreCase("")) {
-//					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-//					userRequest.setRespMesg("Enter Last Name");
-//					return userRequest;
-//				}
-				
 //				String userCode = userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1);
 
 				UserDetails userDetails = userHelper.getUserDetailsByReqObj(userRequest);
 				userDetails = userHelper.saveUserDetails(userDetails);
 				
 				// Save Address
-//				if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
-					for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
-						addressRequest.setUserType(userRequest.getRoleType());
-						addressService.saveAddressDetailsByRequest(addressRequest, userDetails.getId(), userRequest.getSuperadminId());
-					}
-//				}else {
-//					
-//					AddressRequestObject addressRequestObj = addressHelper.setAddressRequestObjectByUserReqObj(userRequest);
-//					
-//					AddressDetails addressDetails = addressHelper.getAddressDetailsByReqObj(addressRequestObj, userDetails.getId(), userDetails.getSuperadminId());
-//					addressHelper.saveAddressDetails(addressDetails);
-//				}
+
+				for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
+					addressRequest.setUserType(userRequest.getRoleType());
+					addressService.saveAddressDetailsByRequest(addressRequest, userDetails.getId(), userRequest.getSuperadminId());
+				}
+
 				// send sms
 
 				userRequest.setRespCode(Constant.SUCCESS_CODE);
