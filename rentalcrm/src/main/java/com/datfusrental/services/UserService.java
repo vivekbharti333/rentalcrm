@@ -5,6 +5,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import com.datfusrental.helper.AddressHelper;
 import com.datfusrental.helper.UserHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
 import com.datfusrental.object.request.AddressRequestObject;
+import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.request.UserRequestObject;
 
@@ -38,26 +40,38 @@ public class UserService {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+//	@Autowired
+//	private ModelMapper modelMapper;
+	
+//	public LoginRequestObject authenticUser(String loginId) {
+//	    UserDetails userDetails = userHelper.getUserDetailsByLoginId(loginId);
+//	    
+//	    LoginRequestObject loginRequest = modelMapper.map(userDetails, LoginRequestObject.class);
+//	    return loginRequest;
+//	}
 
-	public UserRequestObject doLogin(Request<UserRequestObject> userRequestObject) throws BizException, Exception {
-		UserRequestObject userRequest = userRequestObject.getPayload();
-		userHelper.validateUserRequest(userRequest);
+	public LoginRequestObject doLogin(Request<LoginRequestObject> loginRequestObject) throws BizException, Exception {
+		LoginRequestObject loginRequest = loginRequestObject.getPayload();
+		userHelper.validateLoginRequest(loginRequest);
 
-		UserDetails userDetails = userHelper.getUserDetailsByLoginIdAndStatus(userRequest.getLoginId());
+		System.out.println(loginRequest.getLoginId()+" hkghg");
+		
+		UserDetails userDetails = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
+		System.out.println("userDetails : "+userDetails);
 		if (userDetails != null) {
 			if(userDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
 				
-				userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				userRequest.setRespMesg(Constant.INACTIVE_USER);
-				return userRequest;
+				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				loginRequest.setRespMesg(Constant.INACTIVE_USER);
+				return loginRequest;
 			}
-
+			
 			boolean isValid = userHelper.checkValidityOfUser(userDetails.getValidityExpireOn());
-
 			if (isValid) {
-
-				if (BCrypt.checkpw(userRequest.getPassword(), userDetails.getPassword())) {
-					logger.info("Login Successfully: " + userRequest);
+				System.out.println("3 : lkllkjk");
+				if (BCrypt.checkpw(loginRequest.getPassword(), userDetails.getSalt())) {
+					logger.info("Login Successfully: " + loginRequest);
 
 					// generate secret key.
 					String secretKey = jwtTokenUtil.generateSecretKey();
@@ -68,33 +82,34 @@ public class UserService {
 
 					String token = jwtTokenUtil.generateAccessToken(userDetails);
 
-					userRequest.setLoginId(userDetails.getLoginId());
-					userRequest.setPassword(null);
+					loginRequest.setLoginId(userDetails.getLoginId());
+					loginRequest.setPassword(null);
 
-					userRequest.setFirstName(userDetails.getFirstName());
-					userRequest.setLastName(userDetails.getLastName());
-					userRequest.setService(userDetails.getService());
-					userRequest.setRoleType(userDetails.getRoleType());
-					userRequest.setSuperadminId(userDetails.getSuperadminId());
-					userRequest.setToken(token);
+					loginRequest.setFirstName(userDetails.getFirstName());
+					loginRequest.setLastName(userDetails.getLastName());
+					loginRequest.setService(userDetails.getService());
+					loginRequest.setPermissions(userDetails.getPermissions());
+					loginRequest.setRoleType(userDetails.getRoleType());
+					loginRequest.setSuperadminId(userDetails.getSuperadminId());
+					loginRequest.setToken(token);
 
-					userRequest.setRespCode(Constant.SUCCESS_CODE);
-					userRequest.setRespMesg(Constant.LOGIN_SUCCESS);
-					return userRequest;
+					loginRequest.setRespCode(Constant.SUCCESS_CODE);
+					loginRequest.setRespMesg(Constant.LOGIN_SUCCESS);
+					return loginRequest;
 				} else {
-					userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-					userRequest.setRespMesg(Constant.INVALID_LOGIN);
-					return userRequest;
+					loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+					loginRequest.setRespMesg(Constant.INVALID_LOGIN);
+					return loginRequest;
 				}
 			} else {
-				userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				userRequest.setRespMesg(Constant.EXPIRED_LOGIN);
-				return userRequest;
+				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				loginRequest.setRespMesg(Constant.EXPIRED_LOGIN);
+				return loginRequest;
 			}
 		} else {
-			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			userRequest.setRespMesg(Constant.INVALID_LOGIN);
-			return userRequest;
+			loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			loginRequest.setRespMesg(Constant.INVALID_LOGIN);
+			return loginRequest;
 		}
 	}
 	
@@ -126,18 +141,32 @@ public class UserService {
 
 //		String password = userHelper.generateRandomChars("ABCD145pqrs678abcdef90EF9GHxyzIJKL5MNOPQRghijS1234560TUVWXYlmnoZ1234567tuvw890", 10);
 //		userRequest.setPassword("test@123");
+		
+		
 			
 		System.out.println(userRequest.getFirstName());
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
 //		if (isValid) {
+		
+		if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter First Name");
+		}
+		if(userRequest.getLastName() == null || userRequest.getLastName().equalsIgnoreCase("")) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Last Name");
+		}
+		if(userRequest.getMobileNo() == null || userRequest.getMobileNo().equalsIgnoreCase("")) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Mobile No");
+		}
 
 			UserDetails existsUserDetails = userHelper.getUserDetailsByLoginIdAndSuperadminId(userRequest.getMobileNo(), userRequest.getSuperadminId());
 			if (existsUserDetails == null) {
 				userRequest.setPassword("12345");
 
-				String password = BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt());
+				String salt = BCrypt.gensalt();
+				String password = BCrypt.hashpw(userRequest.getPassword(), salt);
 				userRequest.setPassword(password);
+				userRequest.setSalt(password);
 				
 //				String userCode = userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1);
 

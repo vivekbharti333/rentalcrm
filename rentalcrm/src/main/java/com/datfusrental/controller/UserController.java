@@ -1,37 +1,26 @@
 package com.datfusrental.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
 import com.datfusrental.entities.UserDetails;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.request.UserRequestObject;
 import com.datfusrental.object.response.GenricResponse;
 import com.datfusrental.object.response.Response;
-
 import com.datfusrental.services.UserService;
 
 @CrossOrigin(origins = "*")
@@ -44,12 +33,27 @@ public class UserController {
 	UserService userService;
 	
 
+//	@RequestMapping(path = "doLogin", method = RequestMethod.POST)
+//	public Response<UserRequestObject> doLogin(@RequestBody Request<UserRequestObject> userRequestObject,
+//			HttpServletRequest request) {
+//		GenricResponse<UserRequestObject> responseObj = new GenricResponse<UserRequestObject>();
+//		try {
+//			UserRequestObject response = userService.doLogin(userRequestObject);
+//			return responseObj.createSuccessResponse(response, Constant.SUCCESS_CODE);
+//		} catch (BizException e) {
+//			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+//		}
+//	}
+	
 	@RequestMapping(path = "doLogin", method = RequestMethod.POST)
-	public Response<UserRequestObject> doLogin(@RequestBody Request<UserRequestObject> userRequestObject,
+	public Response<LoginRequestObject> doLogin(@RequestBody Request<LoginRequestObject> loginRequestObject,
 			HttpServletRequest request) {
-		GenricResponse<UserRequestObject> responseObj = new GenricResponse<UserRequestObject>();
+		GenricResponse<LoginRequestObject> responseObj = new GenricResponse<LoginRequestObject>();
 		try {
-			UserRequestObject response = userService.doLogin(userRequestObject);
+			LoginRequestObject response = userService.doLogin(loginRequestObject);
 			return responseObj.createSuccessResponse(response, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());

@@ -54,6 +54,9 @@ public class UserDetails {
 	@Column(name = "password")
 	private String password;
 	
+	@Column(name = "salt")
+	private String salt;
+	
 	@Column(name = "status")
 	private String status;
 	

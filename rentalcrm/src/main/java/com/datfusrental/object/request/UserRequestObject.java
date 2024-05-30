@@ -14,6 +14,7 @@ public class UserRequestObject {
 	private String userCode;
 	private String loginId;
 	private String password;
+	private String salt;
 	private String status;
 	private String roleTypeIds;
 	private String roleType;

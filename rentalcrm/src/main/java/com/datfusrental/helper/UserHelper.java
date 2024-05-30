@@ -29,6 +29,7 @@ import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.RoleType;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.UserRequestObject;
 
 @Component
@@ -37,18 +38,15 @@ public class UserHelper {
 	@Autowired
 	private UserDetailsDao userDetailsDao;
 	
+	public void validateLoginRequest(LoginRequestObject loginRequest) throws BizException {
+		if (loginRequest == null) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
+		}
+	}
+	
 	public void validateUserRequest(UserRequestObject userRequest) throws BizException {
 		if (userRequest == null) {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
-		}
-		if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {
-			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter First Name");
-		}
-		if(userRequest.getLastName() == null || userRequest.getLastName().equalsIgnoreCase("")) {
-			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Last Name");
-		}
-		if(userRequest.getMobileNo() == null || userRequest.getMobileNo().equalsIgnoreCase("")) {
-			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Mobile No");
 		}
 	}
 
@@ -104,7 +102,6 @@ public class UserHelper {
 		Predicate restriction2 = criteriaBuilder.notEqual(root.get("status"), Status.REMOVED.name());
 		criteriaQuery.where(restriction1, restriction2);
 		UserDetails userDetails = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
-		System.out.println(userDetails+"yttyt");
 		return userDetails;
 	}
 	
@@ -130,6 +127,7 @@ public class UserHelper {
 		userDetails.setUserCode(userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1));
 		userDetails.setLoginId(userRequest.getMobileNo());
 		userDetails.setPassword(userRequest.getPassword());
+		userDetails.setSalt(userRequest.getSalt());
 		userDetails.setStatus(Status.ACTIVE.name());
 		userDetails.setRoleType(userRequest.getRoleType());
 		userDetails.setService(userRequest.getService());
