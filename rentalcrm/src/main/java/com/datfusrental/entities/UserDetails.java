@@ -31,7 +31,7 @@ public class UserDetails {
 	private Long id;
 	
 	@Column(name = "secret_key")
-	private String secretKey;
+	private String secretTokenKey;
 	
 	@Lob
 	@Column(name = "user_picture")

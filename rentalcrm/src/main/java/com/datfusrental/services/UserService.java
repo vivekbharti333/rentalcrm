@@ -1,5 +1,6 @@
 package com.datfusrental.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -54,11 +55,8 @@ public class UserService {
 	public LoginRequestObject doLogin(Request<LoginRequestObject> loginRequestObject) throws BizException, Exception {
 		LoginRequestObject loginRequest = loginRequestObject.getPayload();
 		userHelper.validateLoginRequest(loginRequest);
-
-		System.out.println(loginRequest.getLoginId()+" hkghg");
 		
 		UserDetails userDetails = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
-		System.out.println("userDetails : "+userDetails);
 		if (userDetails != null) {
 			if(userDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
 				
@@ -69,7 +67,6 @@ public class UserService {
 			
 			boolean isValid = userHelper.checkValidityOfUser(userDetails.getValidityExpireOn());
 			if (isValid) {
-				System.out.println("3 : lkllkjk");
 				if (BCrypt.checkpw(loginRequest.getPassword(), userDetails.getSalt())) {
 					logger.info("Login Successfully: " + loginRequest);
 
@@ -77,10 +74,10 @@ public class UserService {
 					String secretKey = jwtTokenUtil.generateSecretKey();
 
 					// update secret key in UserDetails.
-					userDetails.setSecretKey(secretKey);
+					userDetails.setSecretTokenKey(secretKey);
 					userHelper.UpdateUserDetails(userDetails);
 
-					String token = jwtTokenUtil.generateAccessToken(userDetails);
+					String token = jwtTokenUtil.generateJwtToken(userDetails);
 
 					loginRequest.setLoginId(userDetails.getLoginId());
 					loginRequest.setPassword(null);
@@ -128,7 +125,6 @@ public class UserService {
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			return userRequest;
 		}
-		
 		return userRequest;
 	}
 	
@@ -142,8 +138,6 @@ public class UserService {
 //		String password = userHelper.generateRandomChars("ABCD145pqrs678abcdef90EF9GHxyzIJKL5MNOPQRghijS1234560TUVWXYlmnoZ1234567tuvw890", 10);
 //		userRequest.setPassword("test@123");
 		
-		
-			
 		System.out.println(userRequest.getFirstName());
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
@@ -370,7 +364,11 @@ public class UserService {
 
 	public List<UserDetails> getUserDetails(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		List<UserDetails> userList = userHelper.getUserDetails(userRequest);  		
+		List<UserDetails> userList = new ArrayList<UserDetails>();
+		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
+		if (isValid) {
+		userList = userHelper.getUserDetails(userRequest);  
+	}
 		return userList;
 	}
 	

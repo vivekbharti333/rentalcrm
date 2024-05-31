@@ -190,8 +190,6 @@ public class UserController {
 		GenricResponse<UserDetails> response = new GenricResponse<UserDetails>();
 		try {
 			List<UserDetails> userList = userService.getUserDetails(userRequestObject);
-			int totalNum = userList.size();
-			System.out.println(totalNum+": tyt");
 			return response.createListResponse(userList, 200, String.valueOf(userList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
