@@ -46,6 +46,9 @@ public class UserDetails {
 	@Column(name = "last_name")
 	private String lastName;
 	
+	@Column(name = "gender")
+	private String gender;
+	
 	@NonNull
 	@Length(min = 5, max = 20)
 	@Column(name = "login_id")
@@ -124,6 +127,12 @@ public class UserDetails {
 	
 	@Column(name = "created_by")
 	private String createdBy;
+	
+	@Column(name = "teamleader_id")
+	private String teamleaderId;
+	
+	@Column(name = "admin_id")
+	private String adminId;
 	
 	@Column(name = "superadmin_id")
 	private String superadminId;

@@ -205,70 +205,49 @@ public class UserHelper {
 	@SuppressWarnings("unchecked")
 	public List<UserDetails> getUserDetails(UserRequestObject userRequest) {
 		if (userRequest.getRoleType().equals(RoleType.MAINADMIN.name())) {
-			if (userRequest.getRequestedFor().equalsIgnoreCase(RequestFor.SEARCH.name())) {
-				List<UserDetails> results = userDetailsDao.getEntityManager()
-						.createQuery("SELECT UD FROM UserDetails UD WHERE status NOT IN (:removed) AND"
-								+ " (userCode LIKE :searchParam OR firstName LIKE :searchParam OR lastName LIKE :searchParam "
-								+ "OR loginId LIKE :searchParam OR roleType LIKE :searchParam OR mobileNo LIKE :searchParam ) ORDER BY UD.id DESC")
-//					    .setParameter("roleType", RoleType.SUPERADMIN.name())
-						.setParameter("removed", Collections.singletonList(Status.REMOVED.name()))
-						.setParameter("searchParam", "%" + userRequest.getSearchParam() + "%").getResultList();
-
-				return results;
-			} else {
-				List<UserDetails> results = userDetailsDao.getEntityManager()
-						.createQuery("SELECT UD FROM UserDetails UD WHERE status NOT IN (:REMOVED) ORDER BY UD.id DESC")
-//						.setParameter("roleType", RoleType.SUPERADMIN.name())
-						.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
-				return results;
-			}
+			List<UserDetails> results = userDetailsDao.getEntityManager()
+					.createQuery("SELECT UD FROM UserDetails UD WHERE status NOT IN (:REMOVED) ORDER BY UD.id DESC")
+					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
+			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.SUPERADMIN.name())) {
-			System.out.println("Enter hai");
-			if (userRequest.getRequestedFor().equalsIgnoreCase(RequestFor.SEARCH.name())) {
-				System.out.println("Enter hai1");
-				List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
-						"SELECT UD FROM UserDetails UD WHERE UD.superadminId =:superadminId AND status NOT IN (:removed) AND"
-								+ " (userCode LIKE :searchParam OR firstName LIKE :searchParam OR lastName LIKE :searchParam "
-								+ "OR loginId LIKE :searchParam OR roleType LIKE :searchParam OR mobileNo LIKE :searchParam ) ORDER BY UD.id DESC")
-					    .setParameter("superadminId", userRequest.getSuperadminId())
-//						.setParameter("roleType", RoleType.SUPERADMIN.name())
-						.setParameter("removed", Collections.singletonList(Status.REMOVED.name()))
-						.setParameter("searchParam", "%" + userRequest.getSearchParam() + "%").getResultList();
-
-				return results;
-			} else {
-				System.out.println("Enter hai2");
-				List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
-						"SELECT UD FROM UserDetails UD WHERE UD.superadminId =:superadminId AND roleType NOT IN :roleType AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-						.setParameter("superadminId", userRequest.getCreatedBy())
-						.setParameter("roleType", RoleType.SUPERADMIN.name())
-						.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
-				return results;
-			}
+			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
+					"SELECT UD FROM UserDetails UD WHERE UD.superadminId =:superadminId AND roleType NOT IN :roleType AND status NOT IN :REMOVED ORDER BY UD.id DESC")
+					.setParameter("superadminId", userRequest.getSuperadminId())
+					.setParameter("roleType", RoleType.SUPERADMIN.name())
+					.setParameter("REMOVED", Status.REMOVED.name())
+					.getResultList();
+			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.ADMIN.name())) {
 			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
-					"SELECT UD FROM UserDetails UD WHERE UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-					.setParameter("createdBy", userRequest.getCreatedBy())
+					"SELECT UD FROM UserDetails UD WHERE UD.adminId =:adminId AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
+					.setParameter("adminId", userRequest.getLoginId())
 					.setParameter("superadminId", userRequest.getSuperadminId())
-					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
+					.setParameter("REMOVED", Status.REMOVED.name())
+					.getResultList();
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.TEAM_LEADER.name())) {
 			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
 					"SELECT UD FROM UserDetails UD WHERE UD.createdBy =:createdBy AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-					.setParameter("createdBy", userRequest.getCreatedBy())
+					.setParameter("createdBy", userRequest.getLoginId())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
 			return results;
 		}
 		return null;
-	}	
-
-	public List<UserDetails> getUserDetailsByUserRole(UserRequestObject userRequest) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
-	
+	@SuppressWarnings("unchecked")
+	public List<UserDetails> getUserDetailsByRoleType(UserRequestObject userRequest) {
+		System.out.println("kjhhjh : "+userRequest.getRoleType());
+		List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
+				"SELECT UD FROM UserDetails UD WHERE UD.roleType =:roleType AND UD.createdBy =:createdBy AND UD.superadminId =:superadminId ORDER BY UD.id DESC")
+				.setParameter("roleType", userRequest.getRoleType())
+				.setParameter("createdBy", userRequest.getCreatedBy())
+				.setParameter("superadminId", userRequest.getSuperadminId())
+				.getResultList();
+		return results;
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<UserDetails> getUserListForDropDown(UserRequestObject userRequest) {
 		

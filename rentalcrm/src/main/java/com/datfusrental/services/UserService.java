@@ -326,7 +326,7 @@ public class UserService {
 		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
 		if (userDetails != null) {
 			
-			userDetails.setCreatedBy(userRequest.getTeamLeaderId());
+			userDetails.setCreatedBy(userRequest.getTeamleaderId());
 			userHelper.UpdateUserDetails(userDetails);
 			
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
@@ -365,16 +365,18 @@ public class UserService {
 	public List<UserDetails> getUserDetails(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		List<UserDetails> userList = new ArrayList<UserDetails>();
-		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
+//		if (isValid) {
 		userList = userHelper.getUserDetails(userRequest);  
-	}
+		System.out.println(userHelper.getUserDetails(userRequest));
+//	}
 		return userList;
 	}
 	
-	public List<UserDetails> getUserDetailsByUserRole(Request<UserRequestObject> userRequestObject) {
+	public List<UserDetails> getUserDetailsByRoleType(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		List<UserDetails> userList = userHelper.getUserDetailsByUserRole(userRequest);
+		System.out.println(" hh : "+userRequest);
+		List<UserDetails> userList = userHelper.getUserDetailsByRoleType(userRequest);
 		return userList;
 	}
 	
