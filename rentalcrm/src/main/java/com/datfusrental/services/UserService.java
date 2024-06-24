@@ -82,12 +82,14 @@ public class UserService {
 					loginRequest.setLoginId(userDetails.getLoginId());
 					loginRequest.setPassword(null);
 
+					loginRequest.setUserPicture(userDetails.getUserPicture());
 					loginRequest.setFirstName(userDetails.getFirstName());
 					loginRequest.setLastName(userDetails.getLastName());
 					loginRequest.setService(userDetails.getService());
 					loginRequest.setPermissions(userDetails.getPermissions());
 					loginRequest.setRoleType(userDetails.getRoleType());
 					loginRequest.setSuperadminId(userDetails.getSuperadminId());
+					loginRequest.setTeamLeaderId(userDetails.getTeamleaderId());
 					loginRequest.setToken(token);
 
 					loginRequest.setRespCode(Constant.SUCCESS_CODE);
@@ -110,23 +112,23 @@ public class UserService {
 		}
 	}
 	
-	public UserRequestObject getUserDetailsByLoginId(Request<UserRequestObject> userRequestObject) throws BizException {
-		UserRequestObject userRequest = userRequestObject.getPayload();
-		userHelper.validateUserRequest(userRequest);
-
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
-		if (userDetails != null) {
-			
-			userRequest.setFirstName(userDetails.getFirstName());
-			userRequest.setLastName(userDetails.getLastName());
-			userRequest.setUserPicture(userDetails.getUserPicture());
-			userRequest.setRoleType(userDetails.getRoleType());
-			
-			userRequest.setRespCode(Constant.SUCCESS_CODE);
-			return userRequest;
-		}
-		return userRequest;
-	}
+//	public UserRequestObject getUserDetailsByLoginId(Request<UserRequestObject> userRequestObject) throws BizException {
+//		UserRequestObject userRequest = userRequestObject.getPayload();
+//		userHelper.validateUserRequest(userRequest);
+//
+//		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
+//		if (userDetails != null) {
+//			
+//			userRequest.setFirstName(userDetails.getFirstName());
+//			userRequest.setLastName(userDetails.getLastName());
+//			userRequest.setUserPicture(userDetails.getUserPicture());
+//			userRequest.setRoleType(userDetails.getRoleType());
+//			
+//			userRequest.setRespCode(Constant.SUCCESS_CODE);
+//			return userRequest;
+//		}
+//		return userRequest;
+//	}
 	
 
 	@Transactional

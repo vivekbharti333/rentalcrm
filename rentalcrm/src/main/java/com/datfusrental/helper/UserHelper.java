@@ -131,6 +131,7 @@ public class UserHelper {
 		userDetails.setStatus(Status.ACTIVE.name());
 		userDetails.setRoleType(userRequest.getRoleType());
 		userDetails.setService(userRequest.getService());
+		userDetails.setPermissions(userRequest.getPermissions());
 		userDetails.setUserPicture(userRequest.getUserPicture());
 		userDetails.setFirstName(userRequest.getFirstName());
 		userDetails.setLastName(userRequest.getLastName());
@@ -147,6 +148,8 @@ public class UserHelper {
 		userDetails.setIdDocumentPicture(userRequest.getIdDocumentPicture());
 		userDetails.setPanNumber(userRequest.getPanNumber());
 		userDetails.setCreatedBy(userRequest.getCreatedBy());
+		userDetails.setAdminId(userRequest.getAdminId());
+		userDetails.setTeamleaderId(userRequest.getTeamleaderId());
 		
 		userDetails.setDob(userRequest.getDob());
 		
@@ -164,12 +167,18 @@ public class UserHelper {
 			
 		    userDetails.setValidityExpireOn(oneYearLater);
 		}else {
-			
 			UserDetails existsUserDetails = this.getUserDetailsByLoginId(userRequest.getSuperadminId());
-			
 			userDetails.setSuperadminId(userRequest.getSuperadminId());
-//			userDetails.setValidityExpireOn(existsUserDetails.getValidityExpireOn());
+			userDetails.setValidityExpireOn(existsUserDetails.getValidityExpireOn());
 		}
+		if(userRequest.getTeamleaderId() == null || userRequest.getTeamleaderId().equals("")) {
+			userDetails.setTeamleaderId(userRequest.getCreatedBy());
+		}
+		if(userRequest.getAdminId() == null || userRequest.getAdminId().equals("")) {
+			userDetails.setAdminId(userRequest.getCreatedBy());
+		}
+		System.out.println("ADMIN:"+userRequest.getAdminId()+":");
+		System.out.println("Teamleader:"+userRequest.getTeamleaderId()+":");
 	
 		return userDetails;
 	}
@@ -220,7 +229,7 @@ public class UserHelper {
 		} else if (userRequest.getRoleType().equals(RoleType.ADMIN.name())) {
 			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
 					"SELECT UD FROM UserDetails UD WHERE UD.adminId =:adminId AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-					.setParameter("adminId", userRequest.getLoginId())
+					.setParameter("adminId", userRequest.getCreatedBy())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name())
 					.getResultList();
@@ -252,16 +261,15 @@ public class UserHelper {
 	public List<UserDetails> getUserListForDropDown(UserRequestObject userRequest) {
 		
 		List<String> excludedRoleTypes = new ArrayList<String>();
-		if(userRequest.getRoleType().equalsIgnoreCase(RoleType.TEAM_LEADER.name())) {
-			excludedRoleTypes = Arrays.asList(RoleType.FUNDRAISING_OFFICER.name(), RoleType.MAINADMIN.name());
+		if(userRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name(), RoleType.ADMIN.name());
 			
-		}else if(userRequest.getRoleType().equalsIgnoreCase(RoleType.FUNDRAISING_OFFICER.name())) {
-			excludedRoleTypes = Arrays.asList(RoleType.MAINADMIN.name(), RoleType.SUPERADMIN.name(), 
-					RoleType.ADMIN.name(), RoleType.TEAM_LEADER.name());
+		}else if(userRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
+			excludedRoleTypes = Arrays.asList(RoleType.ADMIN.name(), RoleType.TEAM_LEADER.name());
 		}
 		
 		List<UserDetails> results = userDetailsDao.getEntityManager()
-				.createQuery("SELECT UD FROM UserDetails UD WHERE roleType NOT IN :roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
+				.createQuery("SELECT UD FROM UserDetails UD WHERE roleType IN :roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
 				.setParameter("roleType", excludedRoleTypes)
 				.setParameter("superadminId", userRequest.getSuperadminId())
 				.setParameter("REMOVED", Status.REMOVED.name())
