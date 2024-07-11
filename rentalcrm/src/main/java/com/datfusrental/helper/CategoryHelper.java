@@ -120,25 +120,6 @@ public class CategoryHelper {
 			List<CategoryMaster> results = categoryMasterDao.getEntityManager()
 					.createQuery("SELECT CM FROM CategoryMaster CM ORDER BY CM.id ASC").getResultList();
 			return results;
-//		} else if (itemRequest.getRequestedFor().equals("ACTIVE")) {
-//			String categoryNameString = itemRequest.getCategoryAndSubCategoryIds();
-//			List<CategoryDetails> results = new ArrayList<>();
-//
-//// 			Split the categoryNameString by comma to get individual IDs
-//			String[] idStrings = categoryNameString.split(",");
-//
-//			for (String idString : idStrings) {
-//				// Parse each idString to Integer
-//				Integer id = Integer.parseInt(idString.trim());
-//
-//				// Execute query for each ID
-//				List<CategoryDetails> result = categoryMasterDao.getEntityManager().createQuery(
-//						"SELECT SC FROM CategoryDetails SC WHERE SC.categoryType = :categoryType AND SC.id = :id ORDER BY SC.id ASC")
-//						.setParameter("id", id).setParameter("categoryType", itemRequest.getCategoryType())
-//						.getResultList();
-//				results.addAll(result);
-//			}
-//			return results;
 		}
 		return null;
 	}
@@ -183,9 +164,9 @@ public class CategoryHelper {
 	public CategoryDetails getCategoryDetailsByReqObj(ItemRequestObject itemRequest) {
 
 		CategoryDetails categoryDetails = new CategoryDetails();
-		categoryDetails.setCategoryType(itemRequest.getCategoryType());
-		categoryDetails.setCategoryId(itemRequest.getCategoryId());
-		categoryDetails.setCategoryAndSubCategoryIds(itemRequest.getCategoryAndSubCategoryIds());
+//		categoryDetails.setCategoryType(itemRequest.getCategoryType());
+//		categoryDetails.setCategoryId(itemRequest.getCategoryId());
+//		categoryDetails.setCategoryAndSubCategoryIds(itemRequest.getCategoryAndSubCategoryIds());
 
 		categoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		categoryDetails.setStatus(Status.ACTIVE.name());
@@ -203,8 +184,8 @@ public class CategoryHelper {
 	public CategoryDetails getUpdatedCategoryDetailsByReqObj(ItemRequestObject itemRequest,
 			CategoryDetails categoryDetails) {
 
-		categoryDetails.setCategoryId(itemRequest.getCategoryId());
-		categoryDetails.setCategoryAndSubCategoryIds(itemRequest.getCategoryAndSubCategoryIds());
+//		categoryDetails.setCategoryId(itemRequest.getCategoryId());
+//		categoryDetails.setCategoryAndSubCategoryIds(itemRequest.getCategoryAndSubCategoryIds());
 
 		categoryDetails.setStatus(Status.ACTIVE.name());
 		categoryDetails.setUpdatedAt(new Date());

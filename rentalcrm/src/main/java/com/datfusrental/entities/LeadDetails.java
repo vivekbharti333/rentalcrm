@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -62,6 +63,40 @@ public class LeadDetails {
 	
 	@Column(name = "customer_email_id")
 	private String customerEmailId;
+	
+	@Column(name = "quantity")
+	private int quantity;
+	
+	@Column(name = "vendor_amount")
+	private long vendorAmount;
+	
+	@Column(name = "sell_amount")
+	private long sellAmount;
+	
+	@Column(name = "booking_amount")
+	private long bookingAmount;
+	
+	@Column(name = "balance_amount")
+	private long balanceAmount;
+	
+	@Column(name = "total_amount")
+	private long totalAmount;
+	
+	@Column(name = "security_amount")
+	private long securityAmount;
+	
+	@Column(name = "vendor_name")
+	private String vendorName;
+	
+	@Lob
+	@Column(name = "notes")
+	private String notes;
+	
+	@Column(name = "created_by")
+	private String createdBy;
+	
+	@Column(name = "superadmin_id")
+	private String superadminId;
 	
 	@Column(name = "status")
 	private String status;

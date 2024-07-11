@@ -21,14 +21,8 @@ public class CategoryDetails {
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "category_type")
-	private String categoryType;
-	
-	@Column(name = "category_id")
-	private Long categoryId;
-	
-	@Column(name = "category_and_subcategory_ids")
-	private String categoryAndSubCategoryIds;
+	@Column(name = "category")
+	private String category;
 	
 	@Column(name = "status")
 	private String status;
