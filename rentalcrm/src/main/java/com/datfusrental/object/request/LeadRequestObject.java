@@ -33,9 +33,6 @@ public class LeadRequestObject {
 	private String vendorName;
 	private String notes;
 	
-	private Date firstDate;
-	private Date lastDate;
-	
 	private String createdBy;
 	private String superadminId;
 	private String status;
@@ -43,6 +40,9 @@ public class LeadRequestObject {
 	private Date updatedAt;
 	
 	private String requestedFor;
+	private Date firstDate;
+	private Date lastDate;
+	private String roleType;
 	
 	private int respCode;
 	private String respMesg;

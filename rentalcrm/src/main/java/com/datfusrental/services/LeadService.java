@@ -1,5 +1,7 @@
 package com.datfusrental.services;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
@@ -56,12 +58,11 @@ public class LeadService {
 		}
 	}
 
-	
-
-//	public List<UserRole> getUserRole(Request<UserRequestObject> userRequestObject) {
-//		UserRequestObject userRequest = userRequestObject.getPayload();
-//		List<UserRole> roleList = userRoleHelper.getUserRole(userRequest);
-//		return roleList;
-//	}
+	public List<LeadDetails> getEnquaryDetailsByDate(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		
+		List<LeadDetails> leadList = leadHelper.getEnquaryDetailsByDate(leadRequest);
+		return leadList;
+	}
 
 }

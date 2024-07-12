@@ -1,5 +1,6 @@
 package com.datfusrental.helper;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,8 @@ import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.dao.UserRoleMasterDao;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.UserRoleMaster;
+import com.datfusrental.enums.RequestFor;
+import com.datfusrental.enums.RoleType;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.UserRequestObject;
@@ -101,12 +104,48 @@ public class LeadHelper {
 
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getEnquaryDetailsByDate(LeadRequestObject leadRequest) {
-		List<LeadDetails> results = leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id ASC")
-				.setParameter("status", leadRequest)
-				.setParameter("superadminId", leadRequest.getSuperadminId())
-				.setParameter("firstDate", leadRequest.getFirstDate())
-				.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
+		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+				results = leadDetailsDao.getEntityManager().createQuery(
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						.setParameter("status", leadRequest).setParameter("superadminId", leadRequest.getSuperadminId())
+						.setParameter("firstDate", leadRequest.getFirstDate())
+						.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
+				return results;
+			} else if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATEGORY.name())) {
+				results = leadDetailsDao.getEntityManager().createQuery(
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.category =:category AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						.setParameter("status", leadRequest)
+						.setParameter("superadminId", leadRequest.getSuperadminId())
+						.setParameter("category", leadRequest.getCategory())
+						.setParameter("firstDate", leadRequest.getFirstDate())
+						.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
+				return results;
+			}
+
+		} else {
+			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+				results = leadDetailsDao.getEntityManager().createQuery(
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdBy =:createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						.setParameter("status", leadRequest)
+						.setParameter("superadminId", leadRequest.getSuperadminId())
+						.setParameter("createdBy", leadRequest.getCreatedBy())
+						.setParameter("firstDate", leadRequest.getFirstDate())
+						.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
+				return results;
+			} else if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATEGORY.name())) {
+				results = leadDetailsDao.getEntityManager().createQuery(
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.category =:category AND LD.superadminId =:superadminId AND LD.createdBy =:createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						.setParameter("status", leadRequest)
+						.setParameter("superadminId", leadRequest.getSuperadminId())
+						.setParameter("createdBy", leadRequest.getCreatedBy())
+						.setParameter("category", leadRequest.getCategory())
+						.setParameter("firstDate", leadRequest.getFirstDate())
+						.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
+				return results;
+			}
+		}
 		return results;
 
 	}
