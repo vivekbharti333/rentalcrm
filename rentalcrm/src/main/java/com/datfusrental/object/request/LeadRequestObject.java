@@ -33,6 +33,9 @@ public class LeadRequestObject {
 	private String vendorName;
 	private String notes;
 	
+	private Date firstDate;
+	private Date lastDate;
+	
 	private String createdBy;
 	private String superadminId;
 	private String status;

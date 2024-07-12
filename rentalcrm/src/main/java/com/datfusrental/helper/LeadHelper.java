@@ -100,13 +100,15 @@ public class LeadHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<UserRoleMaster> getUserRoleMaster(UserRequestObject userRequest) {
-		if (userRequest.getRequestedFor().equals("ALL")) {
-			List<UserRoleMaster> results = userRoleMasterDao.getEntityManager()
-					.createQuery("SELECT AD FROM UserRoleMaster AD ORDER BY AD.roleType ASC").getResultList();
-			return results;
-		}
-		return null;
+	public List<LeadDetails> getEnquaryDetailsByDate(LeadRequestObject leadRequest) {
+		List<LeadDetails> results = leadDetailsDao.getEntityManager().createQuery(
+				"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id ASC")
+				.setParameter("status", leadRequest)
+				.setParameter("superadminId", leadRequest.getSuperadminId())
+				.setParameter("firstDate", leadRequest.getFirstDate())
+				.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
+		return results;
+
 	}
 
 }
