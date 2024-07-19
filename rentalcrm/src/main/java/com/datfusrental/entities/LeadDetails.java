@@ -28,8 +28,8 @@ public class LeadDetails {
 	@Column(name = "company_name")
 	private String companyName;
 	
-	@Column(name = "enquiry_by")
-	private String enquiryBy;
+	@Column(name = "enquiry_source")
+	private String enquirySource;
 	
 	@Column(name = "category")
 	private String category;

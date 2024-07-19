@@ -57,7 +57,7 @@ public class LeadHelper {
 
 		leadDetails.setBookingId(leadRequest.getBookingId());
 		leadDetails.setCompanyName(leadRequest.getCompanyName());
-		leadDetails.setEnquiryBy(leadRequest.getEnquiryBy());
+		leadDetails.setEnquirySource(leadRequest.getEnquirySource());
 		leadDetails.setCategory(leadRequest.getCategory());
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
 		leadDetails.setItemName(leadRequest.getItemName());
@@ -108,8 +108,10 @@ public class LeadHelper {
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
-						.setParameter("status", leadRequest).setParameter("superadminId", leadRequest.getSuperadminId())
+//						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+//						.setParameter("status", leadRequest)
+						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("firstDate", leadRequest.getFirstDate())
 						.setParameter("lastDate", leadRequest.getLastDate()).getResultList();
 				return results;

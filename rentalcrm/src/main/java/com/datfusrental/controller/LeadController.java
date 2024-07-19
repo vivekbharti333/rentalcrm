@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
+import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
@@ -27,14 +28,14 @@ public class LeadController {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
-	private LeadService userRoleService;
+	private LeadService leadService;
 
 	@RequestMapping(path = "registerLead", method = RequestMethod.POST)
 	public Response<LeadRequestObject> registerLead(@RequestBody Request<LeadRequestObject> leadRequestObject,
 			HttpServletRequest request) {
 		GenricResponse<LeadRequestObject> responseObj = new GenricResponse<LeadRequestObject>();
 		try {
-			LeadRequestObject responce = userRoleService.registerLead(leadRequestObject);
+			LeadRequestObject responce = leadService.registerLead(leadRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -46,16 +47,18 @@ public class LeadController {
 
 
 
-//	@RequestMapping(path = "getUserRole", method = RequestMethod.POST)
-//	public Response<LeadDetails> getUserRole(@RequestBody Request<LeadRequestObject> leadRequestObject) {
-//		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
-//		try {
-//			List<LeadDetails> roleList = userRoleService.getUserRole(leadRequestObject);
+	@RequestMapping(path = "getFollowupOne", method = RequestMethod.POST)
+	public Response<LeadDetails> getFollowupOne(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			System.out.println("kjhhh");
+			List<LeadDetails> followupOneList = leadService.getFollowupOne(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 //			return response.createListResponse(roleList, 200);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
-//		}
-//	}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
 	
 }

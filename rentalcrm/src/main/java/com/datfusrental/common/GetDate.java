@@ -2,10 +2,15 @@ package com.datfusrental.common;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+
+import org.springframework.stereotype.Component;
 
 import com.datfusrental.enums.RequestFor;
 
+@Component
 public class GetDate {
 	
 	   private LocalDate localDate = LocalDate.now();
@@ -23,19 +28,20 @@ public class GetDate {
 		   Date date = new Date();
 //		   if(requestedFor.equalsIgnoreCase(RequestFor.PREVIOUS_DATE.name()))
 //		   
-//	      this.nextday = this.localDate.plus(1L, ChronoUnit.DAYS);
-//	      this.preday = this.localDate.minus(1L, ChronoUnit.DAYS);
-//	      this.firstDateOfMonth = this.localDate.withDayOfMonth(1);
-//	      this.lastDateOfMonth = this.localDate.with(TemporalAdjusters.lastDayOfMonth());
+	      this.nextday = this.localDate.plus(1L, ChronoUnit.DAYS);
+	      this.preday = this.localDate.minus(1L, ChronoUnit.DAYS);
+	      this.firstDateOfMonth = this.localDate.withDayOfMonth(1);
+	      this.lastDateOfMonth = this.localDate.with(TemporalAdjusters.lastDayOfMonth());
 	      
 //	      this.todayDate = Date.from(this.localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 //	      this.tomorrowDate = Date.from(this.nextday.atStartOfDay(ZoneId.systemDefault()).toInstant());
 //	      this.previousDate = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
 //	      this.firstDateMonth = Date.from(this.firstDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
 //	      this.lastDateMonth = Date.from(this.lastDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	      
+	      Date previousDate = null;
 	      if(requestedFor.equalsIgnoreCase(RequestFor.PREVIOUS_DATE.name())) {
-	    	  date = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//	    	  date = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	    	  previousDate = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	      } else if(requestedFor.equalsIgnoreCase(RequestFor.NEXT_DATE.name())) {
 	    	  date = Date.from(this.nextday.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	      }else if(requestedFor.equalsIgnoreCase(RequestFor.MONTH_FIRST_DATE.name())) {
@@ -43,7 +49,7 @@ public class GetDate {
 	      }else if(requestedFor.equalsIgnoreCase(RequestFor.MONTH_LAST_DATE.name())) {
 	    	  date = Date.from(this.lastDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	      }
-	      return date;
+	      return previousDate;
 	   }
 
 }

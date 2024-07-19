@@ -1,5 +1,6 @@
 package com.datfusrental.services;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -8,8 +9,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
@@ -26,6 +29,9 @@ public class LeadService {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private GetDate getDate;
 
 	@Transactional
 	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject)
@@ -58,9 +64,13 @@ public class LeadService {
 		}
 	}
 
-	public List<LeadDetails> getEnquaryDetailsByDate(Request<LeadRequestObject> leadRequestObject) {
+	public List<LeadDetails> getFollowupOne(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		
+		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
+//		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
+		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
+		leadRequest.setLastDate(new Date());
 		List<LeadDetails> leadList = leadHelper.getEnquaryDetailsByDate(leadRequest);
 		return leadList;
 	}

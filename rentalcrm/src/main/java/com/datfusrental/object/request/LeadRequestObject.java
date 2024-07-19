@@ -11,7 +11,7 @@ public class LeadRequestObject {
 	private String token;
 	private String bookingId;
 	private String companyName;
-	private String enquiryBy;
+	private String enquirySource;
 	private String category;
 	private String subCategory;
 	private String itemName;
