@@ -31,6 +31,9 @@ public class LeadDetails {
 	@Column(name = "enquiry_source")
 	private String enquirySource;
 	
+	@Column(name = "super_category")
+	private String superCategory;
+	
 	@Column(name = "category")
 	private String category;
 	
