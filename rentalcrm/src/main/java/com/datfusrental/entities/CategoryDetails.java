@@ -21,6 +21,9 @@ public class CategoryDetails {
 	@Column(name = "id")
 	private Long id;
 	
+	@Column(name = "super_category_id")
+	private Long superCategoryId;
+	
 	@Column(name = "category")
 	private String category;
 	

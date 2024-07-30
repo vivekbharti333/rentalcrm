@@ -12,20 +12,26 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "category_master")
+@Table(name = "sub_category_details")
 @Data
-public class CategoryMaster {
+public class SubCategoryDetails {
 		
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "category")
-	private String category;
+	@Column(name = "category_id")
+	private Long categoryId;
+	
+	@Column(name = "sub_category")
+	private String subCategory;
 	
 	@Column(name = "status")
 	private String status;
+	
+	@Column(name = "superadmin_id")
+	private String superadminId;
 	
 	@Column(name = "created_at")
 	private Date createdAt;

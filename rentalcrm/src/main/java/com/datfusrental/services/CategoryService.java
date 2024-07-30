@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryDetails;
-import com.datfusrental.entities.CategoryMaster;
-import com.datfusrental.entities.SubCategoryMaster;
+import com.datfusrental.entities.SuperCategoryDetails;
+import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.CategoryHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
@@ -30,26 +30,26 @@ public class CategoryService {
 	private JwtTokenUtil jwtTokenUtil;
 
 	@Transactional
-	public ItemRequestObject addCategoryMaster(Request<ItemRequestObject> itemRequestObject)
+	public ItemRequestObject addSuperCategory(Request<ItemRequestObject> itemRequestObject)
 			throws BizException, Exception {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
 		categoryHelper.validateItemRequest(itemRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
+		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
 		if (!isValid) {
 
-			CategoryMaster existsCategoryMaster = categoryHelper.getCategoryMasterByCategory(itemRequest.getCategory());
-			if (existsCategoryMaster == null) {
+			SuperCategoryDetails existsSuperCategory = categoryHelper.getSuperCategoryDetailsBySuperadminId(itemRequest.getSuperadminId());
+			if (existsSuperCategory == null) {
 //
-				CategoryMaster categoryMaster = categoryHelper.getCategoryMasterByReqObj(itemRequest);
-				categoryMaster = categoryHelper.saveCategoryMaster(categoryMaster);
+				SuperCategoryDetails superCategoryDetails = categoryHelper.getSuperCategoryDetailsByReqObj(itemRequest);
+				superCategoryDetails = categoryHelper.saveSuperCategoryDetails(superCategoryDetails);
 
 				itemRequest.setRespCode(Constant.SUCCESS_CODE);
 				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
 				return itemRequest;
 			} else {
-				existsCategoryMaster = categoryHelper.getUpdatedCategoryMasterByReqObj(existsCategoryMaster, itemRequest);
-				existsCategoryMaster = categoryHelper.updateCategoryMaster(existsCategoryMaster);
+				existsSuperCategory = categoryHelper.getUpdatedSuperCategoryDetailsByReqObj(existsSuperCategory, itemRequest);
+				existsSuperCategory = categoryHelper.updateSuperCategoryDetails(existsSuperCategory);
 				
 				itemRequest.setRespCode(Constant.SUCCESS_CODE);
 				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
@@ -63,52 +63,13 @@ public class CategoryService {
 	}
 
 	
-	public List<CategoryMaster> getCategoryMaster(Request<ItemRequestObject> itemRequestObject) {
+	public List<SuperCategoryDetails> getSuperCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<CategoryMaster> categoryMasterList = categoryHelper.getUserRoleMaster(itemRequest);
-		return categoryMasterList;
+		List<SuperCategoryDetails> superCategoryDetailsList = categoryHelper.getSuperCategoryDetails(itemRequest);
+		return superCategoryDetailsList;
 	}
-
-
-	public ItemRequestObject addSubCategoryMaster(Request<ItemRequestObject> itemRequestObject) 
-			throws BizException, Exception {
-		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		categoryHelper.validateItemRequest(itemRequest);
-		
-		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
-		if (!isValid) {
-			SubCategoryMaster existsSubCategoryMaster = categoryHelper.getSubCategoryMasterByCategory(itemRequest.getSubCategory());
-			if(existsSubCategoryMaster == null) {
-				
-				SubCategoryMaster subCategoryMaster = categoryHelper.getSubCategoryMasterByReqObj(itemRequest);
-				subCategoryMaster = categoryHelper.saveSubCategoryMaster(subCategoryMaster);
-				
-				itemRequest.setRespCode(Constant.SUCCESS_CODE);
-				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
-				return itemRequest;
-			}else {
-				existsSubCategoryMaster = categoryHelper.getUpdatedSubCategoryMasterByReqObj(existsSubCategoryMaster, itemRequest);
-				existsSubCategoryMaster = categoryHelper.updateSubCategoryMaster(existsSubCategoryMaster);
-				
-				itemRequest.setRespCode(Constant.SUCCESS_CODE);
-				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
-				return itemRequest;
-			}
-		}else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
-	}
-
-
-	public List<SubCategoryMaster> getSubCategoryMaster(Request<ItemRequestObject> itemRequestObject) {
-		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<SubCategoryMaster> subCategoryMasterList = categoryHelper.getSubCategoryMaster(itemRequest);
-		return subCategoryMasterList;
-	}
-
-
+	
+	
 	public ItemRequestObject addCategoryDetails(Request<ItemRequestObject> itemRequestObject) 
 			throws BizException, Exception {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
@@ -117,7 +78,7 @@ public class CategoryService {
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
 		if (!isValid) {
 			
-			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminIdCategoryType(itemRequest.getSuperadminId(), itemRequest.getCategoryType());
+			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getSuperCategoryId(),itemRequest.getSuperadminId());
 			if(existsCategoryDetails == null) {
 				CategoryDetails categoryDetails = categoryHelper.getCategoryDetailsByReqObj(itemRequest);
 				categoryDetails = categoryHelper.saveCategoryDetails(categoryDetails);
@@ -146,6 +107,48 @@ public class CategoryService {
 		List<CategoryDetails> categoryDetailsList = categoryHelper.getCategoryDetails(itemRequest);
 		return categoryDetailsList;
 	}
+
+
+	public ItemRequestObject addSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) 
+			throws BizException, Exception {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		categoryHelper.validateItemRequest(itemRequest);
+		
+		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
+		if (!isValid) {
+			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getCategoryId(), itemRequest.getSuperadminId());
+			if(existsSubCategoryMaster == null) {
+				
+				SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByReqObj(itemRequest);
+				subCategoryDetails = categoryHelper.saveSubCategoryDetails(subCategoryDetails);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
+				return itemRequest;
+			}else {
+				existsSubCategoryMaster = categoryHelper.getUpdatedSubCategoryDetailsByReqObj(existsSubCategoryMaster, itemRequest);
+				existsSubCategoryMaster = categoryHelper.updateSubCategoryDetails(existsSubCategoryMaster);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+				return itemRequest;
+			}
+		}else {
+			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+			return itemRequest;
+		}
+	}
+
+
+	public List<SubCategoryDetails> getSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		List<SubCategoryDetails> subCategoryMasterList = categoryHelper.getSubCategoryDetails(itemRequest);
+		return subCategoryMasterList;
+	}
+
+
+	
 
 
 }

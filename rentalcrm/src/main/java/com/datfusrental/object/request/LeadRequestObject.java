@@ -12,7 +12,9 @@ public class LeadRequestObject {
 	private String bookingId;
 	private String companyName;
 	private String enquirySource;
+	private Long superCategoryId;
 	private String superCategory;
+	private Long categoryId;
 	private String category;
 	private String subCategory;
 	private String itemName;

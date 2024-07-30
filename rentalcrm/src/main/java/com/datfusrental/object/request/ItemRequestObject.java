@@ -9,11 +9,11 @@ import lombok.Data;
 public class ItemRequestObject {
 	
 	private Long id;
-	private String categoryType;
+	private Long superCategoryId;
+	private String superCategory;
 	private Long categoryId;
 	private String category;
 	private String subCategory;
-	private String categoryAndSubCategoryIds;
 	
 	private String requestedFor;
 	private String token;
@@ -21,6 +21,7 @@ public class ItemRequestObject {
 	private Date createdAt;
 	private Date updatedAt;
 	private String createdBy;
+	private String loginId;
 	
 	private int respCode;
 	private String respMesg;
