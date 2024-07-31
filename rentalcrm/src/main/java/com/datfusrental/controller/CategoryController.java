@@ -76,11 +76,11 @@ public class CategoryController {
 		}
 	}
 
-	@RequestMapping(path = "getCategoryDetails", method = RequestMethod.POST)
-	public Response<CategoryDetails> getCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
+	@RequestMapping(path = "getCategoryDetailsBySuperCategoryId", method = RequestMethod.POST)
+	public Response<CategoryDetails> getCategoryDetailsBySuperCategoryId(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<CategoryDetails> response = new GenricResponse<CategoryDetails>();
 		try {
-			List<CategoryDetails> categoryMasterList = categoryService.getCategoryDetails(itemRequestObject);
+			List<CategoryDetails> categoryMasterList = categoryService.getCategoryDetailsBySuperCategoryId(itemRequestObject);
 			return response.createListResponse(categoryMasterList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -163,7 +163,7 @@ public class CategoryHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CategoryDetails> getCategoryDetails(ItemRequestObject itemRequest) {
+	public List<CategoryDetails> getCategoryDetailsBySuperCategoryId(ItemRequestObject itemRequest) {
 		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
 				"SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId =:superCategoryId AND CD.superadminId =:superadminId AND status =:status ORDER BY CD.id ASC")
 				.setParameter("superCategoryId", itemRequest.getSuperCategoryId())

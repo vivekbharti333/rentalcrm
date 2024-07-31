@@ -88,6 +88,18 @@ public class LeadDetails {
 	@Column(name = "security_amount")
 	private long securityAmount;
 	
+	@Column(name = "amount_to_company")
+	private long amountToCompany;
+	
+	@Column(name = "amount_to_vendor")
+	private long amountToVendor;
+	
+	@Column(name = "delivery_amount_to_company")
+	private long deliveryAmountToCompany;
+	
+	@Column(name = "delivery_amount_to_vendor")
+	private long deliveryAmountToVendor;
+	
 	@Column(name = "vendor_name")
 	private String vendorName;
 	
@@ -103,6 +115,9 @@ public class LeadDetails {
 	
 	@Column(name = "status")
 	private String status;
+	
+	@Column(name = "lead_type")
+	private String leadType;
 	
 	@Column(name = "created_at")
 	private Date createdAt;

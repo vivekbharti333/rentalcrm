@@ -2,6 +2,8 @@ package com.datfusrental.object.request;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import lombok.Data;
 
 @Data
@@ -33,12 +35,20 @@ public class LeadRequestObject {
 	private long balanceAmount;
 	private long totalAmount;
 	private long securityAmount;
+	
+	private long amountToCompany;
+	private long amountToVendor;
+	private long deliveryAmountToCompany;
+	private long deliveryAmountToVendor;
+	
 	private String vendorName;
 	private String notes;
+	private Date followupDateTime;
 	
 	private String createdBy;
 	private String superadminId;
 	private String status;
+	private String leadType;
 	private Date createdAt;
 	private Date updatedAt;
 	
