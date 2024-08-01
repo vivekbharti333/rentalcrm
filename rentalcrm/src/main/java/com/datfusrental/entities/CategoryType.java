@@ -12,20 +12,20 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "super_category_details")
+@Table(name = "category_Type")
 @Data
-public class SuperCategoryDetails {
+public class CategoryType {
 		
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "category_type_id")
-	private Long categoryTypeId;
+	@Column(name = "category_type_name")
+	private String categoryTypeName;
 	
-	@Column(name = "super_category")
-	private String superCategory;
+	@Column(name = "is_checked")
+	private String isChecked;
 	
 	@Column(name = "status")
 	private String status;

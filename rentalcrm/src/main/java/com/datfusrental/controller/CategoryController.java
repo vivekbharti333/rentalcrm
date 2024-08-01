@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryDetails;
+import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.SuperCategoryDetails;
 import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
@@ -31,6 +32,34 @@ public class CategoryController {
 
 	@Autowired
 	CategoryService categoryService;
+	
+	@RequestMapping(path = "addCategoryType", method = RequestMethod.POST)
+	public Response<ItemRequestObject> addCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.addCategoryType(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "getCategoryType", method = RequestMethod.POST)
+	public Response<CategoryType> getCategoryType(
+			@RequestBody Request<ItemRequestObject> itemRequestObject) {
+		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
+		try {
+			List<CategoryType> categoryTypeList = categoryService.getCategoryType(itemRequestObject);
+			return response.createListResponse(categoryTypeList, 200);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "addSuperCategory", method = RequestMethod.POST)
 	public Response<ItemRequestObject> addSuperCategory(@RequestBody Request<ItemRequestObject> itemRequestObject,
@@ -47,13 +76,13 @@ public class CategoryController {
 		}
 	}
 
-	@RequestMapping(path = "getSuperCategoryDetails", method = RequestMethod.POST)
-	public Response<SuperCategoryDetails> getSuperCategoryDetails(
+	@RequestMapping(path = "getSuperCategoryDetailsByCategoryTypeId", method = RequestMethod.POST)
+	public Response<SuperCategoryDetails> getSuperCategoryDetailsByCategoryTypeId(
 			@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<SuperCategoryDetails> response = new GenricResponse<SuperCategoryDetails>();
 		try {
 			List<SuperCategoryDetails> superCategoryDetailsList = categoryService
-					.getSuperCategoryDetails(itemRequestObject);
+					.getSuperCategoryDetailsByCategoryTypeId(itemRequestObject);
 			return response.createListResponse(superCategoryDetailsList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -103,12 +132,12 @@ public class CategoryController {
 		}
 	}
 
-	@RequestMapping(path = "getSubCategoryDetails", method = RequestMethod.POST)
-	public Response<SubCategoryDetails> getSubCategoryMaster(
+	@RequestMapping(path = "getSubCategoryDetailsByCategoryId", method = RequestMethod.POST)
+	public Response<SubCategoryDetails> getSubCategoryDetailsByCategoryId(
 			@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<SubCategoryDetails> response = new GenricResponse<SubCategoryDetails>();
 		try {
-			List<SubCategoryDetails> subCategoryMasterList = categoryService.getSubCategoryDetails(itemRequestObject);
+			List<SubCategoryDetails> subCategoryMasterList = categoryService.getSubCategoryDetailsByCategoryId(itemRequestObject);
 			return response.createListResponse(subCategoryMasterList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();

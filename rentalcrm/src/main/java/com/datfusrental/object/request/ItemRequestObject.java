@@ -9,6 +9,9 @@ import lombok.Data;
 public class ItemRequestObject {
 	
 	private Long id;
+	private Long categoryTypeId;
+	private String categoryTypeName;
+	private String isChecked;
 	private Long superCategoryId;
 	private String superCategory;
 	private Long categoryId;
