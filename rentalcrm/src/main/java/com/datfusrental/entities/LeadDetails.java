@@ -67,14 +67,23 @@ public class LeadDetails {
 	@Column(name = "customer_email_id")
 	private String customerEmailId;
 	
+	@Column(name = "total_days")
+	private int totalDays;
+	
 	@Column(name = "quantity")
 	private int quantity;
 	
-	@Column(name = "vendor_amount")
-	private long vendorAmount;
+	@Column(name = "vendor_rate")
+	private long vendorRate;
 	
-	@Column(name = "sell_amount")
-	private long sellAmount;
+	@Column(name = "pay_to_vendor")
+	private long payToVendor;
+	
+	@Column(name = "company_rate")
+	private long companyRate;
+	
+	@Column(name = "pay_to_company")
+	private long payToCompany;
 	
 	@Column(name = "booking_amount")
 	private long bookingAmount;
@@ -87,12 +96,6 @@ public class LeadDetails {
 	
 	@Column(name = "security_amount")
 	private long securityAmount;
-	
-	@Column(name = "amount_to_company")
-	private long amountToCompany;
-	
-	@Column(name = "amount_to_vendor")
-	private long amountToVendor;
 	
 	@Column(name = "delivery_amount_to_company")
 	private long deliveryAmountToCompany;
