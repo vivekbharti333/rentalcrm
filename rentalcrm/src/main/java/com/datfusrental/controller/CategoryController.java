@@ -54,7 +54,8 @@ public class CategoryController {
 		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
 		try {
 			List<CategoryType> categoryTypeList = categoryService.getCategoryType(itemRequestObject);
-			return response.createListResponse(categoryTypeList, 200);
+//			return response.createListResponse(categoryTypeList, 200);
+			return response.createListResponse(categoryTypeList, 200, String.valueOf(categoryTypeList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -76,14 +77,13 @@ public class CategoryController {
 		}
 	}
 
-	@RequestMapping(path = "getSuperCategoryDetailsByCategoryTypeId", method = RequestMethod.POST)
-	public Response<SuperCategoryDetails> getSuperCategoryDetailsByCategoryTypeId(
-			@RequestBody Request<ItemRequestObject> itemRequestObject) {
+	@RequestMapping(path = "getSuperCategoryDetails", method = RequestMethod.POST)
+	public Response<SuperCategoryDetails> getSuperCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<SuperCategoryDetails> response = new GenricResponse<SuperCategoryDetails>();
 		try {
-			List<SuperCategoryDetails> superCategoryDetailsList = categoryService
-					.getSuperCategoryDetailsByCategoryTypeId(itemRequestObject);
-			return response.createListResponse(superCategoryDetailsList, 200);
+			List<SuperCategoryDetails> superCategoryDetailsList = categoryService.getSuperCategoryDetails(itemRequestObject);
+//			return response.createListResponse(superCategoryDetailsList, 200);
+			return response.createListResponse(superCategoryDetailsList, 200, String.valueOf(superCategoryDetailsList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());

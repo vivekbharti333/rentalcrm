@@ -102,9 +102,9 @@ public class CategoryService {
 	}
 
 	
-	public List<SuperCategoryDetails> getSuperCategoryDetailsByCategoryTypeId(Request<ItemRequestObject> itemRequestObject) {
+	public List<SuperCategoryDetails> getSuperCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<SuperCategoryDetails> superCategoryDetailsList = categoryHelper.getSuperCategoryDetailsByCategoryTypeId(itemRequest);
+		List<SuperCategoryDetails> superCategoryDetailsList = categoryHelper.getSuperCategoryDetails(itemRequest);
 		return superCategoryDetailsList;
 	}
 	

@@ -23,6 +23,7 @@ import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.SuperCategoryDetails;
 import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.entities.UserRoleMaster;
+import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
@@ -168,13 +169,22 @@ public class CategoryHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SuperCategoryDetails> getSuperCategoryDetailsByCategoryTypeId(ItemRequestObject itemRequest) {
-		List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(
-				"SELECT SC FROM SuperCategoryDetails SC WHERE SC.categoryTypeId =:categoryTypeId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
-				.setParameter("categoryTypeId", itemRequest.getCategoryTypeId())
-				.setParameter("superadminId", itemRequest.getSuperadminId())
-				.setParameter("status", Status.ACTIVE.name()).getResultList();
-		return results;
+	public List<SuperCategoryDetails> getSuperCategoryDetails(ItemRequestObject itemRequest) {
+		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(          //INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+					"SELECT sc.id, sc.categoryTypeId, sc.superCategory, sc.status, sc.createdAt, ct.categoryTypeName FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC")
+					.setParameter("superadminId", itemRequest.getSuperadminId())
+//					.setParameter("status", Status.ACTIVE.name())
+					.getResultList();
+			return results;
+		} else {
+			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(
+					"SELECT SC FROM SuperCategoryDetails SC WHERE SC.categoryTypeId =:categoryTypeId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
+					.setParameter("categoryTypeId", itemRequest.getCategoryTypeId())
+					.setParameter("superadminId", itemRequest.getSuperadminId())
+					.setParameter("status", Status.ACTIVE.name()).getResultList();
+			return results;
+		}
 	}
 
 	public CategoryDetails getCategoryDetailsByReqObj(ItemRequestObject itemRequest) {
