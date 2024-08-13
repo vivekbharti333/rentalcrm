@@ -48,10 +48,40 @@ public class CategoryController {
 		}
 	}
 	
+	@RequestMapping(path = "editCategoryType", method = RequestMethod.POST)
+	public Response<ItemRequestObject> editCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.editCategoryType(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "changeCategoryTypeStatus", method = RequestMethod.POST)
+	public Response<ItemRequestObject> changeCategoryTypeStatus(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.changeCategoryTypeStatus(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
 	@RequestMapping(path = "getCategoryType", method = RequestMethod.POST)
-	public Response<CategoryType> getCategoryType(
-			@RequestBody Request<ItemRequestObject> itemRequestObject) {
+	public Response<CategoryType> getCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
+		System.out.println("Enter");
 		try {
 			List<CategoryType> categoryTypeList = categoryService.getCategoryType(itemRequestObject);
 //			return response.createListResponse(categoryTypeList, 200);
@@ -68,6 +98,36 @@ public class CategoryController {
 		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
 		try {
 			ItemRequestObject responce = categoryService.addSuperCategory(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "editSuperCategory", method = RequestMethod.POST)
+	public Response<ItemRequestObject> editSuperCategory(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.editSuperCategory(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "changeSuperCategoryStatus", method = RequestMethod.POST)
+	public Response<ItemRequestObject> changeSuperCategoryStatus(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.changeSuperCategoryStatus(itemRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -104,13 +164,44 @@ public class CategoryController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
+	
+	@RequestMapping(path = "editCategoryDetails", method = RequestMethod.POST)
+	public Response<ItemRequestObject> editCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.editCategoryDetails(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "changeCategoryStatus", method = RequestMethod.POST)
+	public Response<ItemRequestObject> changeCategoryStatus(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.changeCategoryStatus(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
-	@RequestMapping(path = "getCategoryDetailsBySuperCategoryId", method = RequestMethod.POST)
-	public Response<CategoryDetails> getCategoryDetailsBySuperCategoryId(@RequestBody Request<ItemRequestObject> itemRequestObject) {
+	@RequestMapping(path = "getCategoryDetails", method = RequestMethod.POST)
+	public Response<CategoryDetails> getCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<CategoryDetails> response = new GenricResponse<CategoryDetails>();
 		try {
-			List<CategoryDetails> categoryMasterList = categoryService.getCategoryDetailsBySuperCategoryId(itemRequestObject);
-			return response.createListResponse(categoryMasterList, 200);
+			List<CategoryDetails> categoryList = categoryService.getCategoryDetails(itemRequestObject);
+			return response.createListResponse(categoryList, 200, String.valueOf(categoryList.size()));
+//			return response.createListResponse(categoryMasterList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());

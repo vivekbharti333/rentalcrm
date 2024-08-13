@@ -78,7 +78,7 @@ public class UserRoleService {
 				return userRequest;
 			} else {
 				userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				userRequest.setRespMesg(Constant.NOT_EXIST);
+				userRequest.setRespMesg(Constant.DATA_NOT_FOUND);
 				return userRequest;
 			}
 		} else {

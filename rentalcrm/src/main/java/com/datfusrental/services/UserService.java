@@ -234,7 +234,7 @@ public class UserService {
 			return userRequest;
 		} else {
 			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			userRequest.setRespMesg(Constant.NOT_EXIST);
+			userRequest.setRespMesg(Constant.DATA_NOT_FOUND);
 			return userRequest;
 		}
 //		}else {
@@ -263,7 +263,7 @@ public class UserService {
 			return userRequest;
 		}else {
 			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			userRequest.setRespMesg(Constant.NOT_EXIST);
+			userRequest.setRespMesg(Constant.DATA_NOT_FOUND);
 			return userRequest;
 		}
 	}
@@ -377,7 +377,6 @@ public class UserService {
 	
 	public List<UserDetails> getUserDetailsByRoleType(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		System.out.println(" hh : "+userRequest);
 		List<UserDetails> userList = userHelper.getUserDetailsByRoleType(userRequest);
 		return userList;
 	}

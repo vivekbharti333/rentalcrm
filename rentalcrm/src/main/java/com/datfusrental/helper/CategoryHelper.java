@@ -66,12 +66,39 @@ public class CategoryHelper {
 	}
 	
 	@Transactional
-	public SuperCategoryDetails getSuperCategoryDetailsBySuperadminId(String superadminId) {
+	public CategoryType getCategoryTypeById(long id) {
+
+		CriteriaBuilder criteriaBuilder = categoryTypeDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<CategoryType> criteriaQuery = criteriaBuilder.createQuery(CategoryType.class);
+		Root<CategoryType> root = criteriaQuery.from(CategoryType.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), id);
+		criteriaQuery.where(restriction);
+		CategoryType categoryType = categoryTypeDao.getSession().createQuery(criteriaQuery)
+				.uniqueResult();
+		return categoryType;
+	}
+	
+	@Transactional
+	public SuperCategoryDetails getSuperCategoryDetailsBySuperadminId(Long categoryTypeId, String superCategory, String superadminId) {
 
 		CriteriaBuilder criteriaBuilder = superCategoryDetailsDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<SuperCategoryDetails> criteriaQuery = criteriaBuilder.createQuery(SuperCategoryDetails.class);
 		Root<SuperCategoryDetails> root = criteriaQuery.from(SuperCategoryDetails.class);
-		Predicate restriction = criteriaBuilder.equal(root.get("superadminId"), superadminId);
+		Predicate restriction1 = criteriaBuilder.equal(root.get("categoryTypeId"), categoryTypeId);
+		Predicate restriction2 = criteriaBuilder.equal(root.get("superCategory"), superCategory);
+		Predicate restriction3 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
+		criteriaQuery.where(restriction1,restriction2,restriction3);
+		SuperCategoryDetails superCategoryDetails = superCategoryDetailsDao.getSession().createQuery(criteriaQuery)
+				.uniqueResult();
+		return superCategoryDetails;
+	}
+	@Transactional
+	public SuperCategoryDetails getSuperCategoryDetailsById(Long superCategoryId) {
+
+		CriteriaBuilder criteriaBuilder = superCategoryDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<SuperCategoryDetails> criteriaQuery = criteriaBuilder.createQuery(SuperCategoryDetails.class);
+		Root<SuperCategoryDetails> root = criteriaQuery.from(SuperCategoryDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), superCategoryId);
 		criteriaQuery.where(restriction);
 		SuperCategoryDetails superCategoryDetails = superCategoryDetailsDao.getSession().createQuery(criteriaQuery)
 				.uniqueResult();
@@ -93,14 +120,27 @@ public class CategoryHelper {
 	}
 
 	@Transactional
-	public CategoryDetails getCategoryDetailsBySuperadminId(String category, String superadminId) {
+	public CategoryDetails getCategoryDetailsBySuperadminId(Long superCategoryId, String category, String superadminId) {
 
 		CriteriaBuilder criteriaBuilder = categoryDetailsDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<CategoryDetails> criteriaQuery = criteriaBuilder.createQuery(CategoryDetails.class);
 		Root<CategoryDetails> root = criteriaQuery.from(CategoryDetails.class);
-		Predicate restriction1 = criteriaBuilder.equal(root.get("category"), category);
-		Predicate restriction2 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
-		criteriaQuery.where(restriction1, restriction2);
+		Predicate restriction1 = criteriaBuilder.equal(root.get("superCategoryId"), superCategoryId);
+		Predicate restriction2 = criteriaBuilder.equal(root.get("category"), category);
+		Predicate restriction3 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
+		criteriaQuery.where(restriction1, restriction2, restriction3);
+		CategoryDetails categoryDetails = categoryDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return categoryDetails;
+	}
+	
+	@Transactional
+	public CategoryDetails getCategoryDetailsById(Long categoryId) {
+
+		CriteriaBuilder criteriaBuilder = categoryDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<CategoryDetails> criteriaQuery = criteriaBuilder.createQuery(CategoryDetails.class);
+		Root<CategoryDetails> root = criteriaQuery.from(CategoryDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), categoryId);
+		criteriaQuery.where(restriction);
 		CategoryDetails categoryDetails = categoryDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
 		return categoryDetails;
 	}
@@ -125,12 +165,39 @@ public class CategoryHelper {
 		return categoryType;
 	}
 	
+	public CategoryType getEditedCategoryTypeByReqObj(ItemRequestObject itemRequest, CategoryType categoryType) {
+
+		categoryType.setCategoryTypeName(itemRequest.getCategoryTypeName());
+//		categoryType.setStatus(Status.ACTIVE.name());
+//		categoryType.setIsChecked(itemRequest.getIsChecked());
+//		categoryType.setSuperadminId(itemRequest.getSuperadminId());
+//		categoryType.setCreatedAt(new Date());
+		categoryType.setUpdatedAt(new Date());
+
+		return categoryType;
+	}
+	
+	@Transactional
+	public CategoryType updateCategoryType(CategoryType categoryType) {
+		categoryTypeDao.update(categoryType);
+		return categoryType;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<CategoryType> getCategoryType(ItemRequestObject itemRequest) {
-		List<CategoryType> results = categoryTypeDao.getEntityManager().createQuery(
-				"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
-				.setParameter("superadminId", itemRequest.getSuperadminId())
-				.setParameter("status", Status.ACTIVE.name()).getResultList();
+		List<CategoryType> results = new ArrayList<>();
+		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+			results = categoryTypeDao.getEntityManager().createQuery(
+					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId ORDER BY SC.id desc")
+					.setParameter("superadminId", itemRequest.getSuperadminId())
+					.getResultList();
+
+		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.DROPDOWN.name())) {
+			results = categoryTypeDao.getEntityManager().createQuery(
+					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
+					.setParameter("superadminId", itemRequest.getSuperadminId())
+					.setParameter("status", Status.ACTIVE.name()).getResultList();
+		}
 		return results;
 	}
 
@@ -153,12 +220,16 @@ public class CategoryHelper {
 		superCategoryDetailsDao.persist(superCategoryDetails);
 		return superCategoryDetails;
 	}
-
-	public SuperCategoryDetails getUpdatedSuperCategoryDetailsByReqObj(SuperCategoryDetails superCategoryDetails,
-			ItemRequestObject itemRequest) {
-
+	
+	public SuperCategoryDetails getUpdatedSuperCategoryDetailsByReqObj(ItemRequestObject itemRequest, SuperCategoryDetails superCategoryDetails) {
+System.out.println("itemRequest.getSuperCategory() : "+itemRequest.getSuperCategory());
+		superCategoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
 		superCategoryDetails.setSuperCategory(itemRequest.getSuperCategory());
+//		superCategoryDetails.setStatus(Status.ACTIVE.name());
+//		superCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
+//		superCategoryDetails.setCreatedAt(new Date());
 		superCategoryDetails.setUpdatedAt(new Date());
+
 		return superCategoryDetails;
 	}
 
@@ -204,12 +275,14 @@ public class CategoryHelper {
 		categoryDetailsDao.persist(categoryDetails);
 		return categoryDetails;
 	}
-
-	public CategoryDetails getUpdatedCategoryDetailsByReqObj(ItemRequestObject itemRequest,
-			CategoryDetails categoryDetails) {
+	
+	public CategoryDetails getUpdatedCategoryDetailsByReqObj(ItemRequestObject itemRequest, CategoryDetails categoryDetails) {
 
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategory(itemRequest.getCategory());
+//		categoryDetails.setStatus(Status.ACTIVE.name());
+//		categoryDetails.setSuperadminId(itemRequest.getSuperadminId());
+//		categoryDetails.setCreatedAt(new Date());
 		categoryDetails.setUpdatedAt(new Date());
 		return categoryDetails;
 	}
@@ -221,12 +294,15 @@ public class CategoryHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CategoryDetails> getCategoryDetailsBySuperCategoryId(ItemRequestObject itemRequest) {
+	public List<CategoryDetails> getCategoryDetails(ItemRequestObject itemRequest) {
 		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
-				"SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId =:superCategoryId AND CD.superadminId =:superadminId AND status =:status ORDER BY CD.id ASC")
-				.setParameter("superCategoryId", itemRequest.getSuperCategoryId())
+			//"SELECT sc.id, sc.categoryTypeId, sc.superCategory, sc.status, sc.createdAt, ct.categoryTypeName FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC"
+			  "SELECT cd.id, cd.superCategoryId, cd.category, cd.status, cd.createdAt, sc.superCategory FROM CategoryDetails cd, SuperCategoryDetails sc WHERE cd.superCategoryId = sc.id AND cd.superadminId = :superadminId ORDER BY sc.id ASC")
+//				"SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId =:superCategoryId AND CD.superadminId =:superadminId AND status =:status ORDER BY CD.id ASC")
+//				.setParameter("superCategoryId", itemRequest.getSuperCategoryId())
 				.setParameter("superadminId", itemRequest.getSuperadminId())
-				.setParameter("status", Status.ACTIVE.name()).getResultList();
+//				.setParameter("status", Status.ACTIVE.name())
+				.getResultList();
 		return results;
 	}
 

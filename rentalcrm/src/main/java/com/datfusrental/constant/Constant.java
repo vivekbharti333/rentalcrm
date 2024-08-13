@@ -22,6 +22,7 @@ public class Constant {
 	 public static final int BAD_REQUEST_CODE = 400;
 	 public static final int INVALID_TOKEN_CODE = 401;
 	 public static final int ALREADY_EXISTS = 403;
+	 public static final int NOT_EXISTS = 404;
 	 public static final int INTERNAL_SERVER_ERR = 500;
 	
 	 /* Response Message */ 
@@ -35,7 +36,7 @@ public class Constant {
 	 public static final String LOGOUT_SUCCESS = "Logout Successfully";
 	 
 	 public static final String USER_EXIST = "Login Id Already Exists";
-	 public static final String NOT_EXIST = "Not Exists";
+	 public static final String NOT_EXIST_MSG = "Not Exists";
 	 public static final String INACTIVE_USER = "Userid Inactive";
 	 
 	 public static final String INVOICE_GEN_SUCCESS = "Invoice Generated Successfully";
