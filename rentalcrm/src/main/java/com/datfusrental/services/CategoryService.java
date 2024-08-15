@@ -76,8 +76,8 @@ public class CategoryService {
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
 		if (!isValid) {
-
-			SuperCategoryDetails existsSuperCategory = categoryHelper.getSuperCategoryDetailsBySuperadminId(itemRequest.getSuperadminId());
+System.out.println(" jkh : "+itemRequest.getCategoryTypeId()+"  ,  "+itemRequest.getSuperadminId());
+			SuperCategoryDetails existsSuperCategory = categoryHelper.getSuperCategoryDetailsBySuperadminId(itemRequest.getCategoryTypeId(),itemRequest.getSuperadminId());
 			if (existsSuperCategory == null) {
 //
 				SuperCategoryDetails superCategoryDetails = categoryHelper.getSuperCategoryDetailsByReqObj(itemRequest);
