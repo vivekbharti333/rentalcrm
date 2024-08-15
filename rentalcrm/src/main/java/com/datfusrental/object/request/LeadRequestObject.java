@@ -28,9 +28,12 @@ public class LeadRequestObject {
 	private String countryDialCode;
 	private String customerMobile;
 	private String customerEmailId;
+	private int totalDays;
 	private int quantity;
-	private long vendorAmount;
-	private long sellAmount;
+	private long vendorRate;
+	private long payToVendor;
+	private long companyRate;
+	private long payToCompany;
 	private long bookingAmount;
 	private long balanceAmount;
 	private long totalAmount;
@@ -44,6 +47,8 @@ public class LeadRequestObject {
 	private String vendorName;
 	private String notes;
 	private Date followupDateTime;
+	private String remarks;
+	private Date nextFollowupDate;
 	
 	private String createdBy;
 	private String superadminId;

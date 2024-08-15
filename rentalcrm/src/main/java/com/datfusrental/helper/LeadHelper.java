@@ -75,8 +75,10 @@ public class LeadHelper {
 		
 		leadDetails.setQuantity(leadRequest.getQuantity());
 		
-		leadDetails.setVendorAmount(leadRequest.getVendorAmount());
-		leadDetails.setSellAmount(leadRequest.getSellAmount());
+		leadDetails.setVendorRate(leadRequest.getVendorRate());
+		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
+		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
 		
 		leadDetails.setBookingAmount(leadRequest.getBookingAmount());
 		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
