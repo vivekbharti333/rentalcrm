@@ -1,10 +1,13 @@
 package com.datfusrental.common;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.tomcat.util.codec.binary.Base64;
 //import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Component;
+
+import com.datfusrental.constant.Constant;
+import com.datfusrental.enums.ImageType;
 
 @Component
 public class GetBase64Image {
@@ -27,33 +33,25 @@ public class GetBase64Image {
 	}
 
 	/** Upload Photos from base 64 **/
-//	public String getPathToUploadFile(String Type) { // Use
-//		String pathtoUploads;
-//		if (Type.equalsIgnoreCase("USER")) {
-//			pathtoUploads = Constant.docLocation + Constant.userPicPath;
-//		} else if (Type.equalsIgnoreCase("Proof")) {
-//			pathtoUploads = Constant.docLocation + Constant.proofPicPath;
-//		} else if (Type.equalsIgnoreCase("VehicleImage")) {
-//			pathtoUploads = Constant.docLocation + Constant.VehicleImage;
-//		}else if (Type.equalsIgnoreCase("AadhharImage")) {
-//			pathtoUploads = Constant.docLocation + Constant.AadhharImage;
-//		}else if (Type.equalsIgnoreCase("RECIEPT")) {
-//			pathtoUploads = Constant.docLocation + Constant.receipt;
-//		}else if (Type.equalsIgnoreCase("VehicleNumberImage")) {
-//			pathtoUploads = Constant.docLocation + Constant.VehicleNumberImage;
-//		}
-//		else {
-//			pathtoUploads = Constant.docLocation + Constant.defaultPath;
-//		}
-//		if (!new File(pathtoUploads).exists()) {
-//			File dir = new File(pathtoUploads);
-//			dir.mkdirs();
-//		}
-//		Path path = Paths.get(pathtoUploads);
-//		return path.toString();
-//	}
+	public String getPathToUploadFile(String Type) { // Use
+		String pathtoUploads;
+		if (Type.equalsIgnoreCase(ImageType.CATEGORY.name())) {
+			pathtoUploads = Constant.docLocation + Constant.CATEGORY_IMAGES;
+		} else if (Type.equalsIgnoreCase(ImageType.ITEAM.name())) {
+			pathtoUploads = Constant.docLocation + Constant.ITEAM_IMAGES;
+		}
+		else {
+			pathtoUploads = Constant.docLocation + Constant.defaultPath;
+		}
+		if (!new File(pathtoUploads).exists()) {
+			File dir = new File(pathtoUploads);
+			dir.mkdirs();
+		}
+		Path path = Paths.get(pathtoUploads);
+		return path.toString();
+	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked"})
 	public String uploadPhotos(String file, String fileName) {
 		try {
 			String fileBasefile = "";

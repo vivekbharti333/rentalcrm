@@ -21,6 +21,9 @@ public class CategoryType {
 	@Column(name = "id")
 	private Long id;
 	
+	@Column(name = "category_type_image")
+	private String categoryTypeImage;
+	
 	@Column(name = "category_type_name")
 	private String categoryTypeName;
 	

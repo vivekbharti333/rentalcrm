@@ -21,8 +21,14 @@ public class CategoryDetails {
 	@Column(name = "id")
 	private Long id;
 	
+	@Column(name = "category_type_id")
+	private Long categoryTypeId;
+	
 	@Column(name = "super_category_id")
 	private Long superCategoryId;
+	
+	@Column(name = "category_image")
+	private String categoryImage;
 	
 	@Column(name = "category")
 	private String category;

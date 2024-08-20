@@ -3,11 +3,16 @@ package com.datfusrental.constant;
 public class Constant {
 	 /* Document path */
 //	 public static final String docLocation = "/opt/tomcat-8.5/webapps/DonationDocument";
-//	 public static final String docLocation = "D:\\DonationDocument";
+	 public static final String docLocation = "D:\\RentalDocument";
 	 
-	 public static final String invoiceImage = "/InvoiceImage";	
-	 public static final String receipt = "/Receipt";
+	 public static final String IMAGE = "/Images";
+	 public static final String CATEGORY_IMAGES = "/CategoryImages";
+	 public static final String ITEAM_IMAGES = "/IteamImages";
+	 
 	 public static final String defaultPath = "/Default";
+	 
+//	 public static final String receipt = "/Receipt";
+
 	 
 
 	 /* Response Message */

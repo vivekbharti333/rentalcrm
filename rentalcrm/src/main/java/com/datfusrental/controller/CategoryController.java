@@ -1,21 +1,30 @@
 package com.datfusrental.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datfusrental.common.GetBase64Image;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryDetails;
 import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.SuperCategoryDetails;
+import com.datfusrental.enums.ImageType;
 import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
@@ -31,7 +40,10 @@ public class CategoryController {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
-	CategoryService categoryService;
+	private CategoryService categoryService;
+	
+	@Autowired
+	private GetBase64Image getBase64Image;
 	
 	@RequestMapping(path = "addCategoryType", method = RequestMethod.POST)
 	public Response<ItemRequestObject> addCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject,
@@ -222,18 +234,53 @@ public class CategoryController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
+	
+	@RequestMapping(path = "updateSubCategoryDetails", method = RequestMethod.POST)
+	public Response<ItemRequestObject> updateSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.updateSubCategoryDetails(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
-	@RequestMapping(path = "getSubCategoryDetailsByCategoryId", method = RequestMethod.POST)
-	public Response<SubCategoryDetails> getSubCategoryDetailsByCategoryId(
+	@RequestMapping(path = "getSubCategoryDetails", method = RequestMethod.POST)
+	public Response<SubCategoryDetails> getSubCategoryDetails(
 			@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<SubCategoryDetails> response = new GenricResponse<SubCategoryDetails>();
 		try {
-			List<SubCategoryDetails> subCategoryMasterList = categoryService.getSubCategoryDetailsByCategoryId(itemRequestObject);
+			List<SubCategoryDetails> subCategoryMasterList = categoryService.getSubCategoryDetails(itemRequestObject);
 			return response.createListResponse(subCategoryMasterList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		}
+	}
+	
+	@RequestMapping(value = "/cateImg/{imageName}", method = RequestMethod.GET)
+	public HttpEntity<byte[]> getOrder(@PathVariable String imageName, HttpServletRequest request) throws Exception {
+
+		getBase64Image.getServerPath(request);
+		byte[] image;
+
+		String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+		String file = basePath + File.separator + imageName;
+		try {
+			image = FileUtils.readFileToByteArray(new File(file));
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_PNG);
+			headers.setContentLength(image.length);
+			return new HttpEntity<byte[]>(image, headers);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

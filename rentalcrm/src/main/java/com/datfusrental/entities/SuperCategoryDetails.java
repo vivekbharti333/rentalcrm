@@ -24,6 +24,9 @@ public class SuperCategoryDetails {
 	@Column(name = "category_type_id")
 	private Long categoryTypeId;
 	
+	@Column(name = "super_category_image")
+	private String superCategoryImage;
+	
 	@Column(name = "super_category")
 	private String superCategory;
 	

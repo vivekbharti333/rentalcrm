@@ -1,5 +1,6 @@
 package com.datfusrental.services;
 
+import java.io.File;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -8,10 +9,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.datfusrental.common.GetBase64Image;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryDetails;
 import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.SuperCategoryDetails;
+import com.datfusrental.enums.ImageType;
 import com.datfusrental.enums.Status;
 import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
@@ -31,6 +34,9 @@ public class CategoryService {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
+	@Autowired
+	private GetBase64Image getBase64Image;
+	
 	
 	@Transactional
 	public ItemRequestObject addCategoryType(Request<ItemRequestObject> itemRequestObject) 
@@ -40,11 +46,17 @@ public class CategoryService {
 		
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
 		if (!isValid) {
-
-			System.out.println(itemRequest.getCategoryTypeName()+"   ,   "+ itemRequest.getSuperadminId());
 			CategoryType existsCategoryType = categoryHelper.getCategoryTypeByCategoryTypeName(itemRequest.getCategoryTypeName(), itemRequest.getSuperadminId());
-			System.out.println("existsCategoryType : "+existsCategoryType);
 			if (existsCategoryType == null) {
+				if(itemRequest.getCategoryTypeImage() != null || !itemRequest.getCategoryTypeImage().isEmpty()) {
+					
+					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+					String fileName = "CATTYP"+itemRequest.getCategoryTypeName() + itemRequest.getSuperadminId().replaceAll(" ", "");
+					String finalFileName = basePath + File.separator + fileName;
+					String serverPath =  fileName;
+					finalFileName = getBase64Image.uploadPhotos(itemRequest.getCategoryTypeImage(), finalFileName);
+					itemRequest.setCategoryTypeImage(serverPath);
+				}
 //
 				CategoryType categoryType = categoryHelper.getCategoryTypeByReqObj(itemRequest);
 				categoryType = categoryHelper.saveCategoryType(categoryType);
@@ -145,10 +157,20 @@ public class CategoryService {
 		categoryHelper.validateItemRequest(itemRequest);
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
-		if (!isValid) {
+//		if (!isValid) {
 
 			SuperCategoryDetails existsSuperCategory = categoryHelper.getSuperCategoryDetailsBySuperadminId(itemRequest.getCategoryTypeId(),itemRequest.getSuperCategory(),itemRequest.getSuperadminId());
 			if (existsSuperCategory == null) {
+				
+				if(itemRequest.getSuperCategoryImage() != null || !itemRequest.getSuperCategoryImage().isEmpty()) {
+					
+					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+					String fileName = "SUPCAT"+itemRequest.getSuperCategory() + itemRequest.getSuperadminId().replaceAll(" ", "");
+					String finalFileName = basePath + File.separator + fileName;
+					String serverPath =  fileName;
+					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSuperCategoryImage(), finalFileName);
+					itemRequest.setSuperCategoryImage(serverPath);
+				}
 //
 				SuperCategoryDetails superCategoryDetails = categoryHelper.getSuperCategoryDetailsByReqObj(itemRequest);
 				superCategoryDetails = categoryHelper.saveSuperCategoryDetails(superCategoryDetails);
@@ -161,11 +183,11 @@ public class CategoryService {
 				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 				return itemRequest;
 			}
-		} else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
+//		} else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
 	}
 	
 	@Transactional
@@ -179,7 +201,7 @@ public class CategoryService {
 
 			SuperCategoryDetails superCategoryDetails = categoryHelper.getSuperCategoryDetailsById(itemRequest.getSuperCategoryId());
 			if (superCategoryDetails != null) {
-				System.out.println(superCategoryDetails.getSuperCategory()+"  ,  "+itemRequest.getSuperCategory());
+				
 				superCategoryDetails = categoryHelper.getUpdatedSuperCategoryDetailsByReqObj(itemRequest, superCategoryDetails);
 				superCategoryDetails = categoryHelper.updateSuperCategoryDetails(superCategoryDetails);
 				
@@ -245,10 +267,21 @@ public class CategoryService {
 		categoryHelper.validateItemRequest(itemRequest);
 		
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
-		if (isValid) {
+//		if (isValid) {
 			
 			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getSuperCategoryId(), itemRequest.getCategory(), itemRequest.getSuperadminId());
 			if(existsCategoryDetails == null) {
+				
+				if(itemRequest.getCategoryImage() != null || !itemRequest.getCategoryImage().isEmpty()) {
+					
+					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+					String fileName = "CAT"+itemRequest.getCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
+					String finalFileName = basePath + File.separator + fileName;
+					String serverPath =  fileName;
+					finalFileName = getBase64Image.uploadPhotos(itemRequest.getCategoryImage(), finalFileName);
+					itemRequest.setCategoryImage(serverPath);
+				}
+
 				CategoryDetails categoryDetails = categoryHelper.getCategoryDetailsByReqObj(itemRequest);
 				categoryDetails = categoryHelper.saveCategoryDetails(categoryDetails);
 				
@@ -260,11 +293,11 @@ public class CategoryService {
 				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 				return itemRequest;
 			}
-		} else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
+//		} else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
 	}
 
 	public ItemRequestObject editCategoryDetails(Request<ItemRequestObject> itemRequestObject) 
@@ -347,6 +380,16 @@ public class CategoryService {
 			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getSuperadminId());
 			if(existsSubCategoryMaster == null) {
 				
+				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
+					
+					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+					String fileName = "SUBCAT"+itemRequest.getSubCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
+					String finalFileName = basePath + File.separator + fileName;
+					String serverPath =  fileName;
+					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
+					itemRequest.setSubCategoryImage(serverPath);
+				}
+				
 				SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByReqObj(itemRequest);
 				subCategoryDetails = categoryHelper.saveSubCategoryDetails(subCategoryDetails);
 				
@@ -354,11 +397,8 @@ public class CategoryService {
 				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
 				return itemRequest;
 			}else {
-				existsSubCategoryMaster = categoryHelper.getUpdatedSubCategoryDetailsByReqObj(existsSubCategoryMaster, itemRequest);
-				existsSubCategoryMaster = categoryHelper.updateSubCategoryDetails(existsSubCategoryMaster);
-				
-				itemRequest.setRespCode(Constant.SUCCESS_CODE);
-				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+				itemRequest.setRespCode(Constant.ALREADY_EXISTS);
+				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 				return itemRequest;
 			}
 		}else {
@@ -367,11 +407,50 @@ public class CategoryService {
 			return itemRequest;
 		}
 	}
-
-
-	public List<SubCategoryDetails> getSubCategoryDetailsByCategoryId(Request<ItemRequestObject> itemRequestObject) {
+	
+	
+	public ItemRequestObject updateSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) 
+			throws BizException, Exception {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<SubCategoryDetails> subCategoryMasterList = categoryHelper.getSubCategoryDetailsByCategoryId(itemRequest);
+		categoryHelper.validateItemRequest(itemRequest);
+		
+		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
+//		if (!isValid) {
+			SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getSuperadminId());
+			if(subCategoryDetails != null) {
+				
+				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
+					
+					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+					String fileName = "SUBCAT"+itemRequest.getSubCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
+					String finalFileName = basePath + File.separator + fileName;
+					String serverPath =  fileName;
+					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
+					itemRequest.setSubCategoryImage(serverPath);
+				}
+				
+				subCategoryDetails = categoryHelper.getUpdatedSubCategoryDetailsByReqObj(subCategoryDetails, itemRequest);
+				subCategoryDetails = categoryHelper.updateSubCategoryDetails(subCategoryDetails);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+				return itemRequest;
+			}else {
+				itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+				itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+				return itemRequest;
+			}
+//		}else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
+	}
+
+
+	public List<SubCategoryDetails> getSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		List<SubCategoryDetails> subCategoryMasterList = categoryHelper.getSubCategoryDetails(itemRequest);
 		return subCategoryMasterList;
 	}
 

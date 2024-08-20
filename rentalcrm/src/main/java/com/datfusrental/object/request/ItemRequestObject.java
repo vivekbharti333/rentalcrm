@@ -10,13 +10,18 @@ public class ItemRequestObject {
 	
 	private Long id;
 	private Long categoryTypeId;
+	private String categoryTypeImage;
 	private String categoryTypeName;
 	private String isChecked;
 	private Long superCategoryId;
+	private String superCategoryImage;
 	private String superCategory;
 	private Long categoryId;
+	private String categoryImage;
 	private String category;
+	private String subCategoryImage;
 	private String subCategory;
+	
 	
 	private String requestedFor;
 	private String token;
