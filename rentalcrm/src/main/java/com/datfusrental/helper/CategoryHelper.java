@@ -12,7 +12,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.CategoryDetailsDao;
 import com.datfusrental.dao.CategoryTypeDao;
