@@ -26,6 +26,7 @@ import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
 
+
 @Component
 public class CategoryHelper {
 	
@@ -146,6 +147,7 @@ public class CategoryHelper {
 
 		CategoryType categoryType = new CategoryType();
 
+		categoryType.setCategoryTypeImage(itemRequest.getCategoryTypeImage());;
 		categoryType.setCategoryTypeName(itemRequest.getCategoryTypeName());
 		categoryType.setStatus(Status.ACTIVE.name());
 		categoryType.setIsChecked(itemRequest.getIsChecked());
@@ -189,11 +191,11 @@ public class CategoryHelper {
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 					.getResultList();
 
-		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.DROPDOWN.name())) {
-			results = categoryTypeDao.getEntityManager().createQuery(
-					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
-					.setParameter("superadminId", itemRequest.getSuperadminId())
-					.setParameter("status", Status.ACTIVE.name()).getResultList();
+		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) { 
+//			results = categoryTypeDao.getEntityManager().createQuery(
+//					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
+//					.setParameter("superadminId", itemRequest.getSuperadminId())
+//					.setParameter("status", Status.ACTIVE.name()).getResultList();
 		}
 		return results;
 	}
@@ -203,6 +205,7 @@ public class CategoryHelper {
 		SuperCategoryDetails superCategoryDetails = new SuperCategoryDetails();
 
 		superCategoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
+		superCategoryDetails.setSuperCategoryImage(itemRequest.getSuperCategoryImage());
 		superCategoryDetails.setSuperCategory(itemRequest.getSuperCategory());
 		superCategoryDetails.setStatus(Status.ACTIVE.name());
 		superCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
@@ -237,7 +240,7 @@ public class CategoryHelper {
 	public List<SuperCategoryDetails> getSuperCategoryDetails(ItemRequestObject itemRequest) {
 		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(          //INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
-					"SELECT sc.id, sc.categoryTypeId, sc.superCategory, sc.status, sc.createdAt, ct.categoryTypeName FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC")
+					"SELECT sc.id, sc.categoryTypeId, ct.categoryTypeName, sc.superCategory, sc.status, sc.createdAt FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC")
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 //					.setParameter("status", Status.ACTIVE.name())
 					.getResultList();
@@ -260,6 +263,7 @@ public class CategoryHelper {
 		CategoryDetails categoryDetails = new CategoryDetails();
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
+		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
 		categoryDetails.setStatus(Status.ACTIVE.name());
 		categoryDetails.setSuperadminId(itemRequest.getSuperadminId());
@@ -297,7 +301,7 @@ public class CategoryHelper {
 		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
 //			  "SELECT cd.id, cd.superCategoryId, cd.category, cd.status, cd.createdAt, sc.superCategory FROM CategoryDetails cd, SuperCategoryDetails sc WHERE cd.superCategoryId = sc.id AND cd.superadminId = :superadminId ORDER BY sc.id ASC")
-				"SELECT cd.id, cd.superCategoryId, cd.category, cd.status, cd.createdAt, sc.superCategory, ct.categoryTypeName\r\n"
+				"SELECT cd.id, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt\r\n"
 				+ "FROM com.datfusrental.entities.CategoryDetails cd\r\n"
 				+ "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id\r\n"
 				+ "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id\r\n"
@@ -329,6 +333,7 @@ public class CategoryHelper {
 		subCategoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
 		subCategoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		subCategoryDetails.setCategoryId(itemRequest.getCategoryId());
+		subCategoryDetails.setSubCategoryImage(itemRequest.getSubCategoryImage());
 		subCategoryDetails.setSubCategory(itemRequest.getSubCategory());
 		subCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		subCategoryDetails.setStatus(Status.ACTIVE.name());
@@ -363,7 +368,7 @@ public class CategoryHelper {
 		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 			List<SubCategoryDetails> results = subCategoryDetailsDao.getEntityManager().createQuery(
 //					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.subCategory DESC")
-					"SELECT subcd.id, subcd.subCategory, subcd.status, subcd.createdAt, cd.category, scd.superCategory, ctd.categoryTypeName\r\n"
+					"SELECT subcd.id, subcd.categoryTypeId, ctd.categoryTypeName, subcd.superCategoryId, scd.superCategory, subcd.categoryId,cd.category, subcd.subCategory, subcd.status, subcd.createdAt \r\n"
 					+ "FROM SubCategoryDetails subcd\r\n"
 					+ "JOIN CategoryDetails cd ON subcd.categoryId = cd.id\r\n"
 					+ "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id\r\n"
