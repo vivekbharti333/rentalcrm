@@ -116,6 +116,19 @@ public class CategoryHelper {
 				.uniqueResult();
 		return subCategoryDetails;
 	}
+	
+	@Transactional
+	public SubCategoryDetails getSubCategoryDetailsById(Long subCategoryId) {
+
+		CriteriaBuilder criteriaBuilder = subCategoryDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<SubCategoryDetails> criteriaQuery = criteriaBuilder.createQuery(SubCategoryDetails.class);
+		Root<SubCategoryDetails> root = criteriaQuery.from(SubCategoryDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), subCategoryId);
+		criteriaQuery.where(restriction);
+		SubCategoryDetails subCategoryDetails = subCategoryDetailsDao.getSession().createQuery(criteriaQuery)
+				.uniqueResult();
+		return subCategoryDetails;
+	}
 
 	@Transactional
 	public CategoryDetails getCategoryDetailsBySuperadminId(Long superCategoryId, String category, String superadminId) {
@@ -240,14 +253,14 @@ public class CategoryHelper {
 	public List<SuperCategoryDetails> getSuperCategoryDetails(ItemRequestObject itemRequest) {
 		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(          //INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
-					"SELECT sc.id, sc.categoryTypeId, ct.categoryTypeName, sc.superCategory, sc.status, sc.createdAt FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC")
+					"SELECT sc.id, sc.superCategoryImage, sc.categoryTypeId, ct.categoryTypeName, sc.superCategory, sc.status, sc.createdAt FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id DESC")
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 //					.setParameter("status", Status.ACTIVE.name())
 					.getResultList();
 			return results;
 		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())){
 			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(
-					"SELECT SC FROM SuperCategoryDetails SC WHERE SC.categoryTypeId =:categoryTypeId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
+					"SELECT SC FROM SuperCategoryDetails SC WHERE SC.categoryTypeId =:categoryTypeId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id DESC")
 					.setParameter("categoryTypeId", itemRequest.getCategoryTypeId())
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 					.setParameter("status", Status.ACTIVE.name()).getResultList();
@@ -301,25 +314,24 @@ public class CategoryHelper {
 		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
 //			  "SELECT cd.id, cd.superCategoryId, cd.category, cd.status, cd.createdAt, sc.superCategory FROM CategoryDetails cd, SuperCategoryDetails sc WHERE cd.superCategoryId = sc.id AND cd.superadminId = :superadminId ORDER BY sc.id ASC")
-				"SELECT cd.id, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt\r\n"
+				"SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt\r\n"
 				+ "FROM com.datfusrental.entities.CategoryDetails cd\r\n"
 				+ "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id\r\n"
 				+ "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id\r\n"
 				+ "WHERE cd.superadminId = :superadminId\r\n"
-				+ "ORDER BY sc.id ASC")
+				+ "ORDER BY cd.id DESC")
 				.setParameter("superadminId", itemRequest.getSuperadminId())
 				.getResultList();
 		return results;
 		}
 		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
 			List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
-					  "SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId = :superCategoryId AND CD.superadminId =:superadminId AND CD.status =:status ORDER BY CD.id ASC")
+					  "SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId = :superCategoryId AND CD.superadminId =:superadminId AND CD.status =:status ORDER BY CD.id DESC")
 					.setParameter("superCategoryId", itemRequest.getSuperCategoryId())
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 					.setParameter("status", Status.ACTIVE.name())
 					.getResultList();
 				return results;
-				
 		}else {
 			
 		}
@@ -368,20 +380,20 @@ public class CategoryHelper {
 		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 			List<SubCategoryDetails> results = subCategoryDetailsDao.getEntityManager().createQuery(
 //					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.subCategory DESC")
-					"SELECT subcd.id, subcd.categoryTypeId, ctd.categoryTypeName, subcd.superCategoryId, scd.superCategory, subcd.categoryId,cd.category, subcd.subCategory, subcd.status, subcd.createdAt \r\n"
+					"SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, subcd.superCategoryId, scd.superCategory, subcd.categoryId,cd.category, subcd.subCategory, subcd.status, subcd.createdAt \r\n"
 					+ "FROM SubCategoryDetails subcd\r\n"
 					+ "JOIN CategoryDetails cd ON subcd.categoryId = cd.id\r\n"
 					+ "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id\r\n"
 					+ "JOIN CategoryType ctd ON cd.categoryTypeId = ctd.id\r\n"
 					+ "WHERE subcd.superadminId = :superadminId\r\n"
-					+ "ORDER BY subcd.id ASC")
+					+ "ORDER BY subcd.id DESC")
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 					.getResultList();
 			return results;
 		}
 		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
 			List<SubCategoryDetails> results = subCategoryDetailsDao.getEntityManager().createQuery(
-					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.subCategory DESC")
+					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id DESC")
 					.setParameter("categoryId", itemRequest.getCategoryId())
 					.setParameter("superadminId", itemRequest.getSuperadminId())
 					.setParameter("status", Status.ACTIVE.name())

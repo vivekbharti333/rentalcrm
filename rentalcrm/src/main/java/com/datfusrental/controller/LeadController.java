@@ -51,7 +51,6 @@ public class LeadController {
 	public Response<LeadDetails> getFollowupOne(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
-			System.out.println("kjhhh");
 			List<LeadDetails> followupOneList = leadService.getFollowupOne(leadRequestObject);
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 //			return response.createListResponse(roleList, 200);

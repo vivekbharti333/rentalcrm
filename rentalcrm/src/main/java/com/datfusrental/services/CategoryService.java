@@ -376,7 +376,7 @@ public class CategoryService {
 		categoryHelper.validateItemRequest(itemRequest);
 		
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
-		if (!isValid) {
+		if (isValid) {
 			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getSuperadminId());
 			if(existsSubCategoryMaster == null) {
 				
@@ -445,6 +445,40 @@ public class CategoryService {
 //			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
 //			return itemRequest;
 //		}
+	}
+	
+	public ItemRequestObject changeSubCategoryStatus(Request<ItemRequestObject> itemRequestObject) 
+			throws BizException, Exception {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		categoryHelper.validateItemRequest(itemRequest);
+		
+		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
+		if (isValid) {
+			
+			SubCategoryDetails subCategory = categoryHelper.getSubCategoryDetailsById(itemRequest.getSubCategoryId());
+			
+			if(subCategory != null) {
+
+				if(subCategory.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
+					subCategory.setStatus(Status.ACTIVE.name());
+				} else {
+					subCategory.setStatus(Status.INACTIVE.name());
+				}
+				categoryHelper.updateSubCategoryDetails(subCategory);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+				return itemRequest;
+			}else {
+				itemRequest.setRespCode(Constant.NOT_EXISTS);
+				itemRequest.setRespMesg(Constant.DATA_NOT_FOUND);
+				return itemRequest;
+			}
+		} else {
+			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+			return itemRequest;
+		}
 	}
 
 

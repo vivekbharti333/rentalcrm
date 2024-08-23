@@ -205,11 +205,8 @@ public class UserService {
 			
 		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
 		if (userDetails != null) {
-			System.out.println("Enter 1");
 			userDetails = userHelper.getUpdatedUserDetailsByReqObj(userDetails, userRequest);
 			userDetails = userHelper.UpdateUserDetails(userDetails);
-			
-			System.out.println("Enter 2");
 			
 			if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
 				for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
