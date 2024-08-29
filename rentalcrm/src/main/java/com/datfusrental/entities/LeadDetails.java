@@ -116,6 +116,12 @@ public class LeadDetails {
 	@Column(name = "created_by")
 	private String createdBy;
 	
+	@Column(name = "created_by_name")
+	private String createdByName;
+	
+	@Column(name = "updated_by")
+	private String updatedBy;
+	
 	@Column(name = "superadmin_id")
 	private String superadminId;
 	

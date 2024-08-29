@@ -51,6 +51,8 @@ public class LeadRequestObject {
 	private Date nextFollowupDate;
 	
 	private String createdBy;
+	private String createdByName;
+	private String updatedBy;
 	private String superadminId;
 	private String status;
 	private String leadType;
