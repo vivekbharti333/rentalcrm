@@ -93,7 +93,6 @@ public class CategoryController {
 	@RequestMapping(path = "getCategoryType", method = RequestMethod.POST)
 	public Response<CategoryType> getCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
-		System.out.println("Enter");
 		try {
 			List<CategoryType> categoryTypeList = categoryService.getCategoryType(itemRequestObject);
 //			return response.createListResponse(categoryTypeList, 200);
@@ -249,6 +248,21 @@ public class CategoryController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
+	
+	@RequestMapping(path = "changeSubCategoryStatus", method = RequestMethod.POST)
+	public Response<ItemRequestObject> changeSubCategoryStatus(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.changeSubCategoryStatus(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "getSubCategoryDetails", method = RequestMethod.POST)
 	public Response<SubCategoryDetails> getSubCategoryDetails(
@@ -256,14 +270,15 @@ public class CategoryController {
 		GenricResponse<SubCategoryDetails> response = new GenricResponse<SubCategoryDetails>();
 		try {
 			List<SubCategoryDetails> subCategoryMasterList = categoryService.getSubCategoryDetails(itemRequestObject);
-			return response.createListResponse(subCategoryMasterList, 200);
+			return response.createListResponse(subCategoryMasterList, 200, String.valueOf(subCategoryMasterList.size()));
+//			return response.createListResponse(subCategoryMasterList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		}
 	}
 	
-	@RequestMapping(value = "/cateImg/{imageName}", method = RequestMethod.GET)
+	@RequestMapping(value = "/categoryImage/{imageName}", method = RequestMethod.GET)
 	public HttpEntity<byte[]> getOrder(@PathVariable String imageName, HttpServletRequest request) throws Exception {
 
 		getBase64Image.getServerPath(request);

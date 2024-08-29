@@ -86,7 +86,7 @@ public class LeadHelper {
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
 		
 		leadDetails.setVendorName(leadRequest.getVendorName());
-		leadDetails.setNotes(leadRequest.getNotes());
+		leadDetails.setRemarks(leadRequest.getRemarks());
 		leadDetails.setStatus(leadRequest.getStatus());
 		
 		leadDetails.setCreatedAt(new Date());
@@ -151,7 +151,25 @@ public class LeadHelper {
 			}
 		}
 		return results;
-
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<LeadDetails> getAllLeadList(LeadRequestObject leadRequest) {
+		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		if(leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id DESC")
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.getResultList();
+		} else if(leadRequest.getRoleType().equalsIgnoreCase(RoleType.CUSTOMER_EXECUTIVE.name())) {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE LD.createdBy =:createdBy AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+					.setParameter("createdBy", leadRequest.getCreatedBy())
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.getResultList();
+		}
+		return results;
+	}
+	
 
 }

@@ -20,6 +20,7 @@ public class ItemRequestObject {
 	private String categoryImage;
 	private String category;
 	private String subCategoryImage;
+	private Long subCategoryId;
 	private String subCategory;
 	
 	

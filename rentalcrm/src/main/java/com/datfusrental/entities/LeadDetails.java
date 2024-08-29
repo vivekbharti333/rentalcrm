@@ -110,11 +110,17 @@ public class LeadDetails {
 	private String vendorName;
 	
 	@Lob
-	@Column(name = "notes")
-	private String notes;
+	@Column(name = "remarks")
+	private String remarks;
 	
 	@Column(name = "created_by")
 	private String createdBy;
+	
+	@Column(name = "created_by_name")
+	private String createdByName;
+	
+	@Column(name = "updated_by")
+	private String updatedBy;
 	
 	@Column(name = "superadmin_id")
 	private String superadminId;
