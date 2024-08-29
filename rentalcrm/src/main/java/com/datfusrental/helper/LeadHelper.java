@@ -86,7 +86,7 @@ public class LeadHelper {
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
 		
 		leadDetails.setVendorName(leadRequest.getVendorName());
-		leadDetails.setNotes(leadRequest.getNotes());
+		leadDetails.setRemarks(leadRequest.getRemarks());
 		leadDetails.setStatus(leadRequest.getStatus());
 		
 		leadDetails.setCreatedAt(new Date());
