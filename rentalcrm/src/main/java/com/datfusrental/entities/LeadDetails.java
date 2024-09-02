@@ -28,8 +28,8 @@ public class LeadDetails {
 	@Column(name = "company_name")
 	private String companyName;
 	
-	@Column(name = "enquiry_source")
-	private String enquirySource;
+//	@Column(name = "enquiry_source")
+//	private String enquirySource;
 	
 	@Column(name = "category_type_name")
 	private String categoryTypeName;
@@ -52,11 +52,17 @@ public class LeadDetails {
 	@Column(name = "pickup_location")
 	private String pickupLocation;
 	
+	@Column(name = "pickup_point")
+	private String pickupPoint;
+	
 	@Column(name = "drop_date_time")
 	private Date dropDateTime;
 	
 	@Column(name = "drop_location")
 	private String dropLocation;
+	
+	@Column(name ="drop_point")
+	private String dropPoint;
 	
 	@Column(name = "customeName")
 	private String customeName;
@@ -127,6 +133,9 @@ public class LeadDetails {
 	
 	@Column(name = "status")
 	private String status;
+	
+	@Column(name = "lead_origine")
+	private String leadOrigine;
 	
 	@Column(name = "lead_type")
 	private String leadType;

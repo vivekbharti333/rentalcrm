@@ -3,6 +3,8 @@ package com.datfusrental.object.request;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.Data;
 
 @Data
@@ -22,6 +24,9 @@ public class ItemRequestObject {
 	private String subCategoryImage;
 	private Long subCategoryId;
 	private String subCategory;
+	
+	private String location;
+	private String locationType;
 	
 	
 	private String requestedFor;

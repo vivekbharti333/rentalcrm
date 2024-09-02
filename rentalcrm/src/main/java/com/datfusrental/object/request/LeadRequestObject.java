@@ -13,7 +13,7 @@ public class LeadRequestObject {
 	private String token;
 	private String bookingId;
 	private String companyName;
-	private String enquirySource;
+//	private String enquirySource;
 	private Long superCategoryId;
 	private String superCategory;
 	private Long categoryId;
@@ -22,8 +22,10 @@ public class LeadRequestObject {
 	private String itemName;
 	private Date pickupDateTime;
 	private String pickupLocation;
+	private String pickupPoint;
 	private Date dropDateTime;
 	private String dropLocation;
+	private String dropPoint;
 	private String customeName;
 	private String countryDialCode;
 	private String customerMobile;
@@ -55,6 +57,7 @@ public class LeadRequestObject {
 	private String updatedBy;
 	private String superadminId;
 	private String status;
+	private String leadOrigine;
 	private String leadType;
 	private Date createdAt;
 	private Date updatedAt;

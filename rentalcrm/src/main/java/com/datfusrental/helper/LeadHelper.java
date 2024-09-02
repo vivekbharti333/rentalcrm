@@ -57,16 +57,18 @@ public class LeadHelper {
 
 		leadDetails.setBookingId(leadRequest.getBookingId());
 		leadDetails.setCompanyName(leadRequest.getCompanyName());
-		leadDetails.setEnquirySource(leadRequest.getEnquirySource());
+//		leadDetails.setEnquirySource(leadRequest.getEnquirySource());
 		leadDetails.setCategory(leadRequest.getCategory());
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
 		leadDetails.setItemName(leadRequest.getItemName());
 		
 		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
 		leadDetails.setPickupLocation(leadRequest.getPickupLocation());
+		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 		
 		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
 		leadDetails.setDropLocation(leadRequest.getDropLocation());
+		leadDetails.setDropPoint(leadRequest.getDropPoint());
 		
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
 		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
@@ -88,6 +90,9 @@ public class LeadHelper {
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());
 		leadDetails.setStatus(leadRequest.getStatus());
+		
+		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
+		leadDetails.setLeadType(leadRequest.getLeadType());
 		
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());

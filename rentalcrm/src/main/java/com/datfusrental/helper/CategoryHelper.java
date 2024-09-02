@@ -116,6 +116,19 @@ public class CategoryHelper {
 				.uniqueResult();
 		return subCategoryDetails;
 	}
+	
+	@Transactional
+	public SubCategoryDetails getSubCategoryDetailsById(Long id) {
+
+		CriteriaBuilder criteriaBuilder = subCategoryDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<SubCategoryDetails> criteriaQuery = criteriaBuilder.createQuery(SubCategoryDetails.class);
+		Root<SubCategoryDetails> root = criteriaQuery.from(SubCategoryDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), id);
+		criteriaQuery.where(restriction);
+		SubCategoryDetails subCategoryDetails = subCategoryDetailsDao.getSession().createQuery(criteriaQuery)
+				.uniqueResult();
+		return subCategoryDetails;
+	}
 
 	@Transactional
 	public CategoryDetails getCategoryDetailsBySuperadminId(Long superCategoryId, String category, String superadminId) {

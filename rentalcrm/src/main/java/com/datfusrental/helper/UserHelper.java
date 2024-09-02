@@ -237,7 +237,7 @@ public class UserHelper {
 		} else if (userRequest.getRoleType().equals(RoleType.TEAM_LEADER.name())) {
 			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
 					"SELECT UD FROM UserDetails UD WHERE UD.createdBy =:createdBy AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-					.setParameter("createdBy", userRequest.getLoginId())
+					.setParameter("teamleaderId", userRequest.getTeamleaderId())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
 			return results;
