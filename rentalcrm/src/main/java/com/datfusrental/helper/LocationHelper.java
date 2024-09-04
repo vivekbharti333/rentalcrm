@@ -26,6 +26,7 @@ import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
+import com.datfusrental.object.request.LocationRequestObject;
 
 @Component
 public class LocationHelper {
@@ -33,10 +34,22 @@ public class LocationHelper {
 	@Autowired
 	private LocationDetailsDao locationDetailsDao;
 
-	public void validateItemRequest(ItemRequestObject itemRequestObject) throws BizException {
-		if (itemRequestObject == null) {
+	public void validateLocationRequest(LocationRequestObject locationRequestObject) throws BizException {
+		if (locationRequestObject == null) {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
 		}
+	}
+
+	@Transactional
+	public LocationDetails getLocationDetailsById(Long id) {
+
+		CriteriaBuilder criteriaBuilder = locationDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<LocationDetails> criteriaQuery = criteriaBuilder.createQuery(LocationDetails.class);
+		Root<LocationDetails> root = criteriaQuery.from(LocationDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), id);
+		criteriaQuery.where(restriction);
+		LocationDetails locationDetails = locationDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return locationDetails;
 	}
 
 	@Transactional
@@ -53,14 +66,14 @@ public class LocationHelper {
 		return locationDetails;
 	}
 
-	public LocationDetails getLocationDetailsByReqObj(ItemRequestObject itemRequest) {
+	public LocationDetails getLocationDetailsByReqObj(LocationRequestObject locationRequest) {
 
 		LocationDetails locationDetails = new LocationDetails();
 
-		locationDetails.setLocation(itemRequest.getLocation());
-		locationDetails.setLocationType(itemRequest.getLocationType());
+		locationDetails.setLocation(locationRequest.getLocation());
+		locationDetails.setLocationType(locationRequest.getLocationType());
 		locationDetails.setStatus(Status.ACTIVE.name());
-		locationDetails.setSuperadminId(itemRequest.getSuperadminId());
+		locationDetails.setSuperadminId(locationRequest.getSuperadminId());
 		locationDetails.setCreatedAt(new Date());
 		locationDetails.setUpdatedAt(new Date());
 
@@ -73,58 +86,38 @@ public class LocationHelper {
 		return locationDetails;
 	}
 
-	public CategoryType getEditedCategoryTypeByReqObj(ItemRequestObject itemRequest, CategoryType categoryType) {
+	public LocationDetails getUpdatedLocationDetailsByReqObj(LocationRequestObject locationRequest, LocationDetails locationDetails) {
 
-		categoryType.setCategoryTypeName(itemRequest.getCategoryTypeName());
-//		categoryType.setStatus(Status.ACTIVE.name());
-//		categoryType.setIsChecked(itemRequest.getIsChecked());
-//		categoryType.setSuperadminId(itemRequest.getSuperadminId());
-//		categoryType.setCreatedAt(new Date());
-		categoryType.setUpdatedAt(new Date());
+		locationDetails.setLocation(locationRequest.getLocation());
+		locationDetails.setLocationType(locationRequest.getLocationType());
+		locationDetails.setUpdatedAt(new Date());
 
-		return categoryType;
+		return locationDetails;
 	}
 
 	@Transactional
-	public CategoryType updateCategoryType(CategoryType categoryType) {
-//		locationDetailsDao.update(categoryType);
-		return null;
+	public LocationDetails updateLocationDetails(LocationDetails locationDetails) {
+		locationDetailsDao.update(locationDetails);
+		return locationDetails;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CategoryType> getCategoryType(ItemRequestObject itemRequest) {
-		List<CategoryType> results = new ArrayList<>();
-		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-			results = locationDetailsDao.getEntityManager()
-					.createQuery(
-							"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId ORDER BY SC.id desc")
-					.setParameter("superadminId", itemRequest.getSuperadminId()).getResultList();
-
-		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
-//			results = locationDetailsDao.getEntityManager().createQuery(
-//					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
-//					.setParameter("superadminId", itemRequest.getSuperadminId())
-//					.setParameter("status", Status.ACTIVE.name()).getResultList();
-		}
-		return results;
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<LocationDetails> getLocationDetails(ItemRequestObject itemRequest) {
+	public List<LocationDetails> getLocationDetails(LocationRequestObject locationRequest) {
 		List<LocationDetails> results = new ArrayList<>();
-		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-			results = locationDetailsDao.getEntityManager()
-					.createQuery("SELECT LD FROM LocationDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id desc")
-					.setParameter("superadminId", itemRequest.getSuperadminId()).getResultList();
+		if (locationRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+			results = locationDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LocationDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id desc")
+					.setParameter("superadminId", locationRequest.getSuperadminId()).getResultList();
 
-		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYTYPE.name())) {
-			results = locationDetailsDao.getEntityManager()
-					.createQuery("SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId ORDER BY LD.id desc")
-					.setParameter("superadminId", itemRequest.getSuperadminId()).getResultList();
+		} else if (locationRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYTYPE.name())) {
+			results = locationDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LocationDetails LD WHERE LD.locationType =:locationType AND LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id desc")
+					.setParameter("locationType", locationRequest.getLocationType())
+					.setParameter("status", Status.ACTIVE.name())
+					.setParameter("superadminId", locationRequest.getSuperadminId()).getResultList();
 
 		}
 		return results;
 	}
 
-	
 }

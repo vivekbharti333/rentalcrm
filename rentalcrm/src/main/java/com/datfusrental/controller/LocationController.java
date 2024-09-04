@@ -23,11 +23,12 @@ import com.datfusrental.common.GetBase64Image;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryDetails;
 import com.datfusrental.entities.CategoryType;
+import com.datfusrental.entities.LocationDetails;
 import com.datfusrental.entities.SuperCategoryDetails;
 import com.datfusrental.enums.ImageType;
 import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
-import com.datfusrental.object.request.ItemRequestObject;
+import com.datfusrental.object.request.LocationRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.GenricResponse;
 import com.datfusrental.object.response.Response;
@@ -41,16 +42,16 @@ public class LocationController {
 
 	@Autowired
 	private LocationService locationService;
-	
+
 	@Autowired
 	private GetBase64Image getBase64Image;
-	
+
 	@RequestMapping(path = "addLocation", method = RequestMethod.POST)
-	public Response<ItemRequestObject> addLocation(@RequestBody Request<ItemRequestObject> itemRequestObject,
+	public Response<LocationRequestObject> addLocation(@RequestBody Request<LocationRequestObject> locationRequestObject,
 			HttpServletRequest request) {
-		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		GenricResponse<LocationRequestObject> responseObj = new GenricResponse<LocationRequestObject>();
 		try {
-			ItemRequestObject responce = locationService.addLocation(itemRequestObject);
+			LocationRequestObject responce = locationService.addLocation(locationRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -59,13 +60,13 @@ public class LocationController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
-	
-	@RequestMapping(path = "editCategoryType", method = RequestMethod.POST)
-	public Response<ItemRequestObject> editCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject,
+
+	@RequestMapping(path = "updateLocation", method = RequestMethod.POST)
+	public Response<LocationRequestObject> updateLocation(@RequestBody Request<LocationRequestObject> locationRequestObject,
 			HttpServletRequest request) {
-		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		GenricResponse<LocationRequestObject> responseObj = new GenricResponse<LocationRequestObject>();
 		try {
-			ItemRequestObject responce = locationService.editCategoryType(itemRequestObject);
+			LocationRequestObject responce = locationService.updateLocation(locationRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -74,13 +75,13 @@ public class LocationController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
-	
-	@RequestMapping(path = "changeCategoryTypeStatus", method = RequestMethod.POST)
-	public Response<ItemRequestObject> changeCategoryTypeStatus(@RequestBody Request<ItemRequestObject> itemRequestObject,
+
+	@RequestMapping(path = "changeLocationStatus", method = RequestMethod.POST)
+	public Response<LocationRequestObject> changeLocationStatus(@RequestBody Request<LocationRequestObject> locationRequestObject,
 			HttpServletRequest request) {
-		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		GenricResponse<LocationRequestObject> responseObj = new GenricResponse<LocationRequestObject>();
 		try {
-			ItemRequestObject responce = locationService.changeCategoryTypeStatus(itemRequestObject);
+			LocationRequestObject responce = locationService.changeLocationStatus(locationRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -89,19 +90,18 @@ public class LocationController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
-	
-	@RequestMapping(path = "getCategoryType", method = RequestMethod.POST)
-	public Response<CategoryType> getCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject) {
-		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
+
+	@RequestMapping(path = "getLocationDetails", method = RequestMethod.POST)
+	public Response<LocationDetails> getLocationDetails(@RequestBody Request<LocationRequestObject> locationRequestObject) {
+		GenricResponse<LocationDetails> response = new GenricResponse<LocationDetails>();
 		try {
-			List<CategoryType> categoryTypeList = locationService.getCategoryType(itemRequestObject);
-//			return response.createListResponse(categoryTypeList, 200);
-			return response.createListResponse(categoryTypeList, 200, String.valueOf(categoryTypeList.size()));
+			List<LocationDetails> locationDetailsList = locationService.getLocationDetails(locationRequestObject);
+//			return response.createListResponse(locationDetailsList, 200);
+			return response.createListResponse(locationDetailsList, 200, String.valueOf(locationDetailsList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		}
 	}
 
-	
 }
