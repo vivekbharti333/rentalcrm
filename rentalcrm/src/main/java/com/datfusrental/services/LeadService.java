@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.helper.UserHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
@@ -33,6 +34,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+	
+	@Autowired
+	private LeadByStatusHelper leadByStatusHelper;
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
@@ -54,7 +58,7 @@ public class LeadService {
 			if (existsLeadDetails == null) {
 				
 				//Get agent name
-				UserDetails user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
+				User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 				leadRequest.setCreatedByName(user.getFirstName()+" "+user.getLastName());
 				leadRequest.setBookingId(bookingId);
 
@@ -111,24 +115,19 @@ public class LeadService {
 	}
 	
 
-	public List<LeadDetails> getFollowupOne(Request<LeadRequestObject> leadRequestObject) {
+	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		
 		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
 //		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
 		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
 		leadRequest.setLastDate(new Date());
-		List<LeadDetails> leadList = leadHelper.getEnquaryDetailsByDate(leadRequest);
+		List<LeadDetails> leadList = leadByStatusHelper.getLeadListByStatus(leadRequest);
 		return leadList;
 	}
 
 	public List<LeadDetails> getAllLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-//		
-//		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
-////		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
-//		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
-//		leadRequest.setLastDate(new Date());
 		List<LeadDetails> leadList = leadHelper.getAllLeadList(leadRequest);
 		return leadList;
 	}

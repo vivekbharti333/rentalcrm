@@ -18,5 +18,4 @@ public class LocationRequestObject {
 
 	private int respCode;
 	private String respMesg;
-
 }

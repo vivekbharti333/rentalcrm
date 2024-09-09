@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AddressHelper;
@@ -56,40 +56,40 @@ public class UserService {
 		LoginRequestObject loginRequest = loginRequestObject.getPayload();
 		userHelper.validateLoginRequest(loginRequest);
 		
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
-		if (userDetails != null) {
-			if(userDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
+		User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
+		if (user != null) {
+			if(user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
 				
 				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
 				loginRequest.setRespMesg(Constant.INACTIVE_USER);
 				return loginRequest;
 			}
 			
-			boolean isValid = userHelper.checkValidityOfUser(userDetails.getValidityExpireOn());
+			boolean isValid = userHelper.checkValidityOfUser(user.getValidityExpireOn());
 			if (isValid) {
-				if (BCrypt.checkpw(loginRequest.getPassword(), userDetails.getSalt())) {
+				if (BCrypt.checkpw(loginRequest.getPassword(), user.getSalt())) {
 					logger.info("Login Successfully: " + loginRequest);
 
 					// generate secret key.
 					String secretKey = jwtTokenUtil.generateSecretKey();
 
 					// update secret key in UserDetails.
-					userDetails.setSecretTokenKey(secretKey);
-					userHelper.UpdateUserDetails(userDetails);
+					user.setSecretTokenKey(secretKey);
+					userHelper.UpdateUserDetails(user);
 
-					String token = jwtTokenUtil.generateJwtToken(userDetails);
+					String token = jwtTokenUtil.generateJwtToken(user);
 
-					loginRequest.setLoginId(userDetails.getLoginId());
+					loginRequest.setLoginId(user.getLoginId());
 					loginRequest.setPassword(null);
 
-					loginRequest.setUserPicture(userDetails.getUserPicture());
-					loginRequest.setFirstName(userDetails.getFirstName());
-					loginRequest.setLastName(userDetails.getLastName());
-					loginRequest.setService(userDetails.getService());
-					loginRequest.setPermissions(userDetails.getPermissions());
-					loginRequest.setRoleType(userDetails.getRoleType());
-					loginRequest.setSuperadminId(userDetails.getSuperadminId());
-					loginRequest.setTeamLeaderId(userDetails.getTeamleaderId());
+					loginRequest.setUserPicture(user.getUserPicture());
+					loginRequest.setFirstName(user.getFirstName());
+					loginRequest.setLastName(user.getLastName());
+					loginRequest.setService(user.getService());
+					loginRequest.setPermissions(user.getPermissions());
+					loginRequest.setRoleType(user.getRoleType());
+					loginRequest.setSuperadminId(user.getSuperadminId());
+					loginRequest.setTeamLeaderId(user.getTeamleaderId());
 					loginRequest.setToken(token);
 
 					loginRequest.setRespCode(Constant.SUCCESS_CODE);
@@ -155,7 +155,7 @@ public class UserService {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Enter Mobile No");
 		}
 
-			UserDetails existsUserDetails = userHelper.getUserDetailsByLoginIdAndSuperadminId(userRequest.getMobileNo(), userRequest.getSuperadminId());
+			User existsUserDetails = userHelper.getUserDetailsByLoginIdAndSuperadminId(userRequest.getMobileNo(), userRequest.getSuperadminId());
 			if (existsUserDetails == null) {
 				userRequest.setPassword("12345");
 
@@ -166,14 +166,14 @@ public class UserService {
 				
 //				String userCode = userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1);
 
-				UserDetails userDetails = userHelper.getUserDetailsByReqObj(userRequest);
-				userDetails = userHelper.saveUserDetails(userDetails);
+				User user = userHelper.getUserDetailsByReqObj(userRequest);
+				user = userHelper.saveUserDetails(user);
 				
 				// Save Address
 
 				for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
 					addressRequest.setUserType(userRequest.getRoleType());
-					addressService.saveAddressDetailsByRequest(addressRequest, userDetails.getId(), userRequest.getSuperadminId());
+					addressService.saveAddressDetailsByRequest(addressRequest, user.getId(), userRequest.getSuperadminId());
 				}
 
 				// send sms
@@ -203,14 +203,14 @@ public class UserService {
 //		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
 //		if (isValid) {
 			
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
-		if (userDetails != null) {
-			userDetails = userHelper.getUpdatedUserDetailsByReqObj(userDetails, userRequest);
-			userDetails = userHelper.UpdateUserDetails(userDetails);
+		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
+		if (user != null) {
+			user = userHelper.getUpdatedUserDetailsByReqObj(user, userRequest);
+			user = userHelper.UpdateUserDetails(user);
 			
 			if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
 				for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
-					AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(userDetails.getId(), addressRequest.getAddressType(), userDetails.getSuperadminId());
+					AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(user.getId(), addressRequest.getAddressType(), user.getSuperadminId());
 					
 					if(addressDetails != null) {
 						addressService.updateAddressDetailsByRequest(addressRequest,addressDetails);
@@ -218,7 +218,7 @@ public class UserService {
 				}
 			}else {
 				AddressRequestObject addressRequestObj = addressHelper.setAddressRequestObjectByUserReqObj(userRequest);
-				AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(userDetails.getId(), addressRequestObj.getAddressType(), userDetails.getSuperadminId());
+				AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(user.getId(), addressRequestObj.getAddressType(), user.getSuperadminId());
 				
 				if(addressDetails != null) {
 					addressService.updateAddressDetailsByRequest(addressRequestObj,addressDetails);
@@ -247,14 +247,14 @@ public class UserService {
 		
 		System.out.println(userRequest.getLoginId()+" , "+userRequest.getPassword());
 
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
-		if (userDetails != null) {
+		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
+		if (user != null) {
 			String password = BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt());
-			userDetails.setPassword(password);
+			user.setPassword(password);
 //			userDetails.setIsPassChanged("YES");
-			userDetails = userHelper.UpdateUserDetails(userDetails);
+			user = userHelper.UpdateUserDetails(user);
 			
-			userRequest.setStatus(userDetails.getStatus());
+			userRequest.setStatus(user.getStatus());
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
 			return userRequest;
@@ -271,17 +271,17 @@ public class UserService {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
 
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
-		if (userDetails != null) {
+		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
+		if (user != null) {
 
-			if (userDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
-				userDetails.setStatus(Status.ACTIVE.name());
+			if (user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
+				user.setStatus(Status.ACTIVE.name());
 			} else {
-				userDetails.setStatus(Status.INACTIVE.name());
+				user.setStatus(Status.INACTIVE.name());
 			}
-			userDetails = userHelper.UpdateUserDetails(userDetails);
+			user = userHelper.UpdateUserDetails(user);
 
-			userRequest.setStatus(userDetails.getStatus());
+			userRequest.setStatus(user.getStatus());
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
 			return userRequest;
@@ -296,17 +296,17 @@ public class UserService {
 			throws BizException, Exception {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
-		UserDetails userDetails = userHelper.getUserDetailsByLoginIdAndSuperadminId(userRequest.getLoginId(), userRequest.getSuperadminId());
-		if (userDetails != null) {
+		User user = userHelper.getUserDetailsByLoginIdAndSuperadminId(userRequest.getLoginId(), userRequest.getSuperadminId());
+		if (user != null) {
 			
-			userDetails.setStatus(Status.REMOVED.name());
+			user.setStatus(Status.REMOVED.name());
 			
-			userDetails.setLoginId(userDetails.getLoginId()+"removed");
-			userDetails.setCreatedBy(userDetails.getCreatedBy()+"removed");
-			userDetails.setSuperadminId(userDetails.getSuperadminId()+"removed");
-			userDetails = userHelper.UpdateUserDetails(userDetails);
+			user.setLoginId(user.getLoginId()+"removed");
+			user.setCreatedBy(user.getCreatedBy()+"removed");
+			user.setSuperadminId(user.getSuperadminId()+"removed");
+			user = userHelper.UpdateUserDetails(user);
 			
-			userRequest.setStatus(userDetails.getStatus());
+			userRequest.setStatus(user.getStatus());
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.REMOVED_SUCCESS);
 			return userRequest;
@@ -322,11 +322,11 @@ public class UserService {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
 		
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
-		if (userDetails != null) {
+		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
+		if (user != null) {
 			
-			userDetails.setCreatedBy(userRequest.getTeamleaderId());
-			userHelper.UpdateUserDetails(userDetails);
+			user.setCreatedBy(userRequest.getTeamleaderId());
+			userHelper.UpdateUserDetails(user);
 			
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
@@ -343,13 +343,13 @@ public class UserService {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
 		
-		UserDetails userDetails = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
-		if (userDetails != null) {
+		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
+		if (user != null) {
 
-			userDetails.setRoleType(userRequest.getRoleType());
-			userDetails.setCreatedBy(userDetails.getSuperadminId());
+			user.setRoleType(userRequest.getRoleType());
+			user.setCreatedBy(user.getSuperadminId());
 			
-			userHelper.UpdateUserDetails(userDetails);
+			userHelper.UpdateUserDetails(user);
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
 			return userRequest;
@@ -361,9 +361,9 @@ public class UserService {
 	}
 
 
-	public List<UserDetails> getUserDetails(Request<UserRequestObject> userRequestObject) {
+	public List<User> getUserDetails(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		List<UserDetails> userList = new ArrayList<UserDetails>();
+		List<User> userList = new ArrayList<User>();
 //		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
 //		if (isValid) {
 		userList = userHelper.getUserDetails(userRequest);  
@@ -372,15 +372,15 @@ public class UserService {
 		return userList;
 	}
 	
-	public List<UserDetails> getUserDetailsByRoleType(Request<UserRequestObject> userRequestObject) {
+	public List<User> getUserDetailsByRoleType(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		List<UserDetails> userList = userHelper.getUserDetailsByRoleType(userRequest);
+		List<User> userList = userHelper.getUserDetailsByRoleType(userRequest);
 		return userList;
 	}
 	
-	public List<UserDetails> getUserListForDropDown(Request<UserRequestObject> userRequestObject) {
+	public List<User> getUserListForDropDown(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
-		List<UserDetails> userList = userHelper.getUserListForDropDown(userRequest);
+		List<User> userList = userHelper.getUserListForDropDown(userRequest);
 		return userList;
 	}
 

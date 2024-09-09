@@ -33,11 +33,6 @@ public class GetDate {
 	      this.firstDateOfMonth = this.localDate.withDayOfMonth(1);
 	      this.lastDateOfMonth = this.localDate.with(TemporalAdjusters.lastDayOfMonth());
 	      
-//	      this.todayDate = Date.from(this.localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//	      this.tomorrowDate = Date.from(this.nextday.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//	      this.previousDate = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//	      this.firstDateMonth = Date.from(this.firstDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//	      this.lastDateMonth = Date.from(this.lastDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	      Date previousDate = null;
 	      if(requestedFor.equalsIgnoreCase(RequestFor.PREVIOUS_DATE.name())) {
 //	    	  date = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());

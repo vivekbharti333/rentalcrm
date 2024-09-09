@@ -26,6 +26,10 @@ public class Testing {
 		return new ModelAndView("home");
 	}
 
+	@RequestMapping(value = "/testing")
+	public String testing(HttpServletResponse response) throws IOException {
+		return "Security Working";
+	}
 	
 	@RequestMapping(value = "/")
 	public String version(HttpServletResponse response) throws Exception {

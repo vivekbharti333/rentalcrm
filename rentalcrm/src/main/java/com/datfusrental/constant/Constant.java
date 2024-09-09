@@ -14,6 +14,9 @@ public class Constant {
 //	 public static final String receipt = "/Receipt";
 
 	 
+	/* List variable */
+	 public static final int FIRST_RESULT = 0;
+	 public static final int MAX_RESULT = 500;
 
 	 /* Response Message */
 	 public static final String INACTIVE = "User is Inactive";

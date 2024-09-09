@@ -52,10 +52,13 @@ public class LeadRequestObject {
 	private String remarks;
 	private Date nextFollowupDate;
 	
+
+	private String superadminId;
+	private String adminId;
+	private String teamLeaderId;
 	private String createdBy;
 	private String createdByName;
 	private String updatedBy;
-	private String superadminId;
 	private String status;
 	private String leadOrigine;
 	private String leadType;

@@ -60,14 +60,12 @@ public class LeadController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
-
-
 	
-	@RequestMapping(path = "getFollowupOne", method = RequestMethod.POST)
-	public Response<LeadDetails> getFollowupOne(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+	@RequestMapping(path = "getLeadListByStatus", method = RequestMethod.POST)
+	public Response<LeadDetails> getLeadListByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
-			List<LeadDetails> followupOneList = leadService.getFollowupOne(leadRequestObject);
+			List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();

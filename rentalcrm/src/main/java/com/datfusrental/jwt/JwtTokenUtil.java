@@ -7,7 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.helper.UserHelper;
 
 import io.jsonwebtoken.Claims;
@@ -39,7 +39,7 @@ public class JwtTokenUtil {
 		return secretKey;
 	}
 
-	public String generateJwtToken(UserDetails user)
+	public String generateJwtToken(User user)
 			throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
 		return Jwts.builder()
 				.setSubject(user.getLoginId())
@@ -51,7 +51,7 @@ public class JwtTokenUtil {
 
 	public boolean validateJwtToken(String loginId, String token) {
 		try {
-			UserDetails user = userHelper.getUserDetailsByLoginId(loginId);
+			User user = userHelper.getUserDetailsByLoginId(loginId);
 			if (user != null) {
 				Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(user.getSecretTokenKey()))
 						.parseClaimsJws(token).getBody();

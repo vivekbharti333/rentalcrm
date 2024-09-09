@@ -20,9 +20,9 @@ import lombok.Data;
 @Entity
 @Table(name = "user_details")
 @Data
-public class UserDetails {
+public class User {
 	
-	public UserDetails() {
+	public User() {
     }
 	
 	@Id

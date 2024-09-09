@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.Request;
@@ -171,10 +171,10 @@ public class UserController {
 	
 
 	@RequestMapping(path = "getUserDetails", method = RequestMethod.POST)
-	public Response<UserDetails> getUserDetails(@RequestBody Request<UserRequestObject> userRequestObject) {
-		GenricResponse<UserDetails> response = new GenricResponse<UserDetails>();
+	public Response<User> getUserDetails(@RequestBody Request<UserRequestObject> userRequestObject) {
+		GenricResponse<User> response = new GenricResponse<User>();
 		try {
-			List<UserDetails> userList = userService.getUserDetails(userRequestObject);
+			List<User> userList = userService.getUserDetails(userRequestObject);
 			return response.createListResponse(userList, 200, String.valueOf(userList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,10 +184,10 @@ public class UserController {
 	
 	
 	@RequestMapping(path = "getUserDetailsByRoleType", method = RequestMethod.POST)
-	public Response<UserDetails> getUserDetailsByRoleType(@RequestBody Request<UserRequestObject> userRequestObject) {
-		GenricResponse<UserDetails> response = new GenricResponse<UserDetails>();
+	public Response<User> getUserDetailsByRoleType(@RequestBody Request<UserRequestObject> userRequestObject) {
+		GenricResponse<User> response = new GenricResponse<User>();
 		try {
-			List<UserDetails> userList = userService.getUserDetailsByRoleType(userRequestObject);
+			List<User> userList = userService.getUserDetailsByRoleType(userRequestObject);
 			return response.createListResponse(userList, 200, String.valueOf(userList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -197,10 +197,10 @@ public class UserController {
 	
 	
 	@RequestMapping(path = "getUserListForDropDown", method = RequestMethod.POST)
-	public Response<UserDetails> getUserListForDropDown(@RequestBody Request<UserRequestObject> userRequestObject) {
-		GenricResponse<UserDetails> response = new GenricResponse<UserDetails>();
+	public Response<User> getUserListForDropDown(@RequestBody Request<UserRequestObject> userRequestObject) {
+		GenricResponse<User> response = new GenricResponse<User>();
 		try {
-			List<UserDetails> userList = userService.getUserListForDropDown(userRequestObject);
+			List<User> userList = userService.getUserListForDropDown(userRequestObject);
 			return response.createListResponse(userList, 200);
 		} catch (Exception e) {
 			e.printStackTrace();

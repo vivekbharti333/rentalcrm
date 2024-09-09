@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.UserDetailsDao;
 import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.RoleType;
 import com.datfusrental.enums.Status;
@@ -77,87 +77,85 @@ public class UserHelper {
 		}
 	}
 
-
-
 	@Transactional
-	public UserDetails getUserDetailsByLoginId(String loginId) {
+	public User getUserDetailsByLoginId(String loginId) {
 
 		CriteriaBuilder criteriaBuilder = userDetailsDao.getSession().getCriteriaBuilder();
-		CriteriaQuery<UserDetails> criteriaQuery = criteriaBuilder.createQuery(UserDetails.class);
-		Root<UserDetails> root = criteriaQuery.from(UserDetails.class);
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> root = criteriaQuery.from(User.class);
 		Predicate restriction1 = criteriaBuilder.equal(root.get("loginId"), loginId);
 		Predicate restriction2 = criteriaBuilder.notEqual(root.get("status"), Status.REMOVED.name());
 		criteriaQuery.where(restriction1,restriction2);
-		UserDetails userDetails = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
-		return userDetails;
+		User user = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return user;
 	}
 	
 	@Transactional
-	public UserDetails getUserDetailsByLoginIdAndStatus(String loginId) {
+	public User getUserDetailsByLoginIdAndStatus(String loginId) {
 
 		CriteriaBuilder criteriaBuilder = userDetailsDao.getSession().getCriteriaBuilder();
-		CriteriaQuery<UserDetails> criteriaQuery = criteriaBuilder.createQuery(UserDetails.class);
-		Root<UserDetails> root = criteriaQuery.from(UserDetails.class);
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> root = criteriaQuery.from(User.class);
 		Predicate restriction1 = criteriaBuilder.equal(root.get("loginId"), loginId);
 		Predicate restriction2 = criteriaBuilder.notEqual(root.get("status"), Status.REMOVED.name());
 		criteriaQuery.where(restriction1, restriction2);
-		UserDetails userDetails = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
-		return userDetails;
+		User user = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return user;
 	}
 	
 	@Transactional
-	public UserDetails getUserDetailsByLoginIdAndSuperadminId(String loginId, String superadminId) {
+	public User getUserDetailsByLoginIdAndSuperadminId(String loginId, String superadminId) {
 
 		CriteriaBuilder criteriaBuilder = userDetailsDao.getSession().getCriteriaBuilder();
-		CriteriaQuery<UserDetails> criteriaQuery = criteriaBuilder.createQuery(UserDetails.class);
-		Root<UserDetails> root = criteriaQuery.from(UserDetails.class);
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> root = criteriaQuery.from(User.class);
 		Predicate restriction1 = criteriaBuilder.equal(root.get("loginId"), loginId);
 		Predicate restriction2 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
 		Predicate restriction3 = criteriaBuilder.notEqual(root.get("status"), Status.REMOVED.name());
 		criteriaQuery.where(restriction1, restriction2, restriction3);
-		UserDetails userDetails = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
-		return userDetails;
+		User user = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return user;
 	}
 	
 
-	public UserDetails getUserDetailsByReqObj(UserRequestObject userRequest) {
+	public User getUserDetailsByReqObj(UserRequestObject userRequest) {
 
-		UserDetails userDetails = new UserDetails();
+		User user = new User();
 		
-		userDetails.setUserCode(userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1));
-		userDetails.setLoginId(userRequest.getMobileNo());
-		userDetails.setPassword(userRequest.getPassword());
-		userDetails.setSalt(userRequest.getSalt());
-		userDetails.setStatus(Status.ACTIVE.name());
-		userDetails.setRoleType(userRequest.getRoleType());
-		userDetails.setService(userRequest.getService());
-		userDetails.setPermissions(userRequest.getPermissions());
-		userDetails.setUserPicture(userRequest.getUserPicture());
-		userDetails.setFirstName(userRequest.getFirstName());
-		userDetails.setLastName(userRequest.getLastName());
-		userDetails.setMobileNo(userRequest.getMobileNo());
-		userDetails.setEmergencyContactRelation1(userRequest.getEmergencyContactRelation1());
-		userDetails.setEmergencyContactName1(userRequest.getEmergencyContactName1());
-		userDetails.setEmergencyContactNo1(userRequest.getEmergencyContactNo1());
-		userDetails.setEmergencyContactRelation2(userRequest.getEmergencyContactRelation2());
-		userDetails.setEmergencyContactName2(userRequest.getEmergencyContactName2());
-		userDetails.setEmergencyContactNo2(userRequest.getEmergencyContactNo2());
-		userDetails.setAlternateMobile(userRequest.getAlternateMobile());
-		userDetails.setEmailId(userRequest.getEmailId());
-		userDetails.setIdDocumentType(userRequest.getIdDocumentType());
-		userDetails.setIdDocumentPicture(userRequest.getIdDocumentPicture());
-		userDetails.setPanNumber(userRequest.getPanNumber());
-		userDetails.setCreatedBy(userRequest.getCreatedBy());
-		userDetails.setAdminId(userRequest.getAdminId());
-		userDetails.setTeamleaderId(userRequest.getTeamleaderId());
+		user.setUserCode(userRequest.getFirstName().substring(0,1)+userRequest.getLastName().substring(0,1));
+		user.setLoginId(userRequest.getMobileNo());
+		user.setPassword(userRequest.getPassword());
+		user.setSalt(userRequest.getSalt());
+		user.setStatus(Status.ACTIVE.name());
+		user.setRoleType(userRequest.getRoleType());
+		user.setService(userRequest.getService());
+		user.setPermissions(userRequest.getPermissions());
+		user.setUserPicture(userRequest.getUserPicture());
+		user.setFirstName(userRequest.getFirstName());
+		user.setLastName(userRequest.getLastName());
+		user.setMobileNo(userRequest.getMobileNo());
+		user.setEmergencyContactRelation1(userRequest.getEmergencyContactRelation1());
+		user.setEmergencyContactName1(userRequest.getEmergencyContactName1());
+		user.setEmergencyContactNo1(userRequest.getEmergencyContactNo1());
+		user.setEmergencyContactRelation2(userRequest.getEmergencyContactRelation2());
+		user.setEmergencyContactName2(userRequest.getEmergencyContactName2());
+		user.setEmergencyContactNo2(userRequest.getEmergencyContactNo2());
+		user.setAlternateMobile(userRequest.getAlternateMobile());
+		user.setEmailId(userRequest.getEmailId());
+		user.setIdDocumentType(userRequest.getIdDocumentType());
+		user.setIdDocumentPicture(userRequest.getIdDocumentPicture());
+		user.setPanNumber(userRequest.getPanNumber());
+		user.setCreatedBy(userRequest.getCreatedBy());
+		user.setAdminId(userRequest.getAdminId());
+		user.setTeamleaderId(userRequest.getTeamleaderId());
 		
-		userDetails.setDob(userRequest.getDob());
+		user.setDob(userRequest.getDob());
 		
-		userDetails.setCreatedAt(new Date());
-		userDetails.setUpdatedAt(new Date());
-		userDetails.setPasswordUpdatedAt(new Date());
-		if(userDetails.getRoleType().equals(RoleType.SUPERADMIN.name())) {
-			userDetails.setSuperadminId(userDetails.getLoginId());
+		user.setCreatedAt(new Date());
+		user.setUpdatedAt(new Date());
+		user.setPasswordUpdatedAt(new Date());
+		if(user.getRoleType().equals(RoleType.SUPERADMIN.name())) {
+			user.setSuperadminId(user.getLoginId());
 			
 			Date date = new Date();
 			Calendar calendar = Calendar.getInstance();
@@ -165,61 +163,61 @@ public class UserHelper {
 			calendar.add(Calendar.YEAR, 1);
 			Date oneYearLater = calendar.getTime();
 			
-		    userDetails.setValidityExpireOn(oneYearLater);
+		    user.setValidityExpireOn(oneYearLater);
 		}else {
-			UserDetails existsUserDetails = this.getUserDetailsByLoginId(userRequest.getSuperadminId());
-			userDetails.setSuperadminId(userRequest.getSuperadminId());
-			userDetails.setValidityExpireOn(existsUserDetails.getValidityExpireOn());
+			User existsUserDetails = this.getUserDetailsByLoginId(userRequest.getSuperadminId());
+			user.setSuperadminId(userRequest.getSuperadminId());
+			user.setValidityExpireOn(existsUserDetails.getValidityExpireOn());
 		}
 		if(userRequest.getTeamleaderId() == null || userRequest.getTeamleaderId().equals("")) {
-			userDetails.setTeamleaderId(userRequest.getCreatedBy());
+			user.setTeamleaderId(userRequest.getCreatedBy());
 		}
 		if(userRequest.getAdminId() == null || userRequest.getAdminId().equals("")) {
-			userDetails.setAdminId(userRequest.getCreatedBy());
+			user.setAdminId(userRequest.getCreatedBy());
 		}
 		System.out.println("ADMIN:"+userRequest.getAdminId()+":");
 		System.out.println("Teamleader:"+userRequest.getTeamleaderId()+":");
 	
-		return userDetails;
+		return user;
 	}
 
 	@Transactional
-	public UserDetails saveUserDetails(UserDetails userDetails) {
-		userDetailsDao.persist(userDetails);
-		return userDetails;
+	public User saveUserDetails(User user) {
+		userDetailsDao.persist(user);
+		return user;
 	}
 	
 
-	public UserDetails getUpdatedUserDetailsByReqObj(UserDetails userDetails, UserRequestObject userRequest) {
+	public User getUpdatedUserDetailsByReqObj(User user, UserRequestObject userRequest) {
 
-		userDetails.setUserPicture(userRequest.getUserPicture());
-		userDetails.setRoleType(userRequest.getRoleType());
-		userDetails.setFirstName(userRequest.getFirstName());
-		userDetails.setLastName(userRequest.getLastName());
-		userDetails.setMobileNo(userRequest.getMobileNo());
-		userDetails.setAlternateMobile(userRequest.getAlternateMobile());
-		userDetails.setEmailId(userRequest.getEmailId());
-		userDetails.setUpdatedAt(new Date());
+		user.setUserPicture(userRequest.getUserPicture());
+		user.setRoleType(userRequest.getRoleType());
+		user.setFirstName(userRequest.getFirstName());
+		user.setLastName(userRequest.getLastName());
+		user.setMobileNo(userRequest.getMobileNo());
+		user.setAlternateMobile(userRequest.getAlternateMobile());
+		user.setEmailId(userRequest.getEmailId());
+		user.setUpdatedAt(new Date());
 
-		return userDetails;
+		return user;
 	}
 
 	@Transactional
-	public UserDetails UpdateUserDetails(UserDetails userDetails) {
-		userDetailsDao.update(userDetails);
-		return userDetails;
+	public User UpdateUserDetails(User user) {
+		userDetailsDao.update(user);
+		return user;
 	}
 	
 
 	@SuppressWarnings("unchecked")
-	public List<UserDetails> getUserDetails(UserRequestObject userRequest) {
+	public List<User> getUserDetails(UserRequestObject userRequest) {
 		if (userRequest.getRoleType().equals(RoleType.MAINADMIN.name())) {
-			List<UserDetails> results = userDetailsDao.getEntityManager()
+			List<User> results = userDetailsDao.getEntityManager()
 					.createQuery("SELECT UD FROM UserDetails UD WHERE status NOT IN (:REMOVED) ORDER BY UD.id DESC")
 					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.SUPERADMIN.name())) {
-			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
+			List<User> results = userDetailsDao.getEntityManager().createQuery(
 					"SELECT UD FROM UserDetails UD WHERE UD.superadminId =:superadminId AND roleType NOT IN :roleType AND status NOT IN :REMOVED ORDER BY UD.id DESC")
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("roleType", RoleType.SUPERADMIN.name())
@@ -227,7 +225,7 @@ public class UserHelper {
 					.getResultList();
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.ADMIN.name())) {
-			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
+			List<User> results = userDetailsDao.getEntityManager().createQuery(
 					"SELECT UD FROM UserDetails UD WHERE UD.adminId =:adminId AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
 					.setParameter("adminId", userRequest.getCreatedBy())
 					.setParameter("superadminId", userRequest.getSuperadminId())
@@ -235,7 +233,7 @@ public class UserHelper {
 					.getResultList();
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.TEAM_LEADER.name())) {
-			List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
+			List<User> results = userDetailsDao.getEntityManager().createQuery(
 					"SELECT UD FROM UserDetails UD WHERE UD.createdBy =:createdBy AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
 					.setParameter("teamleaderId", userRequest.getTeamleaderId())
 					.setParameter("superadminId", userRequest.getSuperadminId())
@@ -246,9 +244,8 @@ public class UserHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<UserDetails> getUserDetailsByRoleType(UserRequestObject userRequest) {
-		System.out.println("kjhhjh : "+userRequest.getRoleType());
-		List<UserDetails> results = userDetailsDao.getEntityManager().createQuery(
+	public List<User> getUserDetailsByRoleType(UserRequestObject userRequest) {
+		List<User> results = userDetailsDao.getEntityManager().createQuery(
 				"SELECT UD FROM UserDetails UD WHERE UD.roleType =:roleType AND UD.createdBy =:createdBy AND UD.superadminId =:superadminId ORDER BY UD.id DESC")
 				.setParameter("roleType", userRequest.getRoleType())
 				.setParameter("createdBy", userRequest.getCreatedBy())
@@ -258,7 +255,7 @@ public class UserHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<UserDetails> getUserListForDropDown(UserRequestObject userRequest) {
+	public List<User> getUserListForDropDown(UserRequestObject userRequest) {
 		
 		List<String> excludedRoleTypes = new ArrayList<String>();
 		if(userRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
@@ -268,7 +265,7 @@ public class UserHelper {
 			excludedRoleTypes = Arrays.asList(RoleType.ADMIN.name(), RoleType.TEAM_LEADER.name());
 		}
 		
-		List<UserDetails> results = userDetailsDao.getEntityManager()
+		List<User> results = userDetailsDao.getEntityManager()
 				.createQuery("SELECT UD FROM UserDetails UD WHERE roleType IN :roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
 				.setParameter("roleType", excludedRoleTypes)
 				.setParameter("superadminId", userRequest.getSuperadminId())
@@ -280,7 +277,6 @@ public class UserHelper {
 
 	@SuppressWarnings("unchecked")
 	public List<AddressDetails> getAddressDetails(UserRequestObject userRequest) {
-		System.out.println(userRequest.getRequestedFor()+"  ,  "+userRequest.getLoginId());
 		if(userRequest.getRequestedFor().equals("ALL")) {
 			List<AddressDetails> results = userDetailsDao.getEntityManager()
 					.createQuery("SELECT AD FROM AddressDetails AD WHERE AD.userId =:userId And AD.superadminId =:superadminId ORDER BY AD.id DESC")

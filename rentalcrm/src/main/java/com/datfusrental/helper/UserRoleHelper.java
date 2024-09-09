@@ -26,7 +26,7 @@ import com.datfusrental.dao.UserDetailsDao;
 import com.datfusrental.dao.UserRoleDao;
 import com.datfusrental.dao.UserRoleMasterDao;
 import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.entities.UserRole;
 import com.datfusrental.entities.UserRoleMaster;
 import com.datfusrental.enums.RequestFor;

@@ -128,6 +128,12 @@ public class LeadDetails {
 	@Column(name = "updated_by")
 	private String updatedBy;
 	
+	@Column(name = "team_leader_id")
+	private String teamLeaderId;
+	
+	@Column(name = "admin_id")
+	private String adminId;
+	
 	@Column(name = "superadmin_id")
 	private String superadminId;
 	

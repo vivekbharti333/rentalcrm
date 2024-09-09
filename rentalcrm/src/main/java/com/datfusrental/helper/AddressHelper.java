@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.AddressDetailsDao;
 import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.UserDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.AddressRequestObject;
 import com.datfusrental.object.request.UserRequestObject;
