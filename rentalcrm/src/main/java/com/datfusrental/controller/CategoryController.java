@@ -234,12 +234,12 @@ public class CategoryController {
 		}
 	}
 	
-	@RequestMapping(path = "updateSubCategoryDetails", method = RequestMethod.POST)
-	public Response<ItemRequestObject> updateSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,
+	@RequestMapping(path = "editSubCategoryDetails", method = RequestMethod.POST)
+	public Response<ItemRequestObject> editSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,
 			HttpServletRequest request) {
 		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
 		try {
-			ItemRequestObject responce = categoryService.updateSubCategoryDetails(itemRequestObject);
+			ItemRequestObject responce = categoryService.editSubCategoryDetails(itemRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());

@@ -47,7 +47,7 @@ public class LeadService {
 		leadHelper.validateLeadRequest(leadRequest);
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
-		if (!isValid) {
+		if (isValid) {
 			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
 			
 			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(bookingId);
@@ -76,6 +76,40 @@ public class LeadService {
 			return leadRequest;
 		}
 	}
+	
+	
+	@Transactional
+	public LeadRequestObject updateLead(Request<LeadRequestObject> leadRequestObject)
+			throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
+
+		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
+		if (isValid) {
+//			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
+			
+			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+			if (existsLeadDetails != null) {
+				
+				//Lead Details
+				LeadDetails leadDetails = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest);
+				leadDetails = leadHelper.updateLeadDetails(leadDetails);
+
+				leadRequest.setRespCode(Constant.SUCCESS_CODE);
+				leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+				return leadRequest;
+			} else {
+				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+				return leadRequest;
+			}
+		} else {
+			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
+			return leadRequest;
+		}
+	}
+	
 
 	public List<LeadDetails> getFollowupOne(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
@@ -98,5 +132,7 @@ public class LeadService {
 		List<LeadDetails> leadList = leadHelper.getAllLeadList(leadRequest);
 		return leadList;
 	}
+
+
 
 }

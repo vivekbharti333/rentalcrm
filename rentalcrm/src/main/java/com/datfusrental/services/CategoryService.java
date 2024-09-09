@@ -409,7 +409,7 @@ public class CategoryService {
 	}
 	
 	
-	public ItemRequestObject updateSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) 
+	public ItemRequestObject editSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) 
 			throws BizException, Exception {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
 		categoryHelper.validateItemRequest(itemRequest);
