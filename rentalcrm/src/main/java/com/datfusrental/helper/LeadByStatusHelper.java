@@ -27,8 +27,9 @@ public class LeadByStatusHelper {
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
-						.setParameter("status", leadRequest)
+//						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+//						.setParameter("status", leadRequest)
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("firstDate", leadRequest.getFirstDate())
 						.setParameter("lastDate", leadRequest.getLastDate())
@@ -36,9 +37,10 @@ public class LeadByStatusHelper {
 				return results;
 			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+//						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
-						.setParameter("status", leadRequest)
+//						.setParameter("status", leadRequest)
 						.setFirstResult(Constant.FIRST_RESULT)
 						.setMaxResults(Constant.MAX_RESULT)
 						.getResultList();
