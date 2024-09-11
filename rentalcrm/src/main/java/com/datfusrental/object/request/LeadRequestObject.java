@@ -14,6 +14,7 @@ public class LeadRequestObject {
 	private String bookingId;
 	private String companyName;
 //	private String enquirySource;
+	private String categoryTypeName;
 	private Long superCategoryId;
 	private String superCategory;
 	private Long categoryId;

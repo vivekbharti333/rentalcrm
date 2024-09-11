@@ -364,7 +364,10 @@ public class CategoryHelper {
 	public SubCategoryDetails getUpdatedSubCategoryDetailsByReqObj(SubCategoryDetails subCategoryDetails,
 			ItemRequestObject itemRequest) {
 
+		subCategoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
+		subCategoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		subCategoryDetails.setCategoryId(itemRequest.getCategoryId());
+		subCategoryDetails.setSubCategoryImage(itemRequest.getSubCategoryImage());
 		subCategoryDetails.setSubCategory(itemRequest.getSubCategory());
 		subCategoryDetails.setUpdatedAt(new Date());
 		return subCategoryDetails;
