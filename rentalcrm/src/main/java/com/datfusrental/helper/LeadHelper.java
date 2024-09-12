@@ -125,6 +125,8 @@ public class LeadHelper {
 
 		leadDetails.setBookingId(leadRequest.getBookingId());
 		leadDetails.setCompanyName(leadRequest.getCompanyName());
+		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
+		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
 		leadDetails.setItemName(leadRequest.getItemName());
