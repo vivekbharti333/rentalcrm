@@ -363,9 +363,9 @@ public class CategoryService {
 	}
 	
 
-	public List<CategoryDetails> getCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
+	public List<ItemRequestObject> getCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<CategoryDetails> categoryDetailsList = categoryHelper.getCategoryDetails(itemRequest);
+		List<ItemRequestObject> categoryDetailsList = categoryHelper.getCategoryDetails(itemRequest);
 		return categoryDetailsList;
 	}
 

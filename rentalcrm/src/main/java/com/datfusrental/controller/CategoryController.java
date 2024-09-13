@@ -207,10 +207,10 @@ public class CategoryController {
 	}
 
 	@RequestMapping(path = "getCategoryDetails", method = RequestMethod.POST)
-	public Response<CategoryDetails> getCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
-		GenricResponse<CategoryDetails> response = new GenricResponse<CategoryDetails>();
+	public Response<ItemRequestObject> getCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
+		GenricResponse<ItemRequestObject> response = new GenricResponse<ItemRequestObject>();
 		try {
-			List<CategoryDetails> categoryList = categoryService.getCategoryDetails(itemRequestObject);
+			List<ItemRequestObject> categoryList = categoryService.getCategoryDetails(itemRequestObject);
 			return response.createListResponse(categoryList, 200, String.valueOf(categoryList.size()));
 //			return response.createListResponse(categoryMasterList, 200);
 		} catch (Exception e) {

@@ -5,9 +5,13 @@ import java.util.List;
 
 import javax.persistence.Column;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequestObject {
 	
 	private Long id;
@@ -24,6 +28,7 @@ public class ItemRequestObject {
 	private String subCategoryImage;
 	private Long subCategoryId;
 	private String subCategory;
+	private String status;
 	
 	private String location;
 	private String locationType;

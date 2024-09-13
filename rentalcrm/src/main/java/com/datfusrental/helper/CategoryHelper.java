@@ -2,6 +2,7 @@ package com.datfusrental.helper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -309,34 +310,93 @@ public class CategoryHelper {
 		return categoryDetails;
 	}
 
+//	@SuppressWarnings("unchecked")
+//	public List<CategoryDetails> getCategoryDetails(ItemRequestObject itemRequest) {
+//		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+//		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
+//				"SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt\r\n"
+//				+ "FROM com.datfusrental.entities.CategoryDetails cd\r\n"
+//				+ "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id\r\n"
+//				+ "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id\r\n"
+//				+ "WHERE cd.superadminId = :superadminId\r\n"
+//				+ "ORDER BY sc.id ASC")
+//				.setParameter("superadminId", itemRequest.getSuperadminId())
+//				.getResultList();
+//		return results;
+//		}
+//		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
+//			List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
+//					  "SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId = :superCategoryId AND CD.superadminId =:superadminId AND CD.status =:status ORDER BY CD.id ASC")
+//					.setParameter("superCategoryId", itemRequest.getSuperCategoryId())
+//					.setParameter("superadminId", itemRequest.getSuperadminId())
+//					.setParameter("status", Status.ACTIVE.name())
+//					.getResultList();
+//				return results;
+//				
+//		}else {
+//			
+//		}
+//		return null;
+//	}
+	
 	@SuppressWarnings("unchecked")
-	public List<CategoryDetails> getCategoryDetails(ItemRequestObject itemRequest) {
-		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
-//			  "SELECT cd.id, cd.superCategoryId, cd.category, cd.status, cd.createdAt, sc.superCategory FROM CategoryDetails cd, SuperCategoryDetails sc WHERE cd.superCategoryId = sc.id AND cd.superadminId = :superadminId ORDER BY sc.id ASC")
-				"SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt\r\n"
-				+ "FROM com.datfusrental.entities.CategoryDetails cd\r\n"
-				+ "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id\r\n"
-				+ "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id\r\n"
-				+ "WHERE cd.superadminId = :superadminId\r\n"
-				+ "ORDER BY sc.id ASC")
-				.setParameter("superadminId", itemRequest.getSuperadminId())
-				.getResultList();
-		return results;
-		}
-		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
-			List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
-					  "SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId = :superCategoryId AND CD.superadminId =:superadminId AND CD.status =:status ORDER BY CD.id ASC")
-					.setParameter("superCategoryId", itemRequest.getSuperCategoryId())
-					.setParameter("superadminId", itemRequest.getSuperadminId())
-					.setParameter("status", Status.ACTIVE.name())
-					.getResultList();
-				return results;
-				
-		}else {
-			
-		}
-		return null;
+	public List<ItemRequestObject> getCategoryDetails(ItemRequestObject itemRequest) {
+	    List<ItemRequestObject> categoryDetailsList = new ArrayList<>();
+
+	    // Handle case when requestedFor is "ALL"
+	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
+	            "SELECT cd.id, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt " +
+	            "FROM com.datfusrental.entities.CategoryDetails cd " +
+	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
+	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
+	            "WHERE cd.superadminId = :superadminId " +
+	            "ORDER BY sc.id ASC")
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .getResultList();
+
+	        for (Object[] row : results) {
+	            ItemRequestObject item = new ItemRequestObject();
+	            item.setId((Long) row[0]);
+	            item.setCategoryTypeId((Long) row[1]);
+	            item.setCategoryTypeName((String) row[2]);
+	            item.setSuperCategoryId((Long) row[3]);
+	            item.setSuperCategory((String) row[4]);
+	            item.setCategory((String) row[5]);
+	            item.setStatus((String) row[6]);
+	            item.setCreatedAt((Date) row[7]);
+
+	            categoryDetailsList.add(item);
+	        }
+	    }
+	    // Handle case when requestedFor is "BYCATID"
+	    else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
+	        List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
+	            "SELECT CD FROM com.datfusrental.entities.CategoryDetails CD " +
+	            "WHERE CD.superCategoryId = :superCategoryId " +
+	            "AND CD.superadminId = :superadminId " +
+	            "AND CD.status = :status " +
+	            "ORDER BY CD.id ASC", CategoryDetails.class)
+	            .setParameter("superCategoryId", itemRequest.getSuperCategoryId())
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .setParameter("status", Status.ACTIVE.name())
+	            .getResultList();
+
+	        // Map the CategoryDetails results to ItemRequestObject
+	        for (CategoryDetails cd : results) {
+	            ItemRequestObject item = new ItemRequestObject();
+	            item.setId(cd.getId());
+	            item.setCategoryTypeId(cd.getCategoryTypeId());
+	            item.setSuperCategoryId(cd.getSuperCategoryId());
+	            item.setCategory(cd.getCategory());
+	            item.setStatus(cd.getStatus());
+	            item.setCreatedAt(cd.getCreatedAt());
+	            
+	            categoryDetailsList.add(item);
+	        }
+	    }
+
+	    return categoryDetailsList;
 	}
 
 	public SubCategoryDetails getSubCategoryDetailsByReqObj(ItemRequestObject itemRequest) {
