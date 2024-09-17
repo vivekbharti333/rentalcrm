@@ -14,16 +14,15 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.NonNull;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 
 @Entity
 @Table(name = "user_details")
 @Data
+@NoArgsConstructor
 public class User {
-	
-	public User() {
-    }
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -137,6 +136,4 @@ public class User {
 	@Column(name = "superadmin_id")
 	private String superadminId;
 
-
-	
 }
