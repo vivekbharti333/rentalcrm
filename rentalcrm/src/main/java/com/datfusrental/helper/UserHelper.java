@@ -225,7 +225,7 @@ public class UserHelper {
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.ADMIN.name())) {
 			List<User> results = userDetailsDao.getEntityManager().createQuery(
-					"SELECT UD FROM UserDetails UD WHERE UD.adminId =:adminId AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
+					"SELECT UD FROM User UD WHERE UD.adminId =:adminId AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
 					.setParameter("adminId", userRequest.getCreatedBy())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name())
@@ -233,7 +233,7 @@ public class UserHelper {
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.TEAM_LEADER.name())) {
 			List<User> results = userDetailsDao.getEntityManager().createQuery(
-					"SELECT UD FROM UserDetails UD WHERE UD.createdBy =:createdBy AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
+					"SELECT UD FROM User UD WHERE UD.createdBy =:createdBy AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
 					.setParameter("teamleaderId", userRequest.getTeamleaderId())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
