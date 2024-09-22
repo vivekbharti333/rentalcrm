@@ -21,11 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.common.GetBase64Image;
 import com.datfusrental.constant.Constant;
-import com.datfusrental.entities.CategoryDetails;
 import com.datfusrental.entities.CategoryType;
-import com.datfusrental.entities.SuperCategoryDetails;
 import com.datfusrental.enums.ImageType;
-import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.Request;
@@ -149,10 +146,10 @@ public class CategoryController {
 	}
 
 	@RequestMapping(path = "getSuperCategoryDetails", method = RequestMethod.POST)
-	public Response<SuperCategoryDetails> getSuperCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
-		GenricResponse<SuperCategoryDetails> response = new GenricResponse<SuperCategoryDetails>();
+	public Response<ItemRequestObject> getSuperCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
+		GenricResponse<ItemRequestObject> response = new GenricResponse<ItemRequestObject>();
 		try {
-			List<SuperCategoryDetails> superCategoryDetailsList = categoryService.getSuperCategoryDetails(itemRequestObject);
+			List<ItemRequestObject> superCategoryDetailsList = categoryService.getSuperCategoryDetails(itemRequestObject);
 //			return response.createListResponse(superCategoryDetailsList, 200);
 			return response.createListResponse(superCategoryDetailsList, 200, String.valueOf(superCategoryDetailsList.size()));
 		} catch (Exception e) {
@@ -265,11 +262,10 @@ public class CategoryController {
 	}
 
 	@RequestMapping(path = "getSubCategoryDetails", method = RequestMethod.POST)
-	public Response<SubCategoryDetails> getSubCategoryDetails(
-			@RequestBody Request<ItemRequestObject> itemRequestObject) {
-		GenricResponse<SubCategoryDetails> response = new GenricResponse<SubCategoryDetails>();
+	public Response<ItemRequestObject> getSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
+		GenricResponse<ItemRequestObject> response = new GenricResponse<ItemRequestObject>();
 		try {
-			List<SubCategoryDetails> subCategoryMasterList = categoryService.getSubCategoryDetails(itemRequestObject);
+			List<ItemRequestObject> subCategoryMasterList = categoryService.getSubCategoryDetails(itemRequestObject);
 			return response.createListResponse(subCategoryMasterList, 200, String.valueOf(subCategoryMasterList.size()));
 //			return response.createListResponse(subCategoryMasterList, 200);
 		} catch (Exception e) {

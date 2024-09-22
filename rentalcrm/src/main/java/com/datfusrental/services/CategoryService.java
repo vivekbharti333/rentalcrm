@@ -13,10 +13,10 @@ import com.datfusrental.common.GetBase64Image;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryDetails;
 import com.datfusrental.entities.CategoryType;
+import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.entities.SuperCategoryDetails;
 import com.datfusrental.enums.ImageType;
 import com.datfusrental.enums.Status;
-import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.CategoryHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
@@ -254,9 +254,9 @@ public class CategoryService {
 		}
 	}
 	
-	public List<SuperCategoryDetails> getSuperCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
+	public List<ItemRequestObject> getSuperCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<SuperCategoryDetails> superCategoryDetailsList = categoryHelper.getSuperCategoryDetails(itemRequest);
+		List<ItemRequestObject> superCategoryDetailsList = categoryHelper.getSuperCategoryDetails(itemRequest);
 		return superCategoryDetailsList;
 	}
 	
@@ -482,9 +482,9 @@ public class CategoryService {
 	}
 
 
-	public List<SubCategoryDetails> getSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
+	public List<ItemRequestObject> getSubCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
-		List<SubCategoryDetails> subCategoryMasterList = categoryHelper.getSubCategoryDetails(itemRequest);
+		List<ItemRequestObject> subCategoryMasterList = categoryHelper.getSubCategoryDetails(itemRequest);
 		return subCategoryMasterList;
 	}
 

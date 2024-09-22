@@ -250,26 +250,84 @@ public class CategoryHelper {
 		return superCategoryDetails;
 	}
 
+//	@SuppressWarnings("unchecked")
+//	public List<SuperCategoryDetails> getSuperCategoryDetails(ItemRequestObject itemRequest) {
+//		List<ItemRequestObject> superCategoryList = new ArrayList<>();
+//		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+//			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(          //INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+//					"SELECT sc.id, sc.superCategoryImage, sc.categoryTypeId, ct.categoryTypeName, sc.superCategory, sc.status, sc.createdAt FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC")
+//					.setParameter("superadminId", itemRequest.getSuperadminId())
+////					.setParameter("status", Status.ACTIVE.name())
+//					.getResultList();
+//			for (Object[] row : results) {
+//	            ItemRequestObject item = new ItemRequestObject();
+//	            item.setId((Long) row[0]);
+//	            item.setSuperCategoryImage((String) row[1]);
+//	            item.setCategoryTypeId((Long) row[2]);
+//	            item.setCategoryTypeName((String) row[3]);
+//	            //item.setSuperCategoryId((Long) row[3]);
+//	            item.setSuperCategory((String) row[4]);
+//	            item.setStatus((String) row[5]);
+//	            item.setCreatedAt((Date) row[6]);
+//
+//	            superCategoryList.add(item);
+//	        }
+//			
+//		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())){
+//			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(
+//					"SELECT SC FROM SuperCategoryDetails SC WHERE SC.categoryTypeId =:categoryTypeId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
+//					.setParameter("categoryTypeId", itemRequest.getCategoryTypeId())
+//					.setParameter("superadminId", itemRequest.getSuperadminId())
+//					.setParameter("status", Status.ACTIVE.name()).getResultList();
+//			return results;
+//		}else {
+//			
+//		}
+//		return null;
+//	}
+	
 	@SuppressWarnings("unchecked")
-	public List<SuperCategoryDetails> getSuperCategoryDetails(ItemRequestObject itemRequest) {
-		if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(          //INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
-					"SELECT sc.id, sc.superCategoryImage, sc.categoryTypeId, ct.categoryTypeName, sc.superCategory, sc.status, sc.createdAt FROM SuperCategoryDetails sc, CategoryType ct WHERE sc.categoryTypeId = ct.id AND sc.superadminId = :superadminId ORDER BY sc.id ASC")
-					.setParameter("superadminId", itemRequest.getSuperadminId())
-//					.setParameter("status", Status.ACTIVE.name())
-					.getResultList();
-			return results;
-		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())){
-			List<SuperCategoryDetails> results = superCategoryDetailsDao.getEntityManager().createQuery(
-					"SELECT SC FROM SuperCategoryDetails SC WHERE SC.categoryTypeId =:categoryTypeId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
-					.setParameter("categoryTypeId", itemRequest.getCategoryTypeId())
-					.setParameter("superadminId", itemRequest.getSuperadminId())
-					.setParameter("status", Status.ACTIVE.name()).getResultList();
-			return results;
-		}else {
-			
-		}
-		return null;
+	public List<ItemRequestObject> getSuperCategoryDetails(ItemRequestObject itemRequest) {
+	    List<ItemRequestObject> superCategoryList = new ArrayList<>();
+	    
+	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+	        // Query to fetch details for all categories
+	        List<Object[]> results = superCategoryDetailsDao.getEntityManager().createQuery(
+	            "SELECT sc.id, sc.superCategoryImage, sc.categoryTypeId, ct.categoryTypeName, sc.superCategory, sc.status, sc.createdAt " +
+	            "FROM SuperCategoryDetails sc JOIN CategoryType ct ON sc.categoryTypeId = ct.id " +
+	            "WHERE sc.superadminId = :superadminId ORDER BY sc.id ASC")
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .getResultList();
+	        
+	        for (Object[] row : results) {
+	        	ItemRequestObject item = new ItemRequestObject();
+	            item.setId((Long) row[0]);
+	            item.setSuperCategoryImage((String) row[1]);
+	            item.setCategoryTypeId((Long) row[2]);
+	            item.setCategoryTypeName((String) row[3]);
+	            item.setSuperCategory((String) row[4]);
+	            item.setStatus((String) row[5]);
+	            item.setCreatedAt((Date) row[6]);
+
+	            superCategoryList.add(item);
+	        }
+	        
+	    } else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
+	        // Query to fetch details by category ID
+	        List<ItemRequestObject> results = superCategoryDetailsDao.getEntityManager().createQuery(
+	            "SELECT sc FROM SuperCategoryDetails sc " +
+	            "WHERE sc.categoryTypeId = :categoryTypeId AND sc.superadminId = :superadminId AND sc.status = :status " +
+	            "ORDER BY sc.id ASC")
+	            .setParameter("categoryTypeId", itemRequest.getCategoryTypeId())
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .setParameter("status", Status.ACTIVE.name())
+	            .getResultList();
+	        
+	        return results;
+	    }
+	    
+	    // Return empty list instead of null
+	    return superCategoryList;
 	}
 
 	public CategoryDetails getCategoryDetailsByReqObj(ItemRequestObject itemRequest) {
@@ -439,34 +497,87 @@ public class CategoryHelper {
 		return subCategoryDetails;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<SubCategoryDetails> getSubCategoryDetails(ItemRequestObject itemRequest) {
-		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-			List<SubCategoryDetails> results = subCategoryDetailsDao.getEntityManager().createQuery(
+//	@SuppressWarnings("unchecked")
+//	public List<ItemRequestObject> getSubCategoryDetails(ItemRequestObject itemRequest) {
+//		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+//			List<ItemRequestObject> results = subCategoryDetailsDao.getEntityManager().createQuery(
+//					"SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, subcd.superCategoryId, scd.superCategory, subcd.categoryId,cd.category, subcd.subCategory, subcd.status, subcd.createdAt \r\n"
+//					+ "FROM SubCategoryDetails subcd\r\n"
+//					+ "JOIN CategoryDetails cd ON subcd.categoryId = cd.id\r\n"
+//					+ "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id\r\n"
+//					+ "JOIN CategoryType ctd ON cd.categoryTypeId = ctd.id\r\n"
+//					+ "WHERE subcd.superadminId = :superadminId\r\n"
+//					+ "ORDER BY subcd.id ASC")
+//					.setParameter("superadminId", itemRequest.getSuperadminId())
+//					.getResultList();
+//			return results;
+//		}
+//		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
+//			List<ItemRequestObject> results = subCategoryDetailsDao.getEntityManager().createQuery(
 //					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.subCategory DESC")
-					"SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, subcd.superCategoryId, scd.superCategory, subcd.categoryId,cd.category, subcd.subCategory, subcd.status, subcd.createdAt \r\n"
-					+ "FROM SubCategoryDetails subcd\r\n"
-					+ "JOIN CategoryDetails cd ON subcd.categoryId = cd.id\r\n"
-					+ "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id\r\n"
-					+ "JOIN CategoryType ctd ON cd.categoryTypeId = ctd.id\r\n"
-					+ "WHERE subcd.superadminId = :superadminId\r\n"
-					+ "ORDER BY subcd.id ASC")
-					.setParameter("superadminId", itemRequest.getSuperadminId())
-					.getResultList();
-			return results;
-		}
-		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
-			List<SubCategoryDetails> results = subCategoryDetailsDao.getEntityManager().createQuery(
-					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.subCategory DESC")
-					.setParameter("categoryId", itemRequest.getCategoryId())
-					.setParameter("superadminId", itemRequest.getSuperadminId())
-					.setParameter("status", Status.ACTIVE.name())
-					.getResultList();
-			return results;
-		}else {
-			
-		}
-		return null;
+//					.setParameter("categoryId", itemRequest.getCategoryId())
+//					.setParameter("superadminId", itemRequest.getSuperadminId())
+//					.setParameter("status", Status.ACTIVE.name())
+//					.getResultList();
+//			return results;
+//		}else {
+//			
+//		}
+//		return null;
+//	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ItemRequestObject> getSubCategoryDetails(ItemRequestObject itemRequest) {
+	    List<ItemRequestObject> subCategoryList = new ArrayList<>();
+	    
+	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
+	        // Query for all subcategory details
+	        List<Object[]> results = subCategoryDetailsDao.getEntityManager().createQuery(
+	            "SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, " +
+	            "subcd.superCategoryId, scd.superCategory, subcd.categoryId, cd.category, " +
+	            "subcd.subCategory, subcd.status, subcd.createdAt " +
+	            "FROM SubCategoryDetails subcd " +
+	            "JOIN CategoryDetails cd ON subcd.categoryId = cd.id " +
+	            "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id " +
+	            "JOIN CategoryType ctd ON cd.categoryTypeId = ctd.id " +
+	            "WHERE subcd.superadminId = :superadminId " +
+	            "ORDER BY subcd.id ASC")
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .getResultList();
+
+	        for (Object[] row : results) {
+	        	ItemRequestObject subCategoryDetails = new ItemRequestObject();
+	            subCategoryDetails.setId((Long) row[0]);
+	            subCategoryDetails.setSubCategoryImage((String) row[1]);
+	            subCategoryDetails.setCategoryTypeId((Long) row[2]);
+	            subCategoryDetails.setCategoryTypeName((String) row[3]);
+	            subCategoryDetails.setSuperCategoryId((Long) row[4]);
+	            subCategoryDetails.setSuperCategory((String) row[5]);
+	            subCategoryDetails.setCategoryId((Long) row[6]);
+	            subCategoryDetails.setCategory((String) row[7]);
+	            subCategoryDetails.setSubCategory((String) row[8]);
+	            subCategoryDetails.setStatus((String) row[9]);
+	            subCategoryDetails.setCreatedAt((Date) row[10]);
+
+	            subCategoryList.add(subCategoryDetails);
+	        }
+	        
+	    } else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
+	        // Query for subcategory details by category ID
+	        List<ItemRequestObject> results = subCategoryDetailsDao.getEntityManager().createQuery(
+	            "SELECT sc FROM SubCategoryDetails sc " +
+	            "WHERE sc.categoryId = :categoryId AND sc.superadminId = :superadminId AND sc.status = :status " +
+	            "ORDER BY sc.subCategory DESC")
+	            .setParameter("categoryId", itemRequest.getCategoryId())
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .setParameter("status", Status.ACTIVE.name())
+	            .getResultList();
+
+	        return results;
+	    }
+	    
+	    // Return empty list instead of null
+	    return subCategoryList;
 	}
 
 }

@@ -32,7 +32,7 @@ public class LocationService {
 		locationHelper.validateLocationRequest(itemRequest);
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
-		if (isValid) {
+//		if (isValid) {
 			LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(itemRequest.getLocation(),
 					itemRequest.getLocationType(), itemRequest.getSuperadminId());
 			if (existsLocationDetails == null) {
@@ -47,11 +47,11 @@ public class LocationService {
 				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 				return itemRequest;
 			}
-		} else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
+//		} else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
 	}
 
 	public LocationRequestObject updateLocation(Request<LocationRequestObject> itemRequestObject)
