@@ -47,6 +47,7 @@ public class UserHelper {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
 		}
 	}
+	
 
 	public static String generateRandomChars(String candidateChars, int length) {
 		StringBuilder sb = new StringBuilder();
