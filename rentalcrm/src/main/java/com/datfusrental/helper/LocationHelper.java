@@ -107,14 +107,16 @@ public class LocationHelper {
 		if (locationRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 			results = locationDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LocationDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id desc")
-					.setParameter("superadminId", locationRequest.getSuperadminId()).getResultList();
+					.setParameter("superadminId", locationRequest.getSuperadminId())
+					.getResultList();
 
 		} else if (locationRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYTYPE.name())) {
 			results = locationDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LocationDetails LD WHERE LD.locationType =:locationType AND LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id desc")
 					.setParameter("locationType", locationRequest.getLocationType())
 					.setParameter("status", Status.ACTIVE.name())
-					.setParameter("superadminId", locationRequest.getSuperadminId()).getResultList();
+					.setParameter("superadminId", locationRequest.getSuperadminId())
+					.getResultList();
 
 		}
 		return results;

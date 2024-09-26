@@ -2,12 +2,9 @@ package com.datfusrental.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.TemporalType;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.LeadDetails;
@@ -28,8 +25,8 @@ public class LeadByStatusHelper {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
 //						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
-					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
-//						.setParameter("status", leadRequest)
+					"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						.setParameter("status", leadRequest.getStatus())
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("firstDate", leadRequest.getFirstDate())
 						.setParameter("lastDate", leadRequest.getLastDate())
@@ -38,9 +35,9 @@ public class LeadByStatusHelper {
 			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
 //						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
-					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+						.setParameter("status", leadRequest.getStatus())
 						.setParameter("superadminId", leadRequest.getSuperadminId())
-//						.setParameter("status", leadRequest)
 						.setFirstResult(Constant.FIRST_RESULT)
 						.setMaxResults(Constant.MAX_RESULT)
 						.getResultList();

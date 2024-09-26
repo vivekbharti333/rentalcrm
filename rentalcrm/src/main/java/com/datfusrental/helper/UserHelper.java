@@ -27,6 +27,7 @@ import com.datfusrental.entities.User;
 import com.datfusrental.enums.RoleType;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.DashboardRequestObject;
 import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.UserRequestObject;
 
@@ -265,7 +266,7 @@ public class UserHelper {
 		}
 		
 		List<User> results = userDetailsDao.getEntityManager()
-				.createQuery("SELECT UD FROM UserDetails UD WHERE roleType IN :roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
+				.createQuery("SELECT UD FROM User UD WHERE roleType IN :roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
 				.setParameter("roleType", excludedRoleTypes)
 				.setParameter("superadminId", userRequest.getSuperadminId())
 				.setParameter("REMOVED", Status.REMOVED.name())
@@ -288,31 +289,32 @@ public class UserHelper {
 	}
 	
 	
-	public Long getActiveAndInactiveUserCount(String roleType, String createdBy, String status) {
+	public Long getActiveAndInactiveUserCount(DashboardRequestObject dashboardRequest) {
 		Long count = 0L;
-		if (roleType.equals(RoleType.MAINADMIN.name())) {
+		if (dashboardRequest.getRoleType().equals(RoleType.MAINADMIN.name())) {
 			count = (Long) userDetailsDao.getEntityManager().createQuery(
-					"SELECT COUNT(*) FROM UserDetails DD where DD.status =:status AND roleType NOT IN :roleType")
-					.setParameter("status", status)
+					"SELECT COUNT(*) FROM User DD where roleType NOT IN :roleType")
+//					.setParameter("status", status)
 					.setParameter("roleType", RoleType.MAINADMIN.name())
 					.getSingleResult();
 			return count;
-		} else if (roleType.equals(RoleType.SUPERADMIN.name())) {
+		} else if (dashboardRequest.getRoleType().equals(RoleType.SUPERADMIN.name())) {
 			count = (Long) userDetailsDao.getEntityManager().createQuery(
-					"SELECT COUNT(*) FROM UserDetails DD where DD.status =:status AND roleType NOT IN :roleType AND DD.superadminId = :superadminId")
-					.setParameter("status", status)
+					"SELECT COUNT(*) FROM User DD where roleType NOT IN :roleType AND DD.superadminId = :superadminId")
+//					.setParameter("status", status)
 					.setParameter("roleType", RoleType.SUPERADMIN.name())
-					.setParameter("superadminId", createdBy)
+					.setParameter("superadminId", dashboardRequest.getSuperadminId())
 					.getSingleResult();
 			return count;
-		} else {
-			count = (Long) userDetailsDao.getEntityManager().createQuery(
-					"SELECT COUNT(*) FROM UserDetails DD where DD.status =:status AND DD.createdBy = :createdBy")
-					.setParameter("status", status)
-					.setParameter("createdBy", createdBy)
-					.getSingleResult();
-			return count;
+//		} else if (roleType.equals(RoleType.ADMIN.name())) {
+//			count = (Long) userDetailsDao.getEntityManager().createQuery(
+//					"SELECT COUNT(*) FROM UserDetails DD where DD.status =:status AND DD.createdBy = :createdBy")
+//					.setParameter("status", status)
+//					.setParameter("createdBy", createdBy)
+//					.getSingleResult();
+//			return count;
 		}
+		return count;
 	}
 
 

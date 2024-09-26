@@ -118,10 +118,10 @@ public class LeadService {
 	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		
-		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
+//		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
 //		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
-		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
-		leadRequest.setLastDate(new Date());
+//		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
+//		leadRequest.setLastDate(new Date());
 		List<LeadDetails> leadList = leadByStatusHelper.getLeadListByStatus(leadRequest);
 		return leadList;
 	}

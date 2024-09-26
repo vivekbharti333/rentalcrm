@@ -56,6 +56,7 @@ public class UserService {
 		LoginRequestObject loginRequest = loginRequestObject.getPayload();
 		userHelper.validateLoginRequest(loginRequest);
 		
+		System.out.println("User id : "+loginRequest.getLoginId());
 		User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
 		if (user != null) {
 			if(user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
