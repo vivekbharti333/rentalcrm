@@ -20,6 +20,7 @@ public class LoginRequestObject {
 
 	private String createdBy;
 	private String teamLeaderId;
+	private String adminId;
 	private String superadminId;
 	
 	private int respCode;

@@ -90,6 +90,7 @@ public class UserService {
 					loginRequest.setPermissions(user.getPermissions());
 					loginRequest.setRoleType(user.getRoleType());
 					loginRequest.setSuperadminId(user.getSuperadminId());
+					loginRequest.setAdminId(user.getAdminId());
 					loginRequest.setTeamLeaderId(user.getTeamleaderId());
 					loginRequest.setToken(token);
 
