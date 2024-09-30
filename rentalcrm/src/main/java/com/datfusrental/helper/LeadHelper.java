@@ -83,7 +83,9 @@ public class LeadHelper {
 		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
-		leadDetails.setQuantity(leadRequest.getQuantity());
+		leadDetails.setAdultQuantity(leadRequest.getAdultQuantity());
+		leadDetails.setChildrenQuantity(leadRequest.getChildrenQuantity());
+		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
 		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
@@ -144,7 +146,9 @@ public class LeadHelper {
 		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
-		leadDetails.setQuantity(leadRequest.getQuantity());
+		leadDetails.setAdultQuantity(leadRequest.getAdultQuantity());
+		leadDetails.setChildrenQuantity(leadRequest.getChildrenQuantity());
+		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
 		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
@@ -163,7 +167,6 @@ public class LeadHelper {
 		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
 		leadDetails.setLeadType(leadRequest.getLeadType());
 
-		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());
 
 		leadDetails.setCreatedBy(leadRequest.getCreatedBy());

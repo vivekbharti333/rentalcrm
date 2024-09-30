@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.datfuslab.whatsapp.SendWhatsappMsg;
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
@@ -36,6 +37,9 @@ public class LeadService {
 	private LeadHelper leadHelper;
 	
 	@Autowired
+	private SendWhatsappMsg sendWhatsappMsg;
+	
+	@Autowired
 	private LeadByStatusHelper leadByStatusHelper;
 
 	@Autowired
@@ -57,6 +61,9 @@ public class LeadService {
 			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(bookingId);
 			if (existsLeadDetails == null) {
 				
+				//Condition if category is cruise check available sheet
+				
+				
 				//Get agent name
 				User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 				leadRequest.setCreatedByName(user.getFirstName()+" "+user.getLastName());
@@ -65,13 +72,20 @@ public class LeadService {
 				//Lead Details
 				LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
 				leadDetails = leadHelper.saveLeadDetails(leadDetails);
+				
+				//history
+				
+				
+				//message
+				String response = sendWhatsappMsg.sendWhatsAppMessage(leadDetails);
+				logger.info("Message response : "+response);
 
 				leadRequest.setRespCode(Constant.SUCCESS_CODE);
 				leadRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
 				return leadRequest;
 			} else {
 				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				leadRequest.setRespMesg(Constant.USER_EXIST);
+				leadRequest.setRespMesg("Booking id already exist. Try again");
 				return leadRequest;
 			}
 		} else {

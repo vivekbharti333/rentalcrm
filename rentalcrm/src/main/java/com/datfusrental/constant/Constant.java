@@ -56,6 +56,18 @@ public class Constant {
 	 public static final String REMOVED_SUCCESS = "Removed Successfully";
 	 public static final String DATA_NOT_FOUND ="Data Not Available";
 	 
+	 
+	 //Status
+	 public static final String FOLLOW_UP ="FOLLOWUP";
+	 public static final String ENQUIRY ="ENQUIRY";
+	 public static final String CONFIRMED ="CONFIRMED";
+	 public static final String ASSIGNED ="ASSIGNED";
+	 
+	 
+	 //Category Name
+	 public static final String VEHICLE ="VEHICLE";
+	 public static final String CAR ="CAR";
+	 public static final String BIKE ="BIKE";
 }
 
 

@@ -32,7 +32,9 @@ public class LeadRequestObject {
 	private String customerMobile;
 	private String customerEmailId;
 	private int totalDays;
-	private int quantity;
+	private int adultQuantity;
+	private int childrenQuantity;
+	private int infantQuantity;
 	private long vendorRate;
 	private long payToVendor;
 	private long companyRate;

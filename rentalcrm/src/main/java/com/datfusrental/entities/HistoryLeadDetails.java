@@ -13,9 +13,9 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "lead_details")
+@Table(name = "history_lead_details")
 @Data
-public class LeadDetails {
+public class HistoryLeadDetails {
 		
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
