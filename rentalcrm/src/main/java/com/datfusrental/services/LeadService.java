@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.datfuslab.whatsapp.SendWhatsappMsg;
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
@@ -24,6 +23,7 @@ import com.datfusrental.helper.UserHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
+import com.datfusrental.whatsapp.SendWhatsappMsg;
 
 @Service
 public class LeadService {

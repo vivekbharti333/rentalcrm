@@ -1,4 +1,4 @@
-package com.datfuslab.whatsapp;
+package com.datfusrental.whatsapp;
 
 import java.text.SimpleDateFormat;
 

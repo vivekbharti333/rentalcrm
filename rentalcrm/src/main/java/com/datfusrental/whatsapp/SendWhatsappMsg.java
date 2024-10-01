@@ -1,4 +1,4 @@
-package com.datfuslab.whatsapp;
+package com.datfusrental.whatsapp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
