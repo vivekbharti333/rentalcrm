@@ -23,25 +23,26 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class InteraktApi {
 	
-	    @Autowired
-	    private RestTemplate restTemplate;
+//	    @Autowired
+//	    private RestTemplate restTemplate;
 
 	    
 	    public String sendInteraktMsg(String parameters) throws Exception {
 
-	        // Setting headers
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.APPLICATION_JSON);
-	        headers.set("Authorization", "Basic dUNkRHc1R01pUlVnaHAtMUx4elAxb2EyamZaT2o2eWtLcjJwYnUzNnlBRTo=");
-
-	        // Creating the request
-	        HttpEntity<String> request = new HttpEntity<>(parameters, headers);
-
-	        // Sending the POST request
-	        ResponseEntity<String> response = restTemplate.exchange("https://api.interakt.ai/v1/public/message/", HttpMethod.POST, request, String.class);
-
-	        String responseString = response.getBody().toString();
-	        return responseString;
+//	        // Setting headers
+//	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setContentType(MediaType.APPLICATION_JSON);
+//	        headers.set("Authorization", "Basic dUNkRHc1R01pUlVnaHAtMUx4elAxb2EyamZaT2o2eWtLcjJwYnUzNnlBRTo=");
+//
+//	        // Creating the request
+//	        HttpEntity<String> request = new HttpEntity<>(parameters, headers);
+//
+//	        // Sending the POST request
+//	        ResponseEntity<String> response = restTemplate.exchange("https://api.interakt.ai/v1/public/message/", HttpMethod.POST, request, String.class);
+//
+//	        String responseString = response.getBody().toString();
+//	        return responseString;
+	        return null;
 	    }
 
 	
