@@ -56,7 +56,10 @@ public class LeadService {
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
 		if (isValid) {
+			
+			//Generate & set booking id
 			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
+			leadRequest.setBookingId(bookingId);
 			
 			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(bookingId);
 			if (existsLeadDetails == null) {
@@ -67,7 +70,6 @@ public class LeadService {
 				//Get agent name
 				User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 				leadRequest.setCreatedByName(user.getFirstName()+" "+user.getLastName());
-				leadRequest.setBookingId(bookingId);
 
 				//Lead Details
 				LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);

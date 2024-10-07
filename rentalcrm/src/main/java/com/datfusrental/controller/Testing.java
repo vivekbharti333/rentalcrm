@@ -1,6 +1,7 @@
 package com.datfusrental.controller;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +26,6 @@ public class Testing {
 
 	@RequestMapping(value = "/log")
 	public ModelAndView test(HttpServletResponse response) throws Exception {
-		itextInvoice.invoice();
 		return new ModelAndView("home");
 	}
 
@@ -36,7 +36,7 @@ public class Testing {
 	
 	@RequestMapping(value = "/")
 	public String version(HttpServletResponse response) throws Exception {
-		itextInvoice.invoice();
+	
 		return "1.2";
 	}
 

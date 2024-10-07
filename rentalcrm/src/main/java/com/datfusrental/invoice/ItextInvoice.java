@@ -1,12 +1,16 @@
 package com.datfusrental.invoice;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+
 import org.springframework.stereotype.Component;
 
+import com.itextpdf.barcodes.BarcodeQRCode;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.color.DeviceRgb;
-import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -18,34 +22,34 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.property.TextAlignment;
-
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.element.LineSeparator;
+import com.datfusrental.entities.LeadDetails;
+import com.itextpdf.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class ItextInvoice {
 
-    public void invoice() throws Exception {
-        // Creating a PdfWriter
-        String dest = "D:\\sample.pdf";
-        PdfWriter writer = new PdfWriter(dest);
+    public ByteArrayOutputStream invoice(LeadDetails leadDetails) throws Exception {
+    	
+    	 LocalDateTime currentDateTime = LocalDateTime.now();
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+         String invoiceDate = currentDateTime.format(formatter);
+        
+    	// Create a ByteArrayOutputStream to hold the PDF data
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        // Creating a PdfWriter to write to the ByteArrayOutputStream
+        PdfWriter writer = new PdfWriter(byteArrayOutputStream);
 
         // Creating a PdfDocument object
         PdfDocument pdfDoc = new PdfDocument(writer);
 
         // Creating a Document object
-        Document doc = new Document(pdfDoc);
+        Document doc = new Document(pdfDoc, PageSize.A4);
 
         // Creating a table with two columns
         float[] pointColumnWidths = {150f, 600f};
@@ -53,7 +57,7 @@ public class ItextInvoice {
 
         // Adding an image to the table
         Cell cellLogo = new Cell();
-        String imageFile = "D:\\download.jpg";
+        String imageFile = "D:\\logosamples.jpg";
         ImageData data = ImageDataFactory.create(imageFile);
         Image img = new Image(data);
         img.setWidth(100);  // Set the desired width of the image
@@ -77,6 +81,9 @@ public class ItextInvoice {
         Paragraph phoneNo = new Paragraph("Phone: +91 9513166378").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
         comName.add(phoneNo);
         
+//        Paragraph gstin = new Paragraph("GSTIN: 29GGGGG1314R9Z6").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
+//        comName.add(gstin);
+        
         table.addCell(comName);
         doc.add(table);
 
@@ -90,6 +97,9 @@ public class ItextInvoice {
         // Draw a horizontal line just below the table
         canvas.moveTo(35, yPositionAfterTable + 650); // Starting point of the line (x, y)
         canvas.lineTo(555, yPositionAfterTable + 650); // Ending point of the line
+        
+//        canvas.moveTo(35, yPositionAfterTable + 645); // Starting point of the line (x, y)
+//        canvas.lineTo(555, yPositionAfterTable + 645); // Ending point of the line
         canvas.stroke(); // Draw the line
         
         doc.add(new Paragraph("").setFontSize(20).setTextAlignment(TextAlignment.CENTER));
@@ -106,8 +116,7 @@ public class ItextInvoice {
         float [] pointColumnWidths0 = {400F,900F, 200F};       
         Table highLightTable = new Table(pointColumnWidths0);
         
-        // Populating row 1 and adding it to the table   
-        
+        // Populating row 1 and adding it to the table    
         Cell empHighLight1 = new Cell();                        
         empHighLight1.add("Bill To,").setFontSize(12);                                      
         empHighLight1.setBorder(Border.NO_BORDER);        
@@ -128,7 +137,7 @@ public class ItextInvoice {
         highLightTable.addCell(invoiceValue);
         
         Cell empHighLight2 = new Cell();                        
-        empHighLight2.add("Suraj kumar").setFontSize(10);                                      
+        empHighLight2.add(leadDetails.getCustomeName()).setFontSize(10);                                      
         empHighLight2.setBorder(Border.NO_BORDER);        
         highLightTable.addCell(empHighLight2);
         
@@ -140,14 +149,15 @@ public class ItextInvoice {
         highLightTable.addCell(dateHead);                            
         
         Cell dateValue = new Cell();                        
-        dateValue.add("30/09/2024");                                 
+//        dateValue.add("30/09/2024");                                 
+        dateValue.add(invoiceDate);                                 
         dateValue.setBackgroundColor(Color.WHITE);      
         dateValue.setBorder(Border.NO_BORDER);
         dateValue.setTextAlignment(TextAlignment.RIGHT).setFontSize(10);         
         highLightTable.addCell(dateValue);
         
         Cell empHighLight3 = new Cell();                        
-        empHighLight3.add("Phone : +91 8545875858").setFontSize(10);                                      
+        empHighLight3.add("Phone : "+leadDetails.getCountryDialCode()+" "+leadDetails.getCustomerMobile()).setFontSize(10);                                      
         empHighLight3.setBorder(Border.NO_BORDER);        
         highLightTable.addCell(empHighLight3);
         
@@ -242,10 +252,11 @@ public class ItextInvoice {
         table1.addCell(c4);    
         
         Cell c5 = new Cell();                        
-        c5.add("hgjhhgh | hjhjh");                                 
+        c5.add("ERTIGA | Manual-SUV | 1 | 26/10/2024 & 9:00 Hours |\n 29/10/2024 & 8:00 Hour | Calangute & Madgaon railway station");    
+//        c5.add("Vehicle Details : ERTIGA | Manual-SUV\n Quantity : 1 \n From Date & Time : 26/10/2024 | 9:00 Hours\n To Date & Time 29/10/2024 | 8:00 Hour \n Location :  Calangute & Madgaon railway station"); 
         c5.setBackgroundColor(new DeviceRgb(247, 245, 242));      
         c5.setBorder(new SolidBorder(Color.BLACK, 0));
-        c5.setTextAlignment(TextAlignment.CENTER);         
+        c5.setTextAlignment(TextAlignment.LEFT);         
         table1.addCell(c5);   
         
         Cell c6 = new Cell();                        
@@ -379,8 +390,8 @@ public class ItextInvoice {
         
         doc.add(table2);
         
-        doc.add(new Paragraph(" "));
-        doc.add(new Paragraph(" ")); 
+        doc.add(new Paragraph("\n\n"));
+//        doc.add(new Paragraph(" ")); 
 
         float [] pointColumnWidthsNotes = {900F, };       
         Table notesTable = new Table(pointColumnWidthsNotes);
@@ -397,8 +408,8 @@ public class ItextInvoice {
         
         doc.add(notesTable);
         
-        doc.add(new Paragraph(" "));
-        doc.add(new Paragraph(" "));
+        doc.add(new Paragraph("\n\n"));
+//        doc.add(new Paragraph(" "));
         
         float [] pointColumnWidthsTnC = {900F, };       
         Table tncTable = new Table(pointColumnWidthsTnC);
@@ -412,30 +423,14 @@ public class ItextInvoice {
         tncTable.addCell(tnc);
         
         doc.add(tncTable);
-        
-//        doc.add(new Paragraph("Notes:-").setFontSize(10).setTextAlignment(TextAlignment.LEFT));
-//        Text boldNodText = new Text("NOD : ").setFontSize(8);
-//        Text normalNodText = new Text("Number of days").setFontSize(8);
-//
-//        Paragraph nod1 = new Paragraph().add(boldNodText).add(normalNodText).setFontSize(8).setTextAlignment(TextAlignment.LEFT);
-//        doc.add(nod);
-//        
-//        Text boldPdtText = new Text("PDT : ").setFontSize(8);
-//        Text normalPdtText = new Text("Per day rent").setFontSize(8);
-//
-//        Paragraph pdt = new Paragraph().add(boldPdtText).add(normalPdtText).setFontSize(8).setTextAlignment(TextAlignment.LEFT);
-//        doc.add(pdt);
-        
-        doc.add(new Paragraph(" "));
-        doc.add(new Paragraph(" ")); 
-
-        
-//        doc.add(new Paragraph("TERM & CONDITIONS:-").setFontSize(10).setTextAlignment(TextAlignment.LEFT));
-//        doc.add(new Paragraph("https://myraanrentals.com/refund-and-cancellation").setFontSize(8).setTextAlignment(TextAlignment.LEFT));
+           
+        doc.add(new Paragraph("\n\n"));
+//        doc.add(new Paragraph(" "));   
         
         // Closing the document
         doc.close();
 
         System.out.println("Image added to table successfully with line drawn below.");
+        return byteArrayOutputStream;
     }
 }

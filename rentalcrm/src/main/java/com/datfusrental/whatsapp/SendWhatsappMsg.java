@@ -27,8 +27,7 @@ public class SendWhatsappMsg {
 
 				} else if (leadDetails.getStatus().equalsIgnoreCase(Constant.FOLLOW_UP)) {
 
-				}
-				if (leadDetails.getStatus().equalsIgnoreCase(Constant.FOLLOW_UP)) {
+				} else if (leadDetails.getStatus().equalsIgnoreCase(Constant.FOLLOW_UP)) {
 
 					String reqParam = vehicleParameter.setFollowupParameterForBike(leadDetails);
 					response = interaktApi.sendInteraktMsg(reqParam);
@@ -36,9 +35,8 @@ public class SendWhatsappMsg {
 				} else if (leadDetails.getStatus().equalsIgnoreCase(Constant.FOLLOW_UP)) {
 
 				}
-
-				// car
 			}
+			// car
 			if (leadDetails.getSuperCategory().equalsIgnoreCase(Constant.CAR)) {
 
 			}
