@@ -3,23 +3,35 @@ package com.datfusrental.invoice;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
+import javax.swing.text.StyleConstants.ColorConstants;
+
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.barcodes.BarcodeQRCode;
+import com.itextpdf.forms.fields.PdfFormField;
+import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.color.DeviceRgb;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfName;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.annot.PdfWidgetAnnotation;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.border.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
@@ -34,6 +46,12 @@ import java.time.format.DateTimeFormatter;
 public class ItextInvoice {
 
     public ByteArrayOutputStream invoice(LeadDetails leadDetails) throws Exception {
+    	
+    	PdfFont timeNewRoman = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN);
+    	PdfFont helvetica = PdfFontFactory.createFont(FontConstants.HELVETICA);
+    	PdfFont bold = PdfFontFactory.createFont(FontConstants.TIMES_BOLD);
+    	
+    	
     	
     	 LocalDateTime currentDateTime = LocalDateTime.now();
          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -113,7 +131,7 @@ public class ItextInvoice {
         doc.add(new Paragraph("").setFontSize(20).setTextAlignment(TextAlignment.CENTER));
         
         
-        float [] pointColumnWidths0 = {400F,900F, 200F};       
+        float [] pointColumnWidths0 = {600F,450F, 200F};       
         Table highLightTable = new Table(pointColumnWidths0);
         
         // Populating row 1 and adding it to the table    
@@ -200,15 +218,15 @@ public class ItextInvoice {
         highLightTable.addCell(empHighLight5);
         
         Cell balanceWithSecurityHead = new Cell();                        
-        balanceWithSecurityHead.add("Balance Due With Security Deposit:");                                 
-        balanceWithSecurityHead.setBackgroundColor(Color.WHITE);      
+        balanceWithSecurityHead.add("Balance Due With Security Deposit:").setFont(bold);                                 
+        balanceWithSecurityHead.setBackgroundColor(Color.LIGHT_GRAY);      
         balanceWithSecurityHead.setBorder(Border.NO_BORDER);
         balanceWithSecurityHead.setTextAlignment(TextAlignment.RIGHT).setFontSize(10);         
         highLightTable.addCell(balanceWithSecurityHead);                            
         
         Cell balanceWithSecurityValue = new Cell();                        
-        balanceWithSecurityValue.add("5900");                                 
-        balanceWithSecurityValue.setBackgroundColor(Color.WHITE);      
+        balanceWithSecurityValue.add("5900").setFont(bold);                                 
+        balanceWithSecurityValue.setBackgroundColor(Color.LIGHT_GRAY);      
         balanceWithSecurityValue.setBorder(Border.NO_BORDER);
         balanceWithSecurityValue.setTextAlignment(TextAlignment.RIGHT).setFontSize(10);         
         highLightTable.addCell(balanceWithSecurityValue);
@@ -252,7 +270,7 @@ public class ItextInvoice {
         table1.addCell(c4);    
         
         Cell c5 = new Cell();                        
-        c5.add("ERTIGA | Manual-SUV | 1 | 26/10/2024 & 9:00 Hours |\n 29/10/2024 & 8:00 Hour | Calangute & Madgaon railway station");    
+        c5.add("ERTIGA | Manual-SUV | 1 | 26/10/2024 & 9:00 Hours |\n 29/10/2024 & 8:00 Hour | Calangute & Madgaon railway station").setFont(helvetica);    
 //        c5.add("Vehicle Details : ERTIGA | Manual-SUV\n Quantity : 1 \n From Date & Time : 26/10/2024 | 9:00 Hours\n To Date & Time 29/10/2024 | 8:00 Hour \n Location :  Calangute & Madgaon railway station"); 
         c5.setBackgroundColor(new DeviceRgb(247, 245, 242));      
         c5.setBorder(new SolidBorder(Color.BLACK, 0));
@@ -260,21 +278,21 @@ public class ItextInvoice {
         table1.addCell(c5);   
         
         Cell c6 = new Cell();                        
-        c6.add("52");                                 
+        c6.add("52").setFont(helvetica);                                 
         c6.setBackgroundColor(new DeviceRgb(247, 245, 242));      
         c6.setBorder(new SolidBorder(Color.BLACK, 0));
         c6.setTextAlignment(TextAlignment.CENTER);         
         table1.addCell(c6);  
         
         Cell c7 = new Cell();                        
-        c7.add("2");                                 
+        c7.add("2").setFont(helvetica);                                 
         c7.setBackgroundColor(new DeviceRgb(247, 245, 242));      
         c7.setBorder(new SolidBorder(Color.BLACK, 0));
         c7.setTextAlignment(TextAlignment.CENTER);         
         table1.addCell(c7); 
         
         Cell c8 = new Cell();                        
-        c8.add("500");                                 
+        c8.add("500").setFont(helvetica);                                 
         c8.setBackgroundColor(new DeviceRgb(247, 245, 242));      
         c8.setBorder(new SolidBorder(Color.BLACK, 0));
         c8.setTextAlignment(TextAlignment.CENTER);         
@@ -424,9 +442,24 @@ public class ItextInvoice {
         
         doc.add(tncTable);
            
-        doc.add(new Paragraph("\n\n"));
+//        doc.add(new Paragraph("\n\n"));
 //        doc.add(new Paragraph(" "));   
         
+    	//QR Code
+    	BarcodeQRCode qrCode = new BarcodeQRCode("Example QR Code Creation in iText7");
+        PdfFormXObject barcodeObject = qrCode.createFormXObject(Color.BLACK, pdfDoc);
+        Image barcodeImage = new Image(barcodeObject).setWidth(80f).setHeight(80f);
+        doc.add(new Paragraph().add(barcodeImage));
+
+
+        SolidLine line = new SolidLine(1f);
+    	line.setColor(Color.BLACK);   	
+    	LineSeparator ls = new LineSeparator(line);
+    	ls.setWidthPercent(100);
+//    	ls.setMarginTop(5);
+    	ls.setMarginBottom(0);
+    	doc.add(ls);
+    	
         // Closing the document
         doc.close();
 
