@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -20,12 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
+import com.datfusrental.entities.InvoiceHeaderDetails;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.helper.InvoiceHeaderHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.invoice.ItextInvoice;
-import com.datfusrental.object.request.ApplicationRequestObject;
 import com.datfusrental.object.request.InvoiceHeaderRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.GenricResponse;
@@ -35,7 +35,10 @@ import com.datfusrental.services.InvoiceHeaderService;
 @CrossOrigin(origins = "*")
 @RestController
 public class InvoiceController {
-	
+
+	@Autowired
+	private InvoiceHeaderHelper invoiceHeaderHelper;
+
 	@Autowired
 	private InvoiceHeaderService invoiceHeaderService;
 
@@ -44,19 +47,19 @@ public class InvoiceController {
 
 	@Autowired
 	private ItextInvoice itextInvoice;
-	
+
 	@RequestMapping(path = "addUpdateInvoiceHeader", method = RequestMethod.POST)
-	public Response<InvoiceHeaderRequestObject> addUpdateInvoiceHeader(@RequestBody Request<InvoiceHeaderRequestObject> invoiceHeaderRequestObject, HttpServletRequest request)
-	{
+	public Response<InvoiceHeaderRequestObject> addUpdateInvoiceHeader(
+			@RequestBody Request<InvoiceHeaderRequestObject> invoiceHeaderRequestObject, HttpServletRequest request) {
 		GenricResponse<InvoiceHeaderRequestObject> responseObj = new GenricResponse<InvoiceHeaderRequestObject>();
 		try {
-			InvoiceHeaderRequestObject responce =  invoiceHeaderService.addUpdateInvoiceHeader(invoiceHeaderRequestObject);
+			InvoiceHeaderRequestObject responce = invoiceHeaderService
+					.addUpdateInvoiceHeader(invoiceHeaderRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
-		}catch (BizException e) {
-			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE,e.getMessage());
-		} 
- 		catch (Exception e) {
- 			e.printStackTrace();
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
@@ -69,26 +72,35 @@ public class InvoiceController {
 		Response respObj = new Response();
 
 		if (leadDetails != null) {
-			if (!leadDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
 
-				ByteArrayOutputStream pdfStream = itextInvoice.invoice(leadDetails);
+			InvoiceHeaderDetails invoiceHeader = invoiceHeaderHelper.getInvoiceHeaderDetailsBySuperadminId(leadDetails.getSuperadminId());
+			if (invoiceHeader != null) {
 
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_PDF);
-				headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-				headers.add("Pragma", "no-cache");
-				headers.add("Expires", "0");
-				headers.setContentLength(pdfStream.size());
+				if (!leadDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
+
+					ByteArrayOutputStream pdfStream = itextInvoice.invoice(leadDetails, invoiceHeader);
+
+					HttpHeaders headers = new HttpHeaders();
+					headers.setContentType(MediaType.APPLICATION_PDF);
+					headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+					headers.add("Pragma", "no-cache");
+					headers.add("Expires", "0");
+					headers.setContentLength(pdfStream.size());
 
 //	        String fileName = invoiceHeader.getCompanyFirstName()+"-invoice.pdf";
-				headers.setContentDispositionFormData("attachment", "invoice.pdf");
+					headers.setContentDispositionFormData("attachment", "invoice.pdf");
 
-				InputStreamResource isr = new InputStreamResource(new ByteArrayInputStream(pdfStream.toByteArray()));
+					InputStreamResource isr = new InputStreamResource(new ByteArrayInputStream(pdfStream.toByteArray()));
 
-				return new ResponseEntity<>(isr, headers, HttpStatus.OK);
+					return new ResponseEntity<>(isr, headers, HttpStatus.OK);
+				} else {
+					respObj.setResponseCode(401);
+					respObj.setResponseMessage("Cancelled request. Please contact admin for details.");
+					return respObj;
+				}
 			} else {
 				respObj.setResponseCode(401);
-				respObj.setResponseMessage("Cancelled request. Please contact admin for details.");
+				respObj.setResponseMessage("Please add invoice header.");
 				return respObj;
 			}
 		} else {

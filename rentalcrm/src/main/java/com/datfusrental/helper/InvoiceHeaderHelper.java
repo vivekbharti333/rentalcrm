@@ -60,7 +60,9 @@ public class InvoiceHeaderHelper {
 		invoiceHeader.setPhoneNumber(invoiceHeaderRequest.getPhoneNumber());
 		invoiceHeader.setEmailId(invoiceHeaderRequest.getEmailId());
 		invoiceHeader.setWebsite(invoiceHeaderRequest.getWebsite());
-
+		invoiceHeader.setNotes(invoiceHeaderRequest.getNotes());
+		invoiceHeader.setTermCondition(invoiceHeaderRequest.getTermCondition());
+		
 		invoiceHeader.setStatus(Status.ACTIVE.name());
 		invoiceHeader.setSuperadminId(invoiceHeaderRequest.getSuperadminId());
 
@@ -86,6 +88,8 @@ public class InvoiceHeaderHelper {
 		invoiceHeader.setPhoneNumber(invoiceHeaderRequest.getPhoneNumber());
 		invoiceHeader.setEmailId(invoiceHeaderRequest.getEmailId());
 		invoiceHeader.setWebsite(invoiceHeaderRequest.getWebsite());
+		invoiceHeader.setNotes(invoiceHeaderRequest.getNotes());
+		invoiceHeader.setTermCondition(invoiceHeaderRequest.getTermCondition());
 
 		invoiceHeader.setStatus(invoiceHeaderRequest.getStatus());
 

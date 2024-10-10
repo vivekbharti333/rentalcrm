@@ -50,6 +50,13 @@ public class InvoiceHeaderDetails {
 	@Column(name = "status")
 	private String status;
 	
+	@Column(name = "Notes")
+	private String notes;
+	
+	@Lob
+	@Column(name = "term_condition")
+	private String termCondition;
+	
 	@Lob
 	@Column(name = "company_logo")
 	private String companyLogo;

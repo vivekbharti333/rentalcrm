@@ -1,10 +1,12 @@
 package com.datfusrental.invoice;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.swing.text.StyleConstants.ColorConstants;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.barcodes.BarcodeQRCode;
@@ -35,7 +37,9 @@ import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
+import com.datfusrental.entities.InvoiceHeaderDetails;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.helper.InvoiceHeaderHelper;
 import com.itextpdf.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,8 +48,9 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class ItextInvoice {
+	
 
-    public ByteArrayOutputStream invoice(LeadDetails leadDetails) throws Exception {
+    public ByteArrayOutputStream invoice(LeadDetails leadDetails, InvoiceHeaderDetails invoiceHeader) throws Exception {
     	
     	PdfFont timeNewRoman = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN);
     	PdfFont helvetica = PdfFontFactory.createFont(FontConstants.HELVETICA);
@@ -73,10 +78,12 @@ public class ItextInvoice {
         float[] pointColumnWidths = {150f, 600f};
         Table table = new Table(pointColumnWidths);
 
+        byte[] imgBytes = Base64.getDecoder().decode(invoiceHeader.getCompanyLogo());
+        
         // Adding an image to the table
         Cell cellLogo = new Cell();
         String imageFile = "D:\\logosamples.jpg";
-        ImageData data = ImageDataFactory.create(imageFile);
+        ImageData data = ImageDataFactory.create(imgBytes);
         Image img = new Image(data);
         img.setWidth(100);  // Set the desired width of the image
         img.setHeight(50);  // Set the desired height of the image
@@ -88,15 +95,17 @@ public class ItextInvoice {
         // Adding a company name and subtitle to the table
         Cell comName = new Cell();
         comName.setBorder(Border.NO_BORDER);
-        comName.add("Myrran Rentals And Adventures Goa Pvt. Ltd.").setFontSize(15).setTextAlignment(TextAlignment.RIGHT);
+//        comName.add("Myrran Rentals And Adventures Goa Pvt. Ltd.").setFontSize(15).setTextAlignment(TextAlignment.RIGHT);
+        comName.add(invoiceHeader.getCompanyName()).setFontSize(15).setTextAlignment(TextAlignment.RIGHT);
 
-        Paragraph addLine1 = new Paragraph("12/1, Marinha Dourada Rd, Tamudki Vado,").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
+//        Paragraph addLine1 = new Paragraph("12/1, Marinha Dourada Rd, Tamudki Vado,").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
+        Paragraph addLine1 = new Paragraph(invoiceHeader.getCompanyAddress()).setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
         comName.add(addLine1);
         
-        Paragraph addLine2 = new Paragraph("Arpora,Baga,Goa -403518").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
+        Paragraph addLine2 = new Paragraph(invoiceHeader.getCity()+" - "+invoiceHeader.getPin()).setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
         comName.add(addLine2);
         
-        Paragraph phoneNo = new Paragraph("Phone: +91 9513166378").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
+        Paragraph phoneNo = new Paragraph(invoiceHeader.getPhoneNumber()).setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
         comName.add(phoneNo);
         
 //        Paragraph gstin = new Paragraph("GSTIN: 29GGGGG1314R9Z6").setFontSize(10).setTextAlignment(TextAlignment.RIGHT);
@@ -434,7 +443,7 @@ public class ItextInvoice {
         
         Cell tnc = new Cell();                        
         tnc.add("TERM & CONDITIONS:").setFontSize(12);  
-        tnc.add("https://myraanrentals.com/refund-and-cancellation").setFontSize(10);  
+        tnc.add(invoiceHeader.getTermCondition()).setFontSize(10);  
         tnc.setBackgroundColor(Color.WHITE);      
         tnc.setBorder(Border.NO_BORDER);
         tnc.setTextAlignment(TextAlignment.LEFT);     
@@ -446,7 +455,7 @@ public class ItextInvoice {
 //        doc.add(new Paragraph(" "));   
         
     	//QR Code
-    	BarcodeQRCode qrCode = new BarcodeQRCode("Example QR Code Creation in iText7");
+    	BarcodeQRCode qrCode = new BarcodeQRCode("https://downloadinvoice.in");
         PdfFormXObject barcodeObject = qrCode.createFormXObject(Color.BLACK, pdfDoc);
         Image barcodeImage = new Image(barcodeObject).setWidth(80f).setHeight(80f);
         doc.add(new Paragraph().add(barcodeImage));
@@ -460,6 +469,17 @@ public class ItextInvoice {
     	ls.setMarginBottom(0);
     	doc.add(ls);
     	
+    	float [] pointColumnWidthsThanku = {900F, };       
+        Table thankuTable = new Table(pointColumnWidthsThanku);
+        
+        Cell thanku = new Cell();                        
+        thanku.add(" Thank You ").setFontSize(12);
+        thanku.setBackgroundColor(Color.WHITE);      
+        thanku.setBorder(Border.NO_BORDER);
+        thanku.setTextAlignment(TextAlignment.CENTER);   
+        thankuTable.addCell(thanku);
+        doc.add(thankuTable);
+        
         // Closing the document
         doc.close();
 

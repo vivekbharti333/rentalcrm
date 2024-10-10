@@ -1,5 +1,8 @@
 package com.datfusrental.object.request;
 
+import javax.persistence.Column;
+import javax.persistence.Lob;
+
 import lombok.Data;
 
 @Data
@@ -17,6 +20,8 @@ public class InvoiceHeaderRequestObject {
 	private String emailId;
 	private String website;
 	private String status;
+	private String notes;
+	private String termCondition;
 	private String companyLogo;
 	private String superadminId;
 
