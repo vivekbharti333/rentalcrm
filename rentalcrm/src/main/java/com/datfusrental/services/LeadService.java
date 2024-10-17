@@ -149,5 +149,18 @@ public class LeadService {
 	}
 
 
+	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
+		return leadList;
+	}
+
+
+	public List<LeadDetails> getAllFollowupList(Request<LeadRequestObject> leadRequestObject) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

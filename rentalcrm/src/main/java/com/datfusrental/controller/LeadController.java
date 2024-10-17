@@ -65,7 +65,9 @@ public class LeadController {
 	public Response<LeadDetails> getLeadListByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
+			System.out.println(" Enter ");
 			List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
+			System.out.println(followupOneList+" hjh");
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -78,6 +80,30 @@ public class LeadController {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getAllLeadList(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "getAllHotLeadList", method = RequestMethod.POST)
+	public Response<LeadDetails> getAllHotLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getAllHotLeadList(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "getAllFollowupList", method = RequestMethod.POST)
+	public Response<LeadDetails> getAllFollowupList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getAllFollowupList(leadRequestObject);
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();

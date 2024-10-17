@@ -246,7 +246,6 @@ public class LeadHelper {
 						.setMaxResults(Constant.MAX_RESULT)
 						.getResultList();
 			}
-
 		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
@@ -281,11 +280,10 @@ public class LeadHelper {
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("adminId", leadRequest.getAdminId())
 						.setParameter("teamLeaderId", leadRequest.getTeamLeaderId())
-						.setFirstResult(Constant.FIRST_RESULT)
-						.setMaxResults(Constant.MAX_RESULT)
+						.setFirstResult(Constant.FIRST_RESULT).setMaxResults(Constant.MAX_RESULT)
 						.getResultList();
 			}
-			//role type else
+			// role type else
 		} else {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
@@ -296,17 +294,28 @@ public class LeadHelper {
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.getResultList();
-			}else {
+			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
 						"SELECT LD FROM LeadDetails LD WHERE LD.createdBy =:createdBy AND LD.adminId=:adminId AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
 						.setParameter("createdBy", leadRequest.getCreatedBy())
 						.setParameter("adminId", leadRequest.getAdminId())
 						.setParameter("superadminId", leadRequest.getSuperadminId())
-						.setFirstResult(Constant.FIRST_RESULT)
-						.setMaxResults(Constant.MAX_RESULT)
+						.setFirstResult(Constant.FIRST_RESULT).setMaxResults(Constant.MAX_RESULT)
 						.getResultList();
 			}
-			}
+		}
+		return results;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
+		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.pickupDateTime =:pickupDateTime ORDER BY LD.id DESC")
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("pickupDateTime", new Date(), TemporalType.DATE).getResultList();
+		}
 		return results;
 	}
 
