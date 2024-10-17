@@ -83,7 +83,7 @@ public class LeadHelper {
 		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
-		leadDetails.setAdultQuantity(leadRequest.getAdultQuantity());
+		leadDetails.setQuantity(leadRequest.getQuantity());
 		leadDetails.setChildrenQuantity(leadRequest.getChildrenQuantity());
 		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
@@ -146,7 +146,7 @@ public class LeadHelper {
 		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
-		leadDetails.setAdultQuantity(leadRequest.getAdultQuantity());
+		leadDetails.setQuantity(leadRequest.getQuantity());
 		leadDetails.setChildrenQuantity(leadRequest.getChildrenQuantity());
 		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 

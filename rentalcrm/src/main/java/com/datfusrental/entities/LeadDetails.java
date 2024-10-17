@@ -76,8 +76,8 @@ public class LeadDetails {
 	@Column(name = "total_days")
 	private int totalDays;
 	
-	@Column(name = "adult_quantity")
-	private int adultQuantity;
+	@Column(name = "quantity")
+	private int quantity;
 	
 	@Column(name = "children_quantity")
 	private int childrenQuantity;
