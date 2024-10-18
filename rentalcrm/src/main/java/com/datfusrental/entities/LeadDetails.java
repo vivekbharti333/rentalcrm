@@ -61,7 +61,7 @@ public class LeadDetails {
 	@Column(name ="drop_point")
 	private String dropPoint;
 	
-	@Column(name = "customeName")
+	@Column(name = "custome_name")
 	private String customeName;
 	
 	@Column(name = "country_dial_code")

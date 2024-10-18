@@ -79,8 +79,8 @@ public class LeadService {
 				
 				
 				//message
-				String response = sendWhatsappMsg.sendWhatsAppMessage(leadDetails);
-				logger.info("Message response : "+response);
+				//String response = sendWhatsappMsg.sendWhatsAppMessage(leadDetails);
+				//logger.info("Message response : "+response);
 
 				leadRequest.setRespCode(Constant.SUCCESS_CODE);
 				leadRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
