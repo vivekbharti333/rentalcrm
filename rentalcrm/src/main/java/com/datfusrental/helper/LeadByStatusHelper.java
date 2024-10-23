@@ -69,7 +69,7 @@ public class LeadByStatusHelper {
 						.setParameter("status", leadRequest.getStatus())
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("adminId", leadRequest.getAdminId())
-						.setParameter("teamLeaderId", leadRequest.getTeamLeaderId())
+						.setParameter("teamLeaderId", leadRequest.getTeamleaderId())
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 						.getResultList();
@@ -79,7 +79,7 @@ public class LeadByStatusHelper {
 						.setParameter("status", leadRequest.getStatus())
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("adminId", leadRequest.getAdminId())
-						.setParameter("teamLeaderId", leadRequest.getTeamLeaderId())
+						.setParameter("teamLeaderId", leadRequest.getTeamleaderId())
 						.setFirstResult(Constant.FIRST_RESULT)
 						.setMaxResults(Constant.MAX_RESULT)
 						.getResultList();

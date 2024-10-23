@@ -82,7 +82,7 @@ public class LeadDetails {
 	@Column(name = "children_quantity")
 	private int childrenQuantity;
 	
-	@Column(name = "_infantQuantity")
+	@Column(name = "infant_quantity")
 	private int infantQuantity;
 	
 	@Column(name = "vendor_rate")
@@ -131,8 +131,8 @@ public class LeadDetails {
 	@Column(name = "updated_by")
 	private String updatedBy;
 	
-	@Column(name = "team_leader_id")
-	private String teamLeaderId;
+	@Column(name = "teamleader_id")
+	private String teamleaderId;
 	
 	@Column(name = "admin_id")
 	private String adminId;

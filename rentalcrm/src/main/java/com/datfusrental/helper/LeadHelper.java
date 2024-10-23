@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.RoleType;
 import com.datfusrental.exceptions.BizException;
@@ -27,6 +28,9 @@ public class LeadHelper {
 
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
+	
+	@Autowired
+	private UserHelper userHelper;
 
 	public void validateLeadRequest(LeadRequestObject leadRequestObject) throws BizException {
 		if (leadRequestObject == null) {
@@ -59,6 +63,8 @@ public class LeadHelper {
 	}
 
 	public LeadDetails getLeadDetailsByReqObj(LeadRequestObject leadRequest) {
+		
+		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 
 		LeadDetails leadDetails = new LeadDetails();
 
@@ -108,8 +114,9 @@ public class LeadHelper {
 		leadDetails.setUpdatedAt(new Date());
 
 		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
-		leadDetails.setTeamLeaderId(leadRequest.getTeamLeaderId());
-		leadDetails.setAdminId(leadRequest.getAdminId());
+		leadDetails.setCreatedByName(leadRequest.getCreatedByName());
+		leadDetails.setTeamleaderId(user.getTeamleaderId());
+		leadDetails.setAdminId(user.getAdminId());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
 
 		return leadDetails;
@@ -267,19 +274,19 @@ public class LeadHelper {
 		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.TEAM_LEADER.name())) {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.adminId=:adminId AND LD.teamLeaderId =:teamLeaderId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.adminId=:adminId AND LD.teamleaderId =:teamleaderId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("adminId", leadRequest.getAdminId())
-						.setParameter("teamLeaderId", leadRequest.getTeamLeaderId())
+						.setParameter("teamLeaderId", leadRequest.getTeamleaderId())
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 						.getResultList();
 			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.adminId=:adminId AND LD.teamLeaderId =:teamLeaderId ORDER BY LD.id DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.adminId=:adminId AND LD.teamleaderId =:teamleaderId ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("adminId", leadRequest.getAdminId())
-						.setParameter("teamLeaderId", leadRequest.getTeamLeaderId())
+						.setParameter("teamleaderId", leadRequest.getTeamleaderId())
 						.setFirstResult(Constant.FIRST_RESULT).setMaxResults(Constant.MAX_RESULT)
 						.getResultList();
 			}

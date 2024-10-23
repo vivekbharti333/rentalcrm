@@ -13,7 +13,6 @@ public class LeadRequestObject {
 	private String token;
 	private String bookingId;
 	private String companyName;
-//	private String enquirySource;
 	private String categoryTypeName;
 	private Long superCategoryId;
 	private String superCategory;
@@ -58,7 +57,7 @@ public class LeadRequestObject {
 
 	private String superadminId;
 	private String adminId;
-	private String teamLeaderId;
+	private String teamleaderId;
 	private String createdBy;
 	private String createdByName;
 	private String updatedBy;

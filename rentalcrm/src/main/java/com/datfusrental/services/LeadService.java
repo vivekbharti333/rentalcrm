@@ -68,8 +68,9 @@ public class LeadService {
 				
 				
 				//Get agent name
-				User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
-				leadRequest.setCreatedByName(user.getFirstName()+" "+user.getLastName());
+//				User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
+//				leadRequest.setCreatedByName(user.getFirstName()+" "+user.getLastName());
+//				leadR
 
 				//Lead Details
 				LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
