@@ -65,9 +65,7 @@ public class LeadController {
 	public Response<LeadDetails> getLeadListByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
-			System.out.println(" Enter ");
 			List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
-			System.out.println(followupOneList+" hjh");
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
