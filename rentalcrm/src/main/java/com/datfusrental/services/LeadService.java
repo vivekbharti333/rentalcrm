@@ -54,7 +54,7 @@ public class LeadService {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
+		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
 		if (isValid) {
 			
 			//Generate & set booking id

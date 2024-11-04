@@ -60,6 +60,7 @@ public class LeadRequestObject {
 	private String teamleaderId;
 	private String createdBy;
 	private String createdByName;
+	private String loginId;
 	private String updatedBy;
 	private String status;
 	private String leadOrigine;
