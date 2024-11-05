@@ -274,7 +274,7 @@ public class CategoryController {
 		}
 	}
 	
-	@RequestMapping(value = "/categoryImage/{imageName}", method = RequestMethod.GET)
+	@RequestMapping(value = "/cateImg/{imageName}", method = RequestMethod.GET)
 	public HttpEntity<byte[]> getOrder(@PathVariable String imageName, HttpServletRequest request) throws Exception {
 
 		getBase64Image.getServerPath(request);

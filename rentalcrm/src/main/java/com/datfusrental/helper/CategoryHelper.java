@@ -404,7 +404,7 @@ public class CategoryHelper {
 	    // Handle case when requestedFor is "ALL"
 	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
-	            "SELECT cd.id, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt " +
+	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt " +
 	            "FROM com.datfusrental.entities.CategoryDetails cd " +
 	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
 	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
@@ -416,13 +416,14 @@ public class CategoryHelper {
 	        for (Object[] row : results) {
 	            ItemRequestObject item = new ItemRequestObject();
 	            item.setId((Long) row[0]);
-	            item.setCategoryTypeId((Long) row[1]);
-	            item.setCategoryTypeName((String) row[2]);
-	            item.setSuperCategoryId((Long) row[3]);
-	            item.setSuperCategory((String) row[4]);
-	            item.setCategory((String) row[5]);
-	            item.setStatus((String) row[6]);
-	            item.setCreatedAt((Date) row[7]);
+	            item.setCategoryImage((String) row[1]);
+	            item.setCategoryTypeId((Long) row[2]);
+	            item.setCategoryTypeName((String) row[3]);
+	            item.setSuperCategoryId((Long) row[4]);
+	            item.setSuperCategory((String) row[5]);
+	            item.setCategory((String) row[6]);
+	            item.setStatus((String) row[7]);
+	            item.setCreatedAt((Date) row[8]);
 
 	            categoryDetailsList.add(item);
 	        }
