@@ -128,12 +128,11 @@ public class LeadHelper {
 		return leadDetails;
 	}
 
-	public LeadDetails getUpdatedLeadDetailsByReqObj(LeadRequestObject leadRequest) {
+	public LeadDetails getUpdatedLeadDetailsByReqObj(LeadRequestObject leadRequest, LeadDetails leadDetails) {
 
-		LeadDetails leadDetails = new LeadDetails();
 
-		leadDetails.setBookingId(leadRequest.getBookingId());
-		leadDetails.setCompanyName(leadRequest.getCompanyName());
+//		leadDetails.setBookingId(leadRequest.getBookingId());
+//		leadDetails.setCompanyName(leadRequest.getCompanyName());
 		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
@@ -184,7 +183,7 @@ public class LeadHelper {
 
 	@Transactional
 	public LeadDetails updateLeadDetails(LeadDetails leadDetails) {
-		leadDetailsDao.persist(leadDetails);
+		leadDetailsDao.update(leadDetails);
 		return leadDetails;
 	}
 

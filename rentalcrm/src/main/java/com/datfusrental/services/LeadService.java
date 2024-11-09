@@ -55,7 +55,7 @@ public class LeadService {
 		leadHelper.validateLeadRequest(leadRequest);
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
-		if (isValid) {
+//		if (isValid) {
 			
 			//Generate & set booking id
 			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
@@ -91,11 +91,11 @@ public class LeadService {
 				leadRequest.setRespMesg("Booking id already exist. Try again");
 				return leadRequest;
 			}
-		} else {
-			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return leadRequest;
-		}
+//		} else {
+//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return leadRequest;
+//		}
 	}
 	
 	
@@ -104,17 +104,19 @@ public class LeadService {
 			throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
+		
+		System.out.println(leadRequest.getCreatedBy()+" Created By");
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
-		if (isValid) {
+//		if (isValid) {
 //			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
 			
 			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 			if (existsLeadDetails != null) {
 				
 				//Lead Details
-				LeadDetails leadDetails = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest);
-				leadDetails = leadHelper.updateLeadDetails(leadDetails);
+				existsLeadDetails = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existsLeadDetails);
+				existsLeadDetails = leadHelper.updateLeadDetails(existsLeadDetails);
 
 				leadRequest.setRespCode(Constant.SUCCESS_CODE);
 				leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
@@ -124,11 +126,11 @@ public class LeadService {
 				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 				return leadRequest;
 			}
-		} else {
-			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return leadRequest;
-		}
+//		} else {
+//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return leadRequest;
+//		}
 	}
 	
 
