@@ -29,6 +29,21 @@ public class LeadController {
 
 	@Autowired
 	private LeadService leadService;
+	
+	@RequestMapping(path = "changeLeadStatus", method = RequestMethod.POST)
+	public Response<LeadRequestObject> changeLeadStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<LeadRequestObject> responseObj = new GenricResponse<LeadRequestObject>();
+		try {
+			LeadRequestObject responce = leadService.changeLeadStatus(leadRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "registerLead", method = RequestMethod.POST)
 	public Response<LeadRequestObject> registerLead(@RequestBody Request<LeadRequestObject> leadRequestObject,
@@ -97,17 +112,7 @@ public class LeadController {
 		}
 	}
 	
-	@RequestMapping(path = "getAllFollowupList", method = RequestMethod.POST)
-	public Response<LeadDetails> getAllFollowupList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
-		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
-		try {
-			List<LeadDetails> followupOneList = leadService.getAllFollowupList(leadRequestObject);
-			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
-		}
-	}
+	
 	
 	
 	

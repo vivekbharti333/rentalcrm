@@ -47,6 +47,35 @@ public class LeadService {
 	
 	@Autowired
 	private GetDate getDate;
+	
+	
+	@Transactional
+	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
+			throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
+
+		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
+		if (isValid) {
+			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+			if (leadDetails != null) {
+				leadDetails.setStatus(leadRequest.getStatus());
+				leadHelper.updateLeadDetails(leadDetails);
+
+				leadRequest.setRespCode(Constant.SUCCESS_CODE);
+				leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getStatus());
+				return leadRequest;
+			} else {
+				leadRequest.setRespCode(Constant.NOT_EXISTS);
+				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+				return leadRequest;
+			}
+		} else {
+			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
+			return leadRequest;
+		}
+	}
 
 	@Transactional
 	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject)
@@ -158,11 +187,6 @@ public class LeadService {
 		return leadList;
 	}
 
-
-	public List<LeadDetails> getAllFollowupList(Request<LeadRequestObject> leadRequestObject) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 
