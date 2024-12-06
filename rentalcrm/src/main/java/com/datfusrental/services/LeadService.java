@@ -1,6 +1,5 @@
 package com.datfusrental.services;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,42 +10,28 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.entities.User;
-import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadHelper;
-import com.datfusrental.helper.UserHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
-import com.datfusrental.whatsapp.SendWhatsappMsg;
 
 @Service
 public class LeadService {
 
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	@Autowired
-	private UserHelper userHelper;
 
 	@Autowired
 	private LeadHelper leadHelper;
-	
-	@Autowired
-	private SendWhatsappMsg sendWhatsappMsg;
 	
 	@Autowired
 	private LeadByStatusHelper leadByStatusHelper;
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-	
-	@Autowired
-	private GetDate getDate;
 	
 	
 	@Transactional
