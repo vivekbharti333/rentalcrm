@@ -377,7 +377,7 @@ public class CategoryService {
 		
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
 		if (isValid) {
-			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getSuperadminId());
+			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getCategoryId(), itemRequest.getSuperadminId());
 			if(existsSubCategoryMaster == null) {
 				
 				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
@@ -416,7 +416,7 @@ public class CategoryService {
 		
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
 //		if (!isValid) {
-			SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getSuperadminId());
+			SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getCategoryId(), itemRequest.getSuperadminId());
 			if(subCategoryDetails != null) {
 				
 				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
