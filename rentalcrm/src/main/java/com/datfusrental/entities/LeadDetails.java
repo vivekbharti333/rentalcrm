@@ -115,6 +115,9 @@ public class LeadDetails {
 	@Column(name = "delivery_amount_to_vendor")
 	private long deliveryAmountToVendor;
 	
+	@Column(name = "actual_amount")
+	private long actualAmount;
+	
 	@Column(name = "vendor_name")
 	private String vendorName;
 	
