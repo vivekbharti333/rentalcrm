@@ -43,8 +43,14 @@ public class LeadDetails {
 	@Column(name = "item_name")
 	private String itemName;
 	
-	@Column(name = "pickup_date_time")
-	private Date pickupDateTime;
+//	@Column(name = "pickup_date_time")
+//	private Date pickupDateTime;
+	
+	@Column(name = "pickup_date")
+	private Date pickupDate;
+	
+	@Column(name = "pickup_time")
+	private Date pickupTime;
 	
 	@Column(name = "pickup_location")
 	private String pickupLocation;
@@ -52,8 +58,14 @@ public class LeadDetails {
 	@Column(name = "pickup_point")
 	private String pickupPoint;
 	
-	@Column(name = "drop_date_time")
-	private Date dropDateTime;
+//	@Column(name = "drop_date_time")
+//	private Date dropDateTime;
+	
+	@Column(name = "drop_date")
+	private Date dropDate;
+	
+	@Column(name = "drop_time")
+	private Date dropTime;
 	
 	@Column(name = "drop_location")
 	private String dropLocation;

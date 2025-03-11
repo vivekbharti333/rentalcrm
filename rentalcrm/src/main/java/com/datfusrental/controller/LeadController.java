@@ -30,6 +30,7 @@ public class LeadController {
 	@Autowired
 	private LeadService leadService;
 	
+	
 	@RequestMapping(path = "changeLeadStatus", method = RequestMethod.POST)
 	public Response<LeadRequestObject> changeLeadStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
 			HttpServletRequest request) {

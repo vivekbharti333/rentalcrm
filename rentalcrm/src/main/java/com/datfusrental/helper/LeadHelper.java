@@ -76,11 +76,13 @@ public class LeadHelper {
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
 		leadDetails.setItemName(leadRequest.getItemName());
 
-		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
+		leadDetails.setPickupDate(leadRequest.getPickupDate());
+		leadDetails.setPickupTime(leadRequest.getPickupTime());
 		leadDetails.setPickupLocation(leadRequest.getPickupLocation());
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
-		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
+		leadDetails.setDropDate(leadRequest.getDropDate());
+		leadDetails.setDropTime(leadRequest.getDropTime());
 		leadDetails.setDropLocation(leadRequest.getDropLocation());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 
@@ -139,11 +141,13 @@ public class LeadHelper {
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
 		leadDetails.setItemName(leadRequest.getItemName());
 
-		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
+		leadDetails.setPickupDate(leadRequest.getPickupDate());
+		leadDetails.setPickupTime(leadRequest.getPickupTime());
 		leadDetails.setPickupLocation(leadRequest.getPickupLocation());
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
-		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
+		leadDetails.setDropDate(leadRequest.getDropDate());
+		leadDetails.setDropTime(leadRequest.getDropTime());
 		leadDetails.setDropLocation(leadRequest.getDropLocation());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 

@@ -20,10 +20,19 @@ public class LeadRequestObject {
 	private String category;
 	private String subCategory;
 	private String itemName;
-	private Date pickupDateTime;
+//	private Date pickupDateTime;
+	
+	private Date pickupDate;
+	private Date pickupTime;
+	
+	
 	private String pickupLocation;
 	private String pickupPoint;
-	private Date dropDateTime;
+//	private Date dropDateTime;
+	
+	private Date dropDate;
+	private Date dropTime;
+	
 	private String dropLocation;
 	private String dropPoint;
 	private String customeName;
