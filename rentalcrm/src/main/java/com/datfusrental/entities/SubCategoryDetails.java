@@ -37,6 +37,12 @@ public class SubCategoryDetails {
 	@Column(name = "sub_category")
 	private String subCategory;
 	
+	@Column(name = "security_amount")
+	private long securityAmount;
+	
+	@Column(name = "vendor_rate")
+	private long vendorRate;
+	
 	@Lob
 	@Column(name = "description")
 	private String description;
