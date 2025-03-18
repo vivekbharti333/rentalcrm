@@ -455,7 +455,6 @@ public class CategoryHelper {
 	            categoryDetailsList.add(item);
 	        }
 	    }
-
 	    return categoryDetailsList;
 	}
 
@@ -468,6 +467,9 @@ public class CategoryHelper {
 		subCategoryDetails.setCategoryId(itemRequest.getCategoryId());
 		subCategoryDetails.setSubCategoryImage(itemRequest.getSubCategoryImage());
 		subCategoryDetails.setSubCategory(itemRequest.getSubCategory());
+		subCategoryDetails.setSecurityAmount(itemRequest.getSecurityAmount());
+		subCategoryDetails.setVendorRate(itemRequest.getVendorRate());
+		subCategoryDetails.setVendorRateForKids(itemRequest.getVendorRateForKids());
 		subCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		subCategoryDetails.setStatus(Status.ACTIVE.name());
 		subCategoryDetails.setCreatedAt(new Date());

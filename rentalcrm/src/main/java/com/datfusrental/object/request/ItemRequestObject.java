@@ -1,10 +1,6 @@
 package com.datfusrental.object.request;
 
 import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +24,11 @@ public class ItemRequestObject {
 	private String subCategoryImage;
 	private Long subCategoryId;
 	private String subCategory;
+	
+	private long securityAmount;
+	private long vendorRate;
+	private long vendorRateForKids;
+	
 	private String status;
 	
 	private String location;

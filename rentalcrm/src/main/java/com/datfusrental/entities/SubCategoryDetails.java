@@ -43,6 +43,9 @@ public class SubCategoryDetails {
 	@Column(name = "vendor_rate")
 	private long vendorRate;
 	
+	@Column(name = "vendor_rate_for_kids")
+	private long vendorRateForKids;
+	
 	@Lob
 	@Column(name = "description")
 	private String description;
