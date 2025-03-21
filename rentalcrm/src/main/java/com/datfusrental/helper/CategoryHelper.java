@@ -539,7 +539,7 @@ public class CategoryHelper {
 	        List<Object[]> results = subCategoryDetailsDao.getEntityManager().createQuery(
 	            "SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, " +
 	            "subcd.superCategoryId, scd.superCategory, subcd.categoryId, cd.category, " +
-	            "subcd.subCategory, subcd.status, subcd.createdAt " +
+	            "subcd.subCategory,subcd.securityAmount,subcd.vendorRate,subcd.vendorRateForKids, subcd.status, subcd.createdAt " +
 	            "FROM SubCategoryDetails subcd " +
 	            "JOIN CategoryDetails cd ON subcd.categoryId = cd.id " +
 	            "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id " +
@@ -560,8 +560,12 @@ public class CategoryHelper {
 	            subCategoryDetails.setCategoryId((Long) row[6]);
 	            subCategoryDetails.setCategory((String) row[7]);
 	            subCategoryDetails.setSubCategory((String) row[8]);
-	            subCategoryDetails.setStatus((String) row[9]);
-	            subCategoryDetails.setCreatedAt((Date) row[10]);
+	            subCategoryDetails.setSecurityAmount(9);
+	            subCategoryDetails.setVendorRate(10);
+	            subCategoryDetails.setVendorRateForKids(11);
+	            
+	            subCategoryDetails.setStatus((String) row[12]);
+	            subCategoryDetails.setCreatedAt((Date) row[13]);
 
 	            subCategoryList.add(subCategoryDetails);
 	        }

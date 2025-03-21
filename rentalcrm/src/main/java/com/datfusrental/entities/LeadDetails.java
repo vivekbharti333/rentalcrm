@@ -100,11 +100,17 @@ public class LeadDetails {
 	@Column(name = "vendor_rate")
 	private long vendorRate;
 	
+	@Column(name = "vendor_rate_for_kids")
+	private long vendorRateForKids;
+	
 	@Column(name = "pay_to_vendor")
 	private long payToVendor;
 	
 	@Column(name = "company_rate")
 	private long companyRate;
+	
+	@Column(name = "company_rate_for_kids")
+	private long companyRateForKids;
 	
 	@Column(name = "pay_to_company")
 	private long payToCompany;
