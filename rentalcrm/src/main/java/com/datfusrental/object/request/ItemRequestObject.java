@@ -1,6 +1,10 @@
 package com.datfusrental.object.request;
 
+import java.time.LocalTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,11 +33,15 @@ public class ItemRequestObject {
 	private long vendorRate;
 	private long vendorRateForKids;
 	
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime startTime;
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime endTime; 
+	
 	private String status;
 	
 	private String location;
 	private String locationType;
-	
 	
 	private String requestedFor;
 	private String token;

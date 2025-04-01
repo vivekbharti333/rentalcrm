@@ -220,10 +220,13 @@ public class CategoryController {
 	public Response<ItemRequestObject> addSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,
 			HttpServletRequest request) {
 		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		System.out.println("Hell00o");
 		try {
+			System.out.println("Hello");
 			ItemRequestObject responce = categoryService.addSubCategoryDetails(itemRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
+			System.out.println("Hello hai");
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.datfusrental.entities;
 
+import java.time.LocalTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -45,6 +48,14 @@ public class SubCategoryDetails {
 	
 	@Column(name = "vendor_rate_for_kids")
 	private long vendorRateForKids;
+	
+	@JsonFormat(pattern = "HH:mm")
+	@Column(name = "start_time")
+	private LocalTime startTime; 
+	
+	@JsonFormat(pattern = "HH:mm")
+	@Column(name = "end_time")
+	private LocalTime endTime; 
 	
 	@Lob
 	@Column(name = "description")
