@@ -564,9 +564,9 @@ public class CategoryHelper {
 	            subCategoryDetails.setCategoryId((Long) row[6]);
 	            subCategoryDetails.setCategory((String) row[7]);
 	            subCategoryDetails.setSubCategory((String) row[8]);
-	            subCategoryDetails.setSecurityAmount(9);
-	            subCategoryDetails.setVendorRate(10);
-	            subCategoryDetails.setVendorRateForKids(11);
+	            subCategoryDetails.setSecurityAmount((Long) row[9]);
+	            subCategoryDetails.setVendorRate((Long) row[10]);
+	            subCategoryDetails.setVendorRateForKids((Long) row[11]);
 	            
 	            subCategoryDetails.setStatus((String) row[12]);
 	            subCategoryDetails.setCreatedAt((Date) row[13]);
