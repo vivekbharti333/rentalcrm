@@ -1,32 +1,19 @@
 package com.datfusrental.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.datfusrental.common.GetBase64Image;
 import com.datfusrental.constant.Constant;
-import com.datfusrental.entities.CategoryDetails;
-import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LocationDetails;
-import com.datfusrental.entities.SuperCategoryDetails;
-import com.datfusrental.enums.ImageType;
-import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LocationRequestObject;
 import com.datfusrental.object.request.Request;
@@ -43,9 +30,7 @@ public class LocationController {
 	@Autowired
 	private LocationService locationService;
 
-	@Autowired
-	private GetBase64Image getBase64Image;
-
+	
 	@RequestMapping(path = "addLocation", method = RequestMethod.POST)
 	public Response<LocationRequestObject> addLocation(@RequestBody Request<LocationRequestObject> locationRequestObject,
 			HttpServletRequest request) {

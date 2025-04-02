@@ -459,7 +459,6 @@ public class CategoryHelper {
 	}
 
 	public SubCategoryDetails getSubCategoryDetailsByReqObj(ItemRequestObject itemRequest) {
-		System.out.println("000");
 		SubCategoryDetails subCategoryDetails = new SubCategoryDetails();
 		
 		subCategoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
@@ -470,10 +469,10 @@ public class CategoryHelper {
 		subCategoryDetails.setSecurityAmount(itemRequest.getSecurityAmount());
 		subCategoryDetails.setVendorRate(itemRequest.getVendorRate());
 		subCategoryDetails.setVendorRateForKids(itemRequest.getVendorRateForKids());
-		System.out.println("111");
 		subCategoryDetails.setStartTime(itemRequest.getStartTime());
 		subCategoryDetails.setEndTime(itemRequest.getEndTime());
-		System.out.println("222");
+		subCategoryDetails.setPickupLocation(itemRequest.getPickupLocation());
+		subCategoryDetails.setDropLocation(itemRequest.getDropLocation());
 		subCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		subCategoryDetails.setStatus(Status.ACTIVE.name());
 		subCategoryDetails.setCreatedAt(new Date());

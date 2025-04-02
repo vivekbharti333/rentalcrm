@@ -3,6 +3,8 @@ package com.datfusrental.object.request;
 import java.time.LocalTime;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -35,8 +37,12 @@ public class ItemRequestObject {
 	
 	@JsonFormat(pattern = "HH:mm")
 	private LocalTime startTime;
+	
 	@JsonFormat(pattern = "HH:mm")
 	private LocalTime endTime; 
+	
+	private String pickupLocation;
+	private String dropLocation;
 	
 	private String status;
 	
