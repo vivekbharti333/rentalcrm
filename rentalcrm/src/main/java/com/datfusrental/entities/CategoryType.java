@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "category_Type")
+@Table(name = "category_type")
 @Data
 public class CategoryType {
 		
