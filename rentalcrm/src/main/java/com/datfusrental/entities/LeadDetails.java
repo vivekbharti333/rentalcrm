@@ -136,6 +136,12 @@ public class LeadDetails {
 	@Column(name = "actual_amount")
 	private long actualAmount;
 	
+	@Column(name = "discount_type")
+	private String discountType;
+	
+	@Column(name = "discount")
+	private long discount;
+	
 	@Column(name = "vendor_name")
 	private String vendorName;
 	

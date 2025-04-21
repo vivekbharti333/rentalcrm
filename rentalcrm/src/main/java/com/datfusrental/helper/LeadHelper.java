@@ -104,6 +104,9 @@ public class LeadHelper {
 		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
 		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+		
+		leadDetails.setDiscountType(leadRequest.getDiscountType());
+		leadDetails.setDiscount(leadRequest.getDiscount());
 
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());

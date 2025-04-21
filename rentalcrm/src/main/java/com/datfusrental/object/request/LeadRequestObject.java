@@ -52,6 +52,9 @@ public class LeadRequestObject {
 	private long totalAmount;
 	private long securityAmount;
 	
+	private String discountType;
+	private long discount;
+	
 	private long amountToCompany;
 	private long amountToVendor;
 	private long deliveryAmountToCompany;
