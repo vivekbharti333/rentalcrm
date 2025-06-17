@@ -10,6 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 
 @Configuration
 @ComponentScan(basePackages="com.datfusrental.*")
@@ -34,4 +37,12 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 		vResolver.setSuffix(".jsp");
 		return vResolver;
 	}
+	
+	@Bean
+	public ObjectMapper objectMapper() {
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.registerModule(new JavaTimeModule());
+	    return mapper;
+	}
+
 }

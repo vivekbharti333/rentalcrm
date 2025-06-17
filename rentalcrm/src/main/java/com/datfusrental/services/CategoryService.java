@@ -389,10 +389,10 @@ public class CategoryService {
 					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
 					itemRequest.setSubCategoryImage(serverPath);
 				}
-				
 				SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByReqObj(itemRequest);
 				subCategoryDetails = categoryHelper.saveSubCategoryDetails(subCategoryDetails);
 				
+				System.out.println("Enter 8");
 				itemRequest.setRespCode(Constant.SUCCESS_CODE);
 				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
 				return itemRequest;
@@ -401,7 +401,7 @@ public class CategoryService {
 				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 				return itemRequest;
 			}
-		}else {
+		} else {
 			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
 			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
 			return itemRequest;

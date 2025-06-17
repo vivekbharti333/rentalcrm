@@ -1,5 +1,6 @@
 package com.datfusrental.helper;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -338,6 +339,28 @@ public class CategoryHelper {
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
+		
+		categoryDetails.setSecurityAmount(itemRequest.getSecurityAmount());
+		categoryDetails.setVendorRate(itemRequest.getVendorRate());
+		categoryDetails.setVendorRateForKids(itemRequest.getVendorRateForKids());
+		
+		categoryDetails.setCompanyRate(itemRequest.getCompanyRate());
+		categoryDetails.setCompanyRateForKids(itemRequest.getCompanyRateForKids());
+		
+		categoryDetails.setStartDate(itemRequest.getStartDate());
+		categoryDetails.setEndDate(itemRequest.getEndDate());
+		categoryDetails.setStartTime(itemRequest.getStartTime());
+		categoryDetails.setEndTime(itemRequest.getEndTime());
+		
+		categoryDetails.setPickupLocation(itemRequest.getPickupLocation());
+		categoryDetails.setDropLocation(itemRequest.getDropLocation());
+		
+		categoryDetails.setQuantity(itemRequest.getQuantity());
+		categoryDetails.setKidQuantity(itemRequest.getKidQuantity());
+		categoryDetails.setInfantQuantity(itemRequest.getInfantQuantity());
+		
+		categoryDetails.setDescription(itemRequest.getDescription());
+		
 		categoryDetails.setStatus(Status.ACTIVE.name());
 		categoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		categoryDetails.setCreatedAt(new Date());
@@ -369,34 +392,6 @@ public class CategoryHelper {
 		return categoryDetails;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public List<CategoryDetails> getCategoryDetails(ItemRequestObject itemRequest) {
-//		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-//		List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
-//				"SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt\r\n"
-//				+ "FROM com.datfusrental.entities.CategoryDetails cd\r\n"
-//				+ "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id\r\n"
-//				+ "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id\r\n"
-//				+ "WHERE cd.superadminId = :superadminId\r\n"
-//				+ "ORDER BY sc.id ASC")
-//				.setParameter("superadminId", itemRequest.getSuperadminId())
-//				.getResultList();
-//		return results;
-//		}
-//		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
-//			List<CategoryDetails> results = categoryDetailsDao.getEntityManager().createQuery(
-//					  "SELECT CD FROM CategoryDetails CD WHERE CD.superCategoryId = :superCategoryId AND CD.superadminId =:superadminId AND CD.status =:status ORDER BY CD.id ASC")
-//					.setParameter("superCategoryId", itemRequest.getSuperCategoryId())
-//					.setParameter("superadminId", itemRequest.getSuperadminId())
-//					.setParameter("status", Status.ACTIVE.name())
-//					.getResultList();
-//				return results;
-//				
-//		}else {
-//			
-//		}
-//		return null;
-//	}
 	
 	@SuppressWarnings("unchecked")
 	public List<ItemRequestObject> getCategoryDetails(ItemRequestObject itemRequest) {
@@ -405,12 +400,13 @@ public class CategoryHelper {
 	    // Handle case when requestedFor is "ALL"
 	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
-	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt " +
+	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt, cd.securityAmount, cd.vendorRate, cd.vendorRateForKids,"
+	            + "cd.companyRate, cd.companyRateForKids, cd.startDate, cd.endDate, cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupLocation, cd.dropLocation " +
 	            "FROM com.datfusrental.entities.CategoryDetails cd " +
 	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
 	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
 	            "WHERE cd.superadminId = :superadminId " +
-	            "ORDER BY sc.id ASC")
+	            "ORDER BY cd.id DESC")
 	            .setParameter("superadminId", itemRequest.getSuperadminId())
 	            .getResultList();
 
@@ -425,6 +421,21 @@ public class CategoryHelper {
 	            item.setCategory((String) row[6]);
 	            item.setStatus((String) row[7]);
 	            item.setCreatedAt((Date) row[8]);
+	            item.setSecurityAmount((long) row[9]);
+	            item.setVendorRate((long) row[10]);
+	            item.setVendorRateForKids((long) row[11]);
+	            item.setCompanyRate((long) row[12]);
+	            item.setCompanyRateForKids((long) row[13]);
+	            item.setStartDate((Date) row[14]);
+	            item.setEndDate((Date) row[15]);
+	            item.setStartTime((LocalTime) row[16]);
+	            item.setEndTime((LocalTime) row[17]);
+	            item.setQuantity((int) row[18]);
+	            item.setKidQuantity((int) row[19]);
+	            item.setInfantQuantity((int) row[20]);
+	            item.setDescription((String) row[21]);
+	            item.setPickupLocation((String) row[22]);
+	            item.setDropLocation((String) row[23]);
 
 	            categoryDetailsList.add(item);
 	        }
@@ -466,15 +477,9 @@ public class CategoryHelper {
 		subCategoryDetails.setCategoryId(itemRequest.getCategoryId());
 		subCategoryDetails.setSubCategoryImage(itemRequest.getSubCategoryImage());
 		subCategoryDetails.setSubCategory(itemRequest.getSubCategory());
-		subCategoryDetails.setSecurityAmount(itemRequest.getSecurityAmount());
-		subCategoryDetails.setVendorRate(itemRequest.getVendorRate());
-		subCategoryDetails.setVendorRateForKids(itemRequest.getVendorRateForKids());
-		subCategoryDetails.setStartTime(itemRequest.getStartTime());
-		subCategoryDetails.setEndTime(itemRequest.getEndTime());
-		subCategoryDetails.setPickupLocation(itemRequest.getPickupLocation());
-		subCategoryDetails.setDropLocation(itemRequest.getDropLocation());
-		subCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		subCategoryDetails.setStatus(Status.ACTIVE.name());
+		
+		subCategoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 		subCategoryDetails.setCreatedAt(new Date());
 		subCategoryDetails.setUpdatedAt(new Date());
 		return subCategoryDetails;
@@ -504,34 +509,6 @@ public class CategoryHelper {
 		return subCategoryDetails;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public List<ItemRequestObject> getSubCategoryDetails(ItemRequestObject itemRequest) {
-//		if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
-//			List<ItemRequestObject> results = subCategoryDetailsDao.getEntityManager().createQuery(
-//					"SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, subcd.superCategoryId, scd.superCategory, subcd.categoryId,cd.category, subcd.subCategory, subcd.status, subcd.createdAt \r\n"
-//					+ "FROM SubCategoryDetails subcd\r\n"
-//					+ "JOIN CategoryDetails cd ON subcd.categoryId = cd.id\r\n"
-//					+ "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id\r\n"
-//					+ "JOIN CategoryType ctd ON cd.categoryTypeId = ctd.id\r\n"
-//					+ "WHERE subcd.superadminId = :superadminId\r\n"
-//					+ "ORDER BY subcd.id ASC")
-//					.setParameter("superadminId", itemRequest.getSuperadminId())
-//					.getResultList();
-//			return results;
-//		}
-//		else if(itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) {
-//			List<ItemRequestObject> results = subCategoryDetailsDao.getEntityManager().createQuery(
-//					"SELECT SC FROM SubCategoryDetails SC WHERE SC.categoryId =:categoryId AND SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.subCategory DESC")
-//					.setParameter("categoryId", itemRequest.getCategoryId())
-//					.setParameter("superadminId", itemRequest.getSuperadminId())
-//					.setParameter("status", Status.ACTIVE.name())
-//					.getResultList();
-//			return results;
-//		}else {
-//			
-//		}
-//		return null;
-//	}
 	
 	@SuppressWarnings("unchecked")
 	public List<ItemRequestObject> getSubCategoryDetails(ItemRequestObject itemRequest) {
@@ -542,7 +519,7 @@ public class CategoryHelper {
 	        List<Object[]> results = subCategoryDetailsDao.getEntityManager().createQuery(
 	            "SELECT subcd.id, subcd.subCategoryImage, subcd.categoryTypeId, ctd.categoryTypeName, " +
 	            "subcd.superCategoryId, scd.superCategory, subcd.categoryId, cd.category, " +
-	            "subcd.subCategory,subcd.securityAmount,subcd.vendorRate,subcd.vendorRateForKids, subcd.status, subcd.createdAt " +
+	            "subcd.subCategory, subcd.status, subcd.createdAt  " +
 	            "FROM SubCategoryDetails subcd " +
 	            "JOIN CategoryDetails cd ON subcd.categoryId = cd.id " +
 	            "JOIN SuperCategoryDetails scd ON cd.superCategoryId = scd.id " +
@@ -563,12 +540,9 @@ public class CategoryHelper {
 	            subCategoryDetails.setCategoryId((Long) row[6]);
 	            subCategoryDetails.setCategory((String) row[7]);
 	            subCategoryDetails.setSubCategory((String) row[8]);
-	            subCategoryDetails.setSecurityAmount((Long) row[9]);
-	            subCategoryDetails.setVendorRate((Long) row[10]);
-	            subCategoryDetails.setVendorRateForKids((Long) row[11]);
 	            
-	            subCategoryDetails.setStatus((String) row[12]);
-	            subCategoryDetails.setCreatedAt((Date) row[13]);
+	            subCategoryDetails.setStatus((String) row[9]);
+	            subCategoryDetails.setCreatedAt((Date) row[10]);
 
 	            subCategoryList.add(subCategoryDetails);
 	        }

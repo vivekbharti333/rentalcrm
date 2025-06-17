@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -32,15 +33,26 @@ public class ItemRequestObject {
 	private String subCategory;
 	
 	private long securityAmount;
+	
 	private long vendorRate;
 	private long vendorRateForKids;
 	
-	@JsonFormat(pattern = "HH:mm")
-	private LocalTime startTime;
+	private long companyRate;
+	private long companyRateForKids;
+	
+	private int quantity;
+	private int kidQuantity;
+	private int infantQuantity;
+	
+	private Date startDate; 
+	private Date endDate; 
 	
 	@JsonFormat(pattern = "HH:mm")
-	private LocalTime endTime; 
+	private LocalTime  startTime;
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime  endTime; 
 	
+	private String description;
 	private String pickupLocation;
 	private String dropLocation;
 	
