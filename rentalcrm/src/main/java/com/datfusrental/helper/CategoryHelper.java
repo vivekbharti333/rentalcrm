@@ -352,8 +352,8 @@ public class CategoryHelper {
 		categoryDetails.setStartTime(itemRequest.getStartTime());
 		categoryDetails.setEndTime(itemRequest.getEndTime());
 		
-		categoryDetails.setPickupLocation(itemRequest.getPickupLocation());
-		categoryDetails.setDropLocation(itemRequest.getDropLocation());
+		categoryDetails.setPickupHub(itemRequest.getPickupHub());
+		categoryDetails.setDropHub(itemRequest.getDropHub());
 		
 		categoryDetails.setQuantity(itemRequest.getQuantity());
 		categoryDetails.setKidQuantity(itemRequest.getKidQuantity());

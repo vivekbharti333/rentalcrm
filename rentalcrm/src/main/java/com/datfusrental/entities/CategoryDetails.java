@@ -79,11 +79,11 @@ public class CategoryDetails {
 	@Column(name = "description")
 	private String description;
 	
-	@Column(name = "pickup_location")
-	private String pickupLocation;
+	@Column(name = "pickup_hub")
+	private String pickupHub;
 	
-	@Column(name = "drop_location")
-	private String dropLocation;
+	@Column(name = "drop_hub")
+	private String dropHub;
 	
 	@Column(name = "status")
 	private String status;

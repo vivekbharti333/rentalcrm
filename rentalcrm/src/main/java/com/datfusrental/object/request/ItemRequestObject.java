@@ -55,7 +55,8 @@ public class ItemRequestObject {
 	private String description;
 	private String pickupLocation;
 	private String dropLocation;
-	
+	private String pickupHub;
+	private String dropHub;
 	private String status;
 	
 	private String location;
