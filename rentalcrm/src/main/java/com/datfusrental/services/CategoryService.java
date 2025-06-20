@@ -375,8 +375,8 @@ public class CategoryService {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
 		categoryHelper.validateItemRequest(itemRequest);
 		
-		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
+//		if (isValid) {
 			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getCategoryId(), itemRequest.getSuperadminId());
 			if(existsSubCategoryMaster == null) {
 				
@@ -392,7 +392,6 @@ public class CategoryService {
 				SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByReqObj(itemRequest);
 				subCategoryDetails = categoryHelper.saveSubCategoryDetails(subCategoryDetails);
 				
-				System.out.println("Enter 8");
 				itemRequest.setRespCode(Constant.SUCCESS_CODE);
 				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
 				return itemRequest;
@@ -401,11 +400,11 @@ public class CategoryService {
 				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 				return itemRequest;
 			}
-		} else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
+//		} else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
 	}
 	
 	

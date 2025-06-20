@@ -401,7 +401,7 @@ public class CategoryHelper {
 	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
 	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt, cd.securityAmount, cd.vendorRate, cd.vendorRateForKids,"
-	            + "cd.companyRate, cd.companyRateForKids, cd.startDate, cd.endDate, cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupLocation, cd.dropLocation " +
+	            + "cd.companyRate, cd.companyRateForKids, cd.startDate, cd.endDate, cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub " +
 	            "FROM com.datfusrental.entities.CategoryDetails cd " +
 	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
 	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
@@ -434,9 +434,8 @@ public class CategoryHelper {
 	            item.setKidQuantity((int) row[19]);
 	            item.setInfantQuantity((int) row[20]);
 	            item.setDescription((String) row[21]);
-	            item.setPickupLocation((String) row[22]);
-	            item.setDropLocation((String) row[23]);
-
+	            item.setPickupHub((String) row[22]);
+	            item.setDropHub((String) row[23]);
 	            categoryDetailsList.add(item);
 	        }
 	    }

@@ -78,12 +78,12 @@ public class LeadHelper {
 
 		leadDetails.setPickupDate(leadRequest.getPickupDate());
 		leadDetails.setPickupTime(leadRequest.getPickupTime());
-		leadDetails.setPickupLocation(leadRequest.getPickupLocation());
+		leadDetails.setPickupHub(leadRequest.getPickupHub());
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
 		leadDetails.setDropDate(leadRequest.getDropDate());
 		leadDetails.setDropTime(leadRequest.getDropTime());
-		leadDetails.setDropLocation(leadRequest.getDropLocation());
+		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
@@ -92,7 +92,7 @@ public class LeadHelper {
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
 		leadDetails.setQuantity(leadRequest.getQuantity());
-		leadDetails.setChildrenQuantity(leadRequest.getChildrenQuantity());
+		leadDetails.setKidQuantity(leadRequest.getKidQuantity());
 		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
@@ -146,12 +146,12 @@ public class LeadHelper {
 
 		leadDetails.setPickupDate(leadRequest.getPickupDate());
 		leadDetails.setPickupTime(leadRequest.getPickupTime());
-		leadDetails.setPickupLocation(leadRequest.getPickupLocation());
+		leadDetails.setPickupHub(leadRequest.getPickupHub());
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
 		leadDetails.setDropDate(leadRequest.getDropDate());
 		leadDetails.setDropTime(leadRequest.getDropTime());
-		leadDetails.setDropLocation(leadRequest.getDropLocation());
+		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
@@ -160,7 +160,7 @@ public class LeadHelper {
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
 		leadDetails.setQuantity(leadRequest.getQuantity());
-		leadDetails.setChildrenQuantity(leadRequest.getChildrenQuantity());
+		leadDetails.setKidQuantity(leadRequest.getKidQuantity());
 		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
