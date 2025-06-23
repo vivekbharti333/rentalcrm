@@ -339,6 +339,7 @@ public class CategoryHelper {
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
+		categoryDetails.setSubCategory(itemRequest.getSubCategory());
 		
 		categoryDetails.setSecurityAmount(itemRequest.getSecurityAmount());
 		categoryDetails.setVendorRate(itemRequest.getVendorRate());
@@ -379,6 +380,7 @@ public class CategoryHelper {
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategory(itemRequest.getCategory());
+		categoryDetails.setSubCategory(itemRequest.getSubCategory());
 //		categoryDetails.setStatus(Status.ACTIVE.name());
 //		categoryDetails.setSuperadminId(itemRequest.getSuperadminId());
 //		categoryDetails.setCreatedAt(new Date());
@@ -401,7 +403,7 @@ public class CategoryHelper {
 	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
 	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt, cd.securityAmount, cd.vendorRate, cd.vendorRateForKids,"
-	            + "cd.companyRate, cd.companyRateForKids, cd.startDate, cd.endDate, cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub " +
+	            + "cd.companyRate, cd.companyRateForKids, cd.startDate, cd.endDate, cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub, cd.subCategory " +
 	            "FROM com.datfusrental.entities.CategoryDetails cd " +
 	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
 	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
@@ -436,6 +438,7 @@ public class CategoryHelper {
 	            item.setDescription((String) row[21]);
 	            item.setPickupHub((String) row[22]);
 	            item.setDropHub((String) row[23]);
+	            item.setSubCategory((String) row[24]);
 	            categoryDetailsList.add(item);
 	        }
 	    }

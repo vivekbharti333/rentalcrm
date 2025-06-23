@@ -37,6 +37,9 @@ public class CategoryDetails {
 	@Column(name = "category")
 	private String category;
 	
+	@Column(name = "sub_category")
+	private String subCategory;
+	
 	@Column(name = "security_amount")
 	private long securityAmount;
 	
