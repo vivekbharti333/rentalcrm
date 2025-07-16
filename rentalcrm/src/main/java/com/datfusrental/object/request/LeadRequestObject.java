@@ -26,8 +26,11 @@ public class LeadRequestObject {
 	private String pickupHub;
 	private String pickupPoint;
 	
-	private Date dropDate;
-	private Date dropTime;
+	private Date pickupDateTime;
+	private Date dropDateTime;
+	
+//	private Date dropDate;
+//	private Date dropTime;
 	
 	private String dropHub;
 	private String dropPoint;
