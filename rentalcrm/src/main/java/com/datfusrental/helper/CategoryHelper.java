@@ -348,8 +348,8 @@ public class CategoryHelper {
 		categoryDetails.setCompanyRate(itemRequest.getCompanyRate());
 		categoryDetails.setCompanyRateForKids(itemRequest.getCompanyRateForKids());
 		
-		categoryDetails.setStartDate(itemRequest.getStartDate());
-		categoryDetails.setEndDate(itemRequest.getEndDate());
+//		categoryDetails.setStartDate(itemRequest.getStartDate());
+//		categoryDetails.setEndDate(itemRequest.getEndDate());
 		categoryDetails.setStartTime(itemRequest.getStartTime());
 		categoryDetails.setEndTime(itemRequest.getEndTime());
 		
@@ -403,7 +403,7 @@ public class CategoryHelper {
 	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
 	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt, cd.securityAmount, cd.vendorRate, cd.vendorRateForKids,"
-	            + "cd.companyRate, cd.companyRateForKids, cd.startDate, cd.endDate, cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub, cd.subCategory " +
+	            + "cd.companyRate, cd.companyRateForKids,cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub, cd.subCategory " +
 	            "FROM com.datfusrental.entities.CategoryDetails cd " +
 	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
 	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
@@ -428,17 +428,17 @@ public class CategoryHelper {
 	            item.setVendorRateForKids((long) row[11]);
 	            item.setCompanyRate((long) row[12]);
 	            item.setCompanyRateForKids((long) row[13]);
-	            item.setStartDate((Date) row[14]);
-	            item.setEndDate((Date) row[15]);
-	            item.setStartTime((LocalTime) row[16]);
-	            item.setEndTime((LocalTime) row[17]);
-	            item.setQuantity((int) row[18]);
-	            item.setKidQuantity((int) row[19]);
-	            item.setInfantQuantity((int) row[20]);
-	            item.setDescription((String) row[21]);
-	            item.setPickupHub((String) row[22]);
-	            item.setDropHub((String) row[23]);
-	            item.setSubCategory((String) row[24]);
+//	            item.setStartDate((Date) row[14]);
+//	            item.setEndDate((Date) row[15]);
+	            item.setStartTime((LocalTime) row[14]);
+	            item.setEndTime((LocalTime) row[15]);
+	            item.setQuantity((int) row[16]);
+	            item.setKidQuantity((int) row[17]);
+	            item.setInfantQuantity((int) row[18]);
+	            item.setDescription((String) row[19]);
+	            item.setPickupHub((String) row[20]);
+	            item.setDropHub((String) row[21]);
+	            item.setSubCategory((String) row[22]);
 	            categoryDetailsList.add(item);
 	        }
 	    }

@@ -55,11 +55,11 @@ public class CategoryDetails {
 	@Column(name = "company_rate_for_kids")
 	private long companyRateForKids;
 	
-	@Column(name = "start_date")
-	private Date startDate; 
-	
-	@Column(name = "end_date")
-	private Date endDate; 
+//	@Column(name = "start_date")
+//	private Date startDate; 
+//	
+//	@Column(name = "end_date")
+//	private Date endDate; 
 	
 	@JsonFormat(pattern = "HH:mm")
 	@Column(name = "start_time")
@@ -87,6 +87,9 @@ public class CategoryDetails {
 	
 	@Column(name = "drop_hub")
 	private String dropHub;
+	
+	@Column(name = "activity_location")
+	private String activityLocation;
 	
 	@Column(name = "status")
 	private String status;

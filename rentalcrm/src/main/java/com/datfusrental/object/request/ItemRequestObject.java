@@ -41,8 +41,8 @@ public class ItemRequestObject {
 	private int kidQuantity;
 	private int infantQuantity;
 	
-	private Date startDate; 
-	private Date endDate; 
+//	private Date startDate; 
+//	private Date endDate; 
 	
 	@JsonFormat(pattern = "HH:mm")
 	private LocalTime  startTime;
