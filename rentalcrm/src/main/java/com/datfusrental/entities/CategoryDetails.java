@@ -88,6 +88,9 @@ public class CategoryDetails {
 	@Column(name = "drop_hub")
 	private String dropHub;
 	
+	@Column(name = "pick_drop_hub")
+	private String pickDropHub;
+	
 	@Column(name = "activity_location")
 	private String activityLocation;
 	

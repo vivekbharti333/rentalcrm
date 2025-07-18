@@ -350,11 +350,15 @@ public class CategoryHelper {
 		
 //		categoryDetails.setStartDate(itemRequest.getStartDate());
 //		categoryDetails.setEndDate(itemRequest.getEndDate());
+		
 		categoryDetails.setStartTime(itemRequest.getStartTime());
 		categoryDetails.setEndTime(itemRequest.getEndTime());
 		
 		categoryDetails.setPickupHub(itemRequest.getPickupHub());
 		categoryDetails.setDropHub(itemRequest.getDropHub());
+		
+		categoryDetails.setPickDropHub(itemRequest.getPickDropHub());
+		categoryDetails.setActivityLocation(itemRequest.getActivityLocation());
 		
 		categoryDetails.setQuantity(itemRequest.getQuantity());
 		categoryDetails.setKidQuantity(itemRequest.getKidQuantity());
@@ -403,7 +407,7 @@ public class CategoryHelper {
 	    if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.ALL.name())) {
 	        List<Object[]> results = categoryDetailsDao.getEntityManager().createQuery(
 	            "SELECT cd.id, cd.categoryImage, cd.categoryTypeId, ct.categoryTypeName, cd.superCategoryId, sc.superCategory, cd.category, cd.status, cd.createdAt, cd.securityAmount, cd.vendorRate, cd.vendorRateForKids,"
-	            + "cd.companyRate, cd.companyRateForKids,cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub, cd.subCategory " +
+	            + "cd.companyRate, cd.companyRateForKids,cd.startTime, cd.endTime, cd.quantity, cd.kidQuantity, cd.infantQuantity, cd.description, cd.pickupHub, cd.dropHub, cd.subCategory, cd.pickDropHub, cd.activityLocation " +
 	            "FROM com.datfusrental.entities.CategoryDetails cd " +
 	            "JOIN com.datfusrental.entities.SuperCategoryDetails sc ON cd.superCategoryId = sc.id " +
 	            "JOIN com.datfusrental.entities.CategoryType ct ON cd.categoryTypeId = ct.id " +
@@ -439,6 +443,8 @@ public class CategoryHelper {
 	            item.setPickupHub((String) row[20]);
 	            item.setDropHub((String) row[21]);
 	            item.setSubCategory((String) row[22]);
+	            item.setPickDropHub((String) row[23]);
+	            item.setActivityLocation((String) row[24]);
 	            categoryDetailsList.add(item);
 	        }
 	    }
