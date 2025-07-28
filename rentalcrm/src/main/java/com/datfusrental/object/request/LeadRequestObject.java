@@ -43,6 +43,7 @@ public class LeadRequestObject {
 	private int kidQuantity;
 	private int infantQuantity;
 	private long vendorRate;
+	private long vendorRateForKids;
 	private long payToVendor;
 	private long companyRate;
 	private long payToCompany;
@@ -50,6 +51,7 @@ public class LeadRequestObject {
 	private long balanceAmount;
 	private long totalAmount;
 	private long securityAmount;
+	private long actualAmount;
 	
 	private String discountType;
 	private long discount;

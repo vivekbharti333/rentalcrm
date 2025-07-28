@@ -98,14 +98,20 @@ public class LeadHelper {
 		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
-		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
-		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setVendorRateForKids(leadRequest.getVendorRateForKids());
+//		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
+//		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
 		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
 
 		leadDetails.setBookingAmount(leadRequest.getBookingAmount());
 		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
 		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+		
+		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
+		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
+		
+		leadDetails.setActualAmount(leadRequest.getActualAmount());
 		
 		leadDetails.setDiscountType(leadRequest.getDiscountType());
 		leadDetails.setDiscount(leadRequest.getDiscount());
