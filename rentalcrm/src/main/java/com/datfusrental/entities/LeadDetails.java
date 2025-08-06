@@ -176,6 +176,13 @@ public class LeadDetails {
 	@Column(name = "lead_type")
 	private String leadType;
 	
+	@Column(name = "next_followup_date")
+	private Date nextFollowupDate;
+	
+	@Lob
+	@Column(name = "notes")
+	private String notes;
+	
 	@Column(name = "created_at")
 	private Date createdAt;
 	

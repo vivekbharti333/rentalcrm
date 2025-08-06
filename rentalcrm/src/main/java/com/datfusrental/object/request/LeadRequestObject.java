@@ -3,6 +3,7 @@ package com.datfusrental.object.request;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 
 import lombok.Data;
 
@@ -78,6 +79,8 @@ public class LeadRequestObject {
 	private String status;
 	private String leadOrigine;
 	private String leadType;
+//	private Date followupDate;
+//	private String notes;
 	private Date createdAt;
 	private Date updatedAt;
 	

@@ -122,6 +122,9 @@ public class LeadHelper {
 
 		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
 		leadDetails.setLeadType(leadRequest.getLeadType());
+		
+		leadDetails.setNextFollowupDate(leadRequest.getNextFollowupDate());
+		leadDetails.setNotes(leadRequest.getNotes());
 
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());
