@@ -208,10 +208,12 @@ public class CategoryHelper {
 					.getResultList();
 
 		} else if (itemRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYCATID.name())) { 
-//			results = categoryTypeDao.getEntityManager().createQuery(
-//					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status ORDER BY SC.id ASC")
-//					.setParameter("superadminId", itemRequest.getSuperadminId())
-//					.setParameter("status", Status.ACTIVE.name()).getResultList();
+			results = categoryTypeDao.getEntityManager().createQuery(
+					"SELECT SC FROM CategoryType SC WHERE SC.superadminId =:superadminId AND SC.status =:status AND id =:id ORDER BY SC.id ASC")
+					.setParameter("superadminId", itemRequest.getSuperadminId())
+					.setParameter("status", Status.ACTIVE.name())
+					.setParameter("id", itemRequest.getCategoryTypeId())
+					.getResultList();
 		}
 		return results;
 	}
@@ -334,8 +336,11 @@ public class CategoryHelper {
 
 	public CategoryDetails getCategoryDetailsByReqObj(ItemRequestObject itemRequest) {
 
+		itemRequest.setRequestedFor(RequestFor.BYCATID.name());
+		
 		CategoryDetails categoryDetails = new CategoryDetails();
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
+		categoryDetails.setCategoryTypeName(this.getCategoryType(itemRequest).get(0).getCategoryTypeName());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());

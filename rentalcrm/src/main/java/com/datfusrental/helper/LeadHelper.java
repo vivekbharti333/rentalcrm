@@ -65,6 +65,8 @@ public class LeadHelper {
 	public LeadDetails getLeadDetailsByReqObj(LeadRequestObject leadRequest) {
 		
 		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
+		
+		System.out.println("khg : "+leadRequest.getCategoryTypeName());
 
 		LeadDetails leadDetails = new LeadDetails();
 
@@ -73,8 +75,7 @@ public class LeadHelper {
 		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
-		leadDetails.setSubCategory(leadRequest.getSubCategory());
-		leadDetails.setItemName(leadRequest.getItemName());
+//		leadDetails.setSubCategory(leadRequest.getSubCategory());
 
 		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
 //		leadDetails.setPickupDate(leadRequest.getPickupDate());
@@ -83,6 +84,7 @@ public class LeadHelper {
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
 		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
+		leadDetails.setTotalDays(leadRequest.getTotalDays());
 //		leadDetails.setDropDate(leadRequest.getDropDate());
 //		leadDetails.setDropTime(leadRequest.getDropTime());
 		leadDetails.setDropHub(leadRequest.getDropHub());
@@ -99,13 +101,16 @@ public class LeadHelper {
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
 		leadDetails.setVendorRateForKids(leadRequest.getVendorRateForKids());
-//		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
-//		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+
+		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		
 		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
+		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
 
 		leadDetails.setBookingAmount(leadRequest.getBookingAmount());
 		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
 		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
+		leadDetails.setActualAmount(leadRequest.getActualAmount());
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
 		
 		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
@@ -149,11 +154,11 @@ public class LeadHelper {
 
 //		leadDetails.setBookingId(leadRequest.getBookingId());
 //		leadDetails.setCompanyName(leadRequest.getCompanyName());
-		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
+//		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
-		leadDetails.setSubCategory(leadRequest.getSubCategory());
-		leadDetails.setItemName(leadRequest.getItemName());
+//		leadDetails.setSubCategory(leadRequest.getSubCategory());
+//		leadDetails.setItemName(leadRequest.getItemName());
 
 		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());  
 //		leadDetails.setPickupDate(leadRequest.getPickupDate());

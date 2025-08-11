@@ -37,11 +37,11 @@ public class LeadDetails {
 	@Column(name = "category")
 	private String category;
 	
-	@Column(name = "sub_category")
-	private String subCategory;
-	
-	@Column(name = "item_name")
-	private String itemName;
+//	@Column(name = "sub_category")
+//	private String subCategory;
+//	
+//	@Column(name = "item_name")
+//	private String itemName;
 	
 	@Column(name = "pickup_date_time")
 	private Date pickupDateTime;

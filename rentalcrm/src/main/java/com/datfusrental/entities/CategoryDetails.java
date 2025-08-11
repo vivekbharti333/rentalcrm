@@ -31,6 +31,9 @@ public class CategoryDetails {
 	@Column(name = "super_category_id")
 	private Long superCategoryId;
 	
+	@Column(name = "category_type_name")
+	private String categoryTypeName;
+	
 	@Column(name = "category_image")
 	private String categoryImage;
 	
