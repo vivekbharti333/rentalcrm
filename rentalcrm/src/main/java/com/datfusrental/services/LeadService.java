@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.helper.LeadByPickAndDropHelper;
 import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
@@ -32,6 +33,9 @@ public class LeadService {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private LeadByPickAndDropHelper leadByPickAndDropHelper;
 	
 	
 	@Transactional
@@ -169,6 +173,17 @@ public class LeadService {
 	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
+		return leadList;
+	}
+
+	public List<LeadDetails> getPickAndDropLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+//		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
+//		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
+//		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
+//		leadRequest.setLastDate(new Date());
+		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickAndDropLeadList(leadRequest);
 		return leadList;
 	}
 

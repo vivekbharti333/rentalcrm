@@ -66,8 +66,6 @@ public class LeadHelper {
 		
 		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 		
-		System.out.println("khg : "+leadRequest.getCategoryTypeName());
-
 		LeadDetails leadDetails = new LeadDetails();
 
 		leadDetails.setBookingId(leadRequest.getBookingId());
@@ -75,7 +73,7 @@ public class LeadHelper {
 		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
-//		leadDetails.setSubCategory(leadRequest.getSubCategory());
+		leadDetails.setSubCategory(leadRequest.getSubCategory());
 
 		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
 //		leadDetails.setPickupDate(leadRequest.getPickupDate());
