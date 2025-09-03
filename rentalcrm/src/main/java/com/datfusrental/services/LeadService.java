@@ -1,5 +1,6 @@
 package com.datfusrental.services;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -10,8 +11,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.LeadByPickAndDropHelper;
 import com.datfusrental.helper.LeadByStatusHelper;
@@ -27,6 +30,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+	
+	@Autowired
+	private GetDate getDate;
 	
 	@Autowired
 	private LeadByStatusHelper leadByStatusHelper;
@@ -128,7 +134,7 @@ public class LeadService {
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
 //		if (isValid) {
 //			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
-			
+			System.out.println(leadRequest.getId()+" id");
 			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 			if (existsLeadDetails != null) {
 				
@@ -176,14 +182,59 @@ public class LeadService {
 		return leadList;
 	}
 
-	public List<LeadDetails> getPickAndDropLeadList(Request<LeadRequestObject> leadRequestObject) {
+	public List<LeadDetails> getPickupLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-//		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
-//		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
-//		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
-//		leadRequest.setLastDate(new Date());
-		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickAndDropLeadList(leadRequest);
+		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
+			leadRequest.setFirstDate(new Date());
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		}
+		
+		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));	
+		} 
+		
+		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+		}
+//		System.out.println(leadRequest.getRequestedFor()+" : requestedFor");
+//		System.out.println(getDate.driveDate(RequestFor.NEXT_DATE.name())+" : Next Date");
+//		System.out.println(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name())+" : Next To Date");
+//		System.out.println(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name())+" : Month First Date");
+//		System.out.println(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name())+" : Month Last Date");
+		
+		System.out.println("hjh : "+leadRequest.getFirstDate());
+		System.out.println("hjh : "+leadRequest.getLastDate());
+		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupLeadList(leadRequest);
+		return leadList;
+	}
+
+	public List<LeadDetails> getDropLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
+			leadRequest.setFirstDate(new Date());
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		}
+		
+		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));	
+		} 
+		
+		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+		}
+		System.out.println(leadRequest.getRequestedFor()+" : requestedFor");
+		System.out.println(getDate.driveDate(RequestFor.NEXT_DATE.name())+" : Next Date");
+		System.out.println(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name())+" : Next To Date");
+		System.out.println(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name())+" : Month First Date");
+		System.out.println(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name())+" : Month Last Date");
+		
+		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropLeadList(leadRequest);
 		return leadList;
 	}
 

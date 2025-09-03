@@ -25,26 +25,29 @@ public class GetDate {
 //	   private Date lastDateMonth;
 
 	   public Date driveDate(String requestedFor) {
-		   Date date = new Date();
-//		   if(requestedFor.equalsIgnoreCase(RequestFor.PREVIOUS_DATE.name()))
-//		   
-	      this.nextday = this.localDate.plus(1L, ChronoUnit.DAYS);
-	      this.preday = this.localDate.minus(1L, ChronoUnit.DAYS);
-	      this.firstDateOfMonth = this.localDate.withDayOfMonth(1);
-	      this.lastDateOfMonth = this.localDate.with(TemporalAdjusters.lastDayOfMonth());
-	      
-	      Date previousDate = null;
-	      if(requestedFor.equalsIgnoreCase(RequestFor.PREVIOUS_DATE.name())) {
-//	    	  date = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	    	  previousDate = Date.from(this.preday.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	      } else if(requestedFor.equalsIgnoreCase(RequestFor.NEXT_DATE.name())) {
-	    	  date = Date.from(this.nextday.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	      }else if(requestedFor.equalsIgnoreCase(RequestFor.MONTH_FIRST_DATE.name())) {
-	    	  date = Date.from(this.firstDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	      }else if(requestedFor.equalsIgnoreCase(RequestFor.MONTH_LAST_DATE.name())) {
-	    	  date = Date.from(this.lastDateOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	      }
-	      return previousDate;
-	   }
+		    LocalDate today = this.localDate;  // Assuming this.localDate is already set
+		    ZoneId zone = ZoneId.systemDefault();
+
+		    switch (requestedFor.toUpperCase()) {
+		        case "PREVIOUS_DATE":
+		            return Date.from(today.minusDays(1).atStartOfDay(zone).toInstant());
+
+		        case "NEXT_DATE":
+		            return Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+
+		        case "NEXT_TO_NEXT_DATE":
+		            return Date.from(today.plusDays(2).atStartOfDay(zone).toInstant());
+
+		        case "MONTH_FIRST_DATE":
+		            return Date.from(today.withDayOfMonth(1).atStartOfDay(zone).toInstant());
+
+		        case "MONTH_LAST_DATE":
+		            return Date.from(today.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(zone).toInstant());
+
+		        default:
+		            return Date.from(today.atStartOfDay(zone).toInstant()); // fallback to today
+		    }
+		}
+
 
 }

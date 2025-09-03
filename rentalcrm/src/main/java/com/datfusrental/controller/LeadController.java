@@ -113,11 +113,24 @@ public class LeadController {
 		}
 	}
 	
-	@RequestMapping(path = "getPickAndDropLeadList", method = RequestMethod.POST)
+	@RequestMapping(path = "getPickupLeadList", method = RequestMethod.POST)
 	public Response<LeadDetails> getPickAndDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
-			List<LeadDetails> followupOneList = leadService.getPickAndDropLeadList(leadRequestObject);
+			List<LeadDetails> followupOneList = leadService.getPickupLeadList(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
+	
+	@RequestMapping(path = "getDropLeadList", method = RequestMethod.POST)
+	public Response<LeadDetails> getDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getDropLeadList(leadRequestObject);
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
