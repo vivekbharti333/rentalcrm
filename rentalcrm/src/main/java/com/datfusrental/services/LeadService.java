@@ -30,20 +30,19 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
-	
+
 	@Autowired
 	private GetDate getDate;
-	
+
 	@Autowired
 	private LeadByStatusHelper leadByStatusHelper;
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-	
+
 	@Autowired
 	private LeadByPickAndDropHelper leadByPickAndDropHelper;
-	
-	
+
 	@Transactional
 	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
@@ -73,98 +72,88 @@ public class LeadService {
 	}
 
 	@Transactional
-	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject)
-			throws BizException, Exception {
+	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
 //		if (isValid) {
-			
-			//Generate & set booking id
-			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
-			leadRequest.setBookingId(bookingId);
-			
-			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(bookingId);
-			if (existsLeadDetails == null) {
-				
-				//Condition if category is cruise check available sheet
-				
-				
-				//Get agent name
+
+		// Generate & set booking id
+		String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
+		leadRequest.setBookingId(bookingId);
+
+		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(bookingId);
+		if (existsLeadDetails == null) {
+
+			// Condition if category is cruise check available sheet
+
+			// Get agent name
 //				User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 //				leadRequest.setCreatedByName(user.getFirstName()+" "+user.getLastName());
 //				leadR
 
-				//Lead Details
-				LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
-				leadDetails = leadHelper.saveLeadDetails(leadDetails);
-				
-				//history
-				
-				
-				//message
-				//String response = sendWhatsappMsg.sendWhatsAppMessage(leadDetails);
-				//logger.info("Message response : "+response);
+			// Lead Details
+			LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
+			leadDetails = leadHelper.saveLeadDetails(leadDetails);
 
-				leadRequest.setRespCode(Constant.SUCCESS_CODE);
-				leadRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
-				return leadRequest;
-			} else {
-				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				leadRequest.setRespMesg("Booking id already exist. Try again");
-				return leadRequest;
-			}
+			// history
+
+			// message
+			// String response = sendWhatsappMsg.sendWhatsAppMessage(leadDetails);
+			// logger.info("Message response : "+response);
+
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
+			return leadRequest;
+		} else {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg("Booking id already exist. Try again");
+			return leadRequest;
+		}
 //		} else {
 //			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
 //			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
 //			return leadRequest;
 //		}
 	}
-	
-	
+
 	@Transactional
-	public LeadRequestObject updateLead(Request<LeadRequestObject> leadRequestObject)
-			throws BizException, Exception {
+	public LeadRequestObject updateLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
-		
-		System.out.println(leadRequest.getCreatedBy()+" Created By");
+
+		System.out.println(leadRequest.getCreatedBy() + " Created By");
 
 		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
 //		if (isValid) {
 //			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
-			System.out.println(leadRequest.getId()+" id");
-			LeadDetails existsLeadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
-			if (existsLeadDetails != null) {
-				
-				//Lead Details
-				existsLeadDetails = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existsLeadDetails);
-				existsLeadDetails = leadHelper.updateLeadDetails(existsLeadDetails);
+		System.out.println(leadRequest.getId() + " id");
+		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+		if (existsLeadDetails != null) {
 
-				leadRequest.setRespCode(Constant.SUCCESS_CODE);
-				leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
-				return leadRequest;
-			} else {
-				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-				return leadRequest;
-			}
+			// Lead Details
+			existsLeadDetails = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existsLeadDetails);
+			existsLeadDetails = leadHelper.updateLeadDetails(existsLeadDetails);
+
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+			return leadRequest;
+		} else {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return leadRequest;
+		}
 //		} else {
 //			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
 //			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
 //			return leadRequest;
 //		}
 	}
-	
 
 	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-		
-//		Date k = getDate.driveDate(RequestFor.PREVIOUS_DATE.name());
-//		Date k = getDate.driveDate(RequestFor.NEXT_DATE.name());
-//		leadRequest.setFirstDate(getDate.driveDate(RequestFor.PREVIOUS_DATE.name()));
-//		leadRequest.setLastDate(new Date());
+
 		List<LeadDetails> leadList = leadByStatusHelper.getLeadListByStatus(leadRequest);
 		return leadList;
 	}
@@ -175,7 +164,6 @@ public class LeadService {
 		return leadList;
 	}
 
-
 	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
@@ -185,28 +173,21 @@ public class LeadService {
 	public List<LeadDetails> getPickupLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
 			leadRequest.setFirstDate(new Date());
 			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
 		}
-		
-		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
 			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));	
-		} 
-		
-		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
+		}
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
 			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
 			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
 		}
-//		System.out.println(leadRequest.getRequestedFor()+" : requestedFor");
-//		System.out.println(getDate.driveDate(RequestFor.NEXT_DATE.name())+" : Next Date");
-//		System.out.println(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name())+" : Next To Date");
-//		System.out.println(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name())+" : Month First Date");
-//		System.out.println(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name())+" : Month Last Date");
-		
-		System.out.println("hjh : "+leadRequest.getFirstDate());
-		System.out.println("hjh : "+leadRequest.getLastDate());
+
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupLeadList(leadRequest);
 		return leadList;
 	}
@@ -214,31 +195,23 @@ public class LeadService {
 	public List<LeadDetails> getDropLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
 			leadRequest.setFirstDate(new Date());
 			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
 		}
-		
-		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
 			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));	
-		} 
-		
-		if(leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
+		}
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
 			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
 			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
 		}
-		System.out.println(leadRequest.getRequestedFor()+" : requestedFor");
-		System.out.println(getDate.driveDate(RequestFor.NEXT_DATE.name())+" : Next Date");
-		System.out.println(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name())+" : Next To Date");
-		System.out.println(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name())+" : Month First Date");
-		System.out.println(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name())+" : Month Last Date");
-		
+
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropLeadList(leadRequest);
 		return leadList;
 	}
-
-
-
 
 }
