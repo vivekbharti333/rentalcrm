@@ -28,7 +28,6 @@ public class LeadByPickAndDropHelper {
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 						.getResultList();
-			
 		} 
 		else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
