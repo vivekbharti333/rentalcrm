@@ -16,6 +16,7 @@ import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.helper.AssignedLeadHelper;
 import com.datfusrental.helper.LeadByPickAndDropHelper;
 import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadHelper;
@@ -42,6 +43,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadByPickAndDropHelper leadByPickAndDropHelper;
+	
+	@Autowired
+	private AssignedLeadHelper assignedLeadHelper;
 
 	@Transactional
 	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
@@ -211,6 +215,28 @@ public class LeadService {
 		}
 
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropLeadList(leadRequest);
+		return leadList;
+	}
+
+	public List<LeadDetails> getLeadByStatus(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
+			leadRequest.setFirstDate(new Date());
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		}
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
+		}
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+		}
+
+		List<LeadDetails> leadList = assignedLeadHelper.getLeadByStatus(leadRequest);
 		return leadList;
 	}
 
