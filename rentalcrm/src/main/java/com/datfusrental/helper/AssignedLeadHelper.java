@@ -38,7 +38,7 @@ public class AssignedLeadHelper {
 					.setParameter("status", leadRequest.getStatus())
 					.setParameter("createdBy", leadRequest.getLoginId())
 					
-					.getResultList();
+					.getResultList(); 
 		
 	} 
 		return results; 
