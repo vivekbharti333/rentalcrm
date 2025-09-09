@@ -57,6 +57,9 @@ public class LeadService {
 		if (isValid) {
 			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 			if (leadDetails != null) {
+				if(!leadRequest.getVendorName().equalsIgnoreCase("") || leadRequest.getVendorName() != null) {
+					leadDetails.setVendorName(leadRequest.getVendorName());
+				}
 				leadDetails.setStatus(leadRequest.getStatus());
 				leadHelper.updateLeadDetails(leadDetails);
 

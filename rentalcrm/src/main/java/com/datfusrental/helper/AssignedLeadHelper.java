@@ -23,7 +23,7 @@ public class AssignedLeadHelper {
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND status =:status AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND status =:status AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
@@ -32,7 +32,7 @@ public class AssignedLeadHelper {
 			
 		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SALES_EXECUTIVE.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.createdBy =:createdBy AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.createdBy =:createdBy AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 					.setParameter("status", leadRequest.getStatus())

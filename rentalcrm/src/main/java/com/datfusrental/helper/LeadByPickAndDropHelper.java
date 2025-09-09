@@ -23,7 +23,7 @@ public class LeadByPickAndDropHelper {
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
