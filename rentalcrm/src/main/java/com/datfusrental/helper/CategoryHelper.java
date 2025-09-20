@@ -134,15 +134,15 @@ public class CategoryHelper {
 	}
 
 	@Transactional
-	public CategoryDetails getCategoryDetailsBySuperadminId(Long superCategoryId, String category, String superadminId) {
+	public CategoryDetails getCategoryDetailsBySuperadminId(String category, String superadminId) {
 
 		CriteriaBuilder criteriaBuilder = categoryDetailsDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<CategoryDetails> criteriaQuery = criteriaBuilder.createQuery(CategoryDetails.class);
 		Root<CategoryDetails> root = criteriaQuery.from(CategoryDetails.class);
-		Predicate restriction1 = criteriaBuilder.equal(root.get("superCategoryId"), superCategoryId);
-		Predicate restriction2 = criteriaBuilder.equal(root.get("category"), category);
-		Predicate restriction3 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
-		criteriaQuery.where(restriction1, restriction2, restriction3);
+//		Predicate restriction1 = criteriaBuilder.equal(root.get("superCategoryId"), superCategoryId);
+		Predicate restriction1 = criteriaBuilder.equal(root.get("category"), category);
+		Predicate restriction2 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
+		criteriaQuery.where(restriction1, restriction2);
 		CategoryDetails categoryDetails = categoryDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
 		return categoryDetails;
 	}
