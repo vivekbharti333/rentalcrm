@@ -269,7 +269,7 @@ public class CategoryService {
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
 //		if (isValid) {
 			
-			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getCategory(), itemRequest.getSuperadminId());
+			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getSubCategory(),itemRequest.getCategory(), itemRequest.getSuperadminId());
 			if(existsCategoryDetails == null) {
 				
 				if(itemRequest.getCategoryImage() != null || !itemRequest.getCategoryImage().isEmpty()) {
