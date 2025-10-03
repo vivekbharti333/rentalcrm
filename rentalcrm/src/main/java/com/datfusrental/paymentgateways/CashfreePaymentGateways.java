@@ -68,7 +68,7 @@ public class CashfreePaymentGateways {
  
     public String getCashfreePaymentParam(LeadRequestObject leadRequest) {
 
-        JSONObject jsonBody = new JSONObject();
+        JSONObject jsonBody = new JSONObject(); 
 
         jsonBody.put("link_id", leadRequest.getBookingId());
         jsonBody.put("link_amount", leadRequest.getTotalAmount());
