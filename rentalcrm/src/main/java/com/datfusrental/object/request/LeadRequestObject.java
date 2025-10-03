@@ -90,6 +90,7 @@ public class LeadRequestObject {
 	private String roleType;
 	
 	private String paymentUrl;
+	private String pgUrl;
 	
 	private int respCode;
 	private String respMesg;

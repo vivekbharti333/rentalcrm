@@ -34,22 +34,7 @@ public class CashfreePaymentGateways {
 	@Autowired
 	private PaymentGatewaysHelper paymentGatewaysHelper;
 
-	
-	private String cashfreeUrl = "https://api.cashfree.com/pg/";
-    private String clientId = "1033809dc61b90c62f6973402f09083301";
-    private String clientKey = "cfsk_ma_prod_9896ddb53bcf14442d758e5f067d3db8_91b46af5";
-    String apiVersion = "2025-01-01"; 
-	
-//    private String cashfreeUrl = "https://sandbox.cashfree.com/pg/";
-//    private String clientId = "TEST10735465a91115f38cb419b4e7a556453701";
-//    private String clientKey = "cfsk_ma_test_fd92fbae796b148d63e26ad34d958f02_7fdb2abe";
-    
-//    public PaymentGatewayDetails getPaymentGatewayDetailsByName(String paymentGatewaysName)
-    
 
-    /**
-     * Generate Cashfree Payment Link
-     */
     public String getCashfreePaymentLink(LeadRequestObject leadRequest) throws IOException, InterruptedException {
 
         String param = this.getCashfreePaymentParam(leadRequest);
@@ -121,7 +106,7 @@ public class CashfreePaymentGateways {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(cashfreeUrl+"links"))
+                .uri(URI.create(pgDetails.getPgUrl()+"links"))
                 .header("Content-Type", "application/json")
                 .header("x-api-version", "2025-01-01")
                 .header("x-client-id", pgDetails.getClientId())
@@ -142,7 +127,7 @@ public class CashfreePaymentGateways {
     	 PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
 
          Request request = new Request.Builder()
-                 .url(cashfreeUrl+"links/" + bookingId)
+                 .url(pgDetails.getPgUrl()+"links/" + bookingId)
                  .get()
                  .addHeader("x-api-version", "2025-01-01")
                  .addHeader("x-client-id", pgDetails.getClientId())

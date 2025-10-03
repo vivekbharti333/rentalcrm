@@ -36,6 +36,9 @@ public class PaymentGatewayDetails {
 	@Column(name = "version")
 	private String version;
 	
+	@Column(name = "pg_url")
+	private String pgUrl;
+	
 	@Column(name = "status")
 	private String status;
 	
