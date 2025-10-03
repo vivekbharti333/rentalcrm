@@ -1,6 +1,5 @@
 package com.datfusrental.paymentgateways;
 
-import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,9 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.PaymentGatewayDetails;
 import com.datfusrental.enums.PaymentGateway;
 import com.datfusrental.helper.PaymentGatewaysHelper;
@@ -33,6 +31,9 @@ public class CashfreePaymentGateways {
 	
 	@Autowired
 	private PaymentGatewaysHelper paymentGatewaysHelper;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 
 
     public String getCashfreePaymentLink(LeadRequestObject leadRequest) throws IOException, InterruptedException {
@@ -139,8 +140,8 @@ public class CashfreePaymentGateways {
                  System.out.println("Response: " + responseBody);
                  
                  
-                 ObjectMapper mapper = new ObjectMapper();
-                 JsonNode root = mapper.readTree(responseBody);
+//                 ObjectMapper mapper = new ObjectMapper();
+                 JsonNode root = objectMapper.readTree(responseBody);
 
 //                 System.out.println("cf_link_id: " + root.get("cf_link_id").asText());
 //                 System.out.println("customer_name: " + root.get("customer_details").get("customer_name").asText());
