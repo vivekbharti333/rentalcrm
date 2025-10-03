@@ -25,7 +25,7 @@ public class PaymentGatewayDetails {
 	private String paymentGatewaysName;
 	
 	@Column(name = "client_id")
-	private String clientId;
+	private String clientId; 
 	
 	@Column(name = "security_key")
 	private String securityKey;
