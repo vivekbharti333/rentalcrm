@@ -64,7 +64,6 @@ public class CashfreePaymentGateways {
 
         return linkUrl;
     }
-
  
     public String getCashfreePaymentParam(LeadRequestObject leadRequest) {
 
