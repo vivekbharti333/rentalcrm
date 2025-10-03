@@ -80,7 +80,7 @@ public class LeadRequestObject {
 	private String leadOrigine;
 	private String leadType;
 //	private Date followupDate;
-//	private String notes;
+
 	private Date createdAt;
 	private Date updatedAt;
 	
