@@ -23,6 +23,8 @@ import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
+import com.datfusrental.paymentgateways.CashfreePaymentGateways;
+import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.DoubleArraySerializer;
 
 @Service
 public class LeadService {
@@ -46,6 +48,9 @@ public class LeadService {
 	
 	@Autowired
 	private AssignedLeadHelper assignedLeadHelper;
+	
+	@Autowired
+	private CashfreePaymentGateways cashfreePaymentGateways;
 
 	@Transactional
 	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
@@ -103,6 +108,11 @@ public class LeadService {
 			// Lead Details
 			LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
 			leadDetails = leadHelper.saveLeadDetails(leadDetails);
+			
+			//Payment Gateways
+			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));
+			}
 
 			// history
 
@@ -123,6 +133,29 @@ public class LeadService {
 //			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
 //			return leadRequest;
 //		}
+	}
+	
+	public LeadRequestObject updatePaymentDetails(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
+		
+		LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
+		if(leadDetails != null) {
+			String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatus(leadRequest.getBookingId());
+			
+			leadDetails.setStatus(paymentStatus);
+			leadDetails.setUpdatedAt(new Date());
+			leadHelper.updateLeadDetails(leadDetails);
+			
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg("Your Payment is "+paymentStatus);
+			return leadRequest;
+			
+		} else {
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg("Invalid booking id or Payment");
+			return leadRequest;
+		}
 	}
 
 	@Transactional

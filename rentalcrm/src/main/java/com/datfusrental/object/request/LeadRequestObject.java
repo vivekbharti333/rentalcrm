@@ -89,6 +89,8 @@ public class LeadRequestObject {
 	private Date lastDate;
 	private String roleType;
 	
+	private String paymentUrl;
+	
 	private int respCode;
 	private String respMesg;
 	

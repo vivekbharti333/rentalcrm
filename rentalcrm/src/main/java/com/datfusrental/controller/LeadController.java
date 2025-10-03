@@ -61,6 +61,21 @@ public class LeadController {
 		}
 	}
 	
+	@RequestMapping(path = "updatePaymentDetails", method = RequestMethod.POST)
+	public Response<LeadRequestObject> updatePaymentDetails(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<LeadRequestObject> responseObj = new GenricResponse<LeadRequestObject>();
+		try {
+			LeadRequestObject responce = leadService.updatePaymentDetails(leadRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
 	
 	@RequestMapping(path = "updateLead", method = RequestMethod.POST)
 	public Response<LeadRequestObject> updateLead(@RequestBody Request<LeadRequestObject> leadRequestObject,
