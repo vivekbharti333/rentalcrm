@@ -73,7 +73,7 @@ public class CashfreePaymentGateways {
         jsonBody.put("link_id", leadRequest.getBookingId());
         jsonBody.put("link_amount", leadRequest.getTotalAmount());
         jsonBody.put("link_currency", "INR");
-        jsonBody.put("link_purpose", leadRequest.getSuperCategory());
+        jsonBody.put("link_purpose", leadRequest.getCategory());
 
         JSONObject customerDetails = new JSONObject();
         customerDetails.put("customer_phone", leadRequest.getCustomerMobile());
@@ -106,7 +106,7 @@ public class CashfreePaymentGateways {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(pgDetails.getPgUrl()+"links"))
+                .uri(URI.create("https://api.cashfree.com/pg/links"))
                 .header("Content-Type", "application/json")
                 .header("x-api-version", "2025-01-01")
                 .header("x-client-id", pgDetails.getClientId())
@@ -127,7 +127,7 @@ public class CashfreePaymentGateways {
     	 PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
 
          Request request = new Request.Builder()
-                 .url(pgDetails.getPgUrl()+"links/" + bookingId)
+                 .url("https://api.cashfree.com/pg/links/" + bookingId)
                  .get()
                  .addHeader("x-api-version", "2025-01-01")
                  .addHeader("x-client-id", pgDetails.getClientId())

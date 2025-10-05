@@ -92,10 +92,10 @@ public class LeadService {
 //		if (isValid) {
 
 		// Generate & set booking id
-		String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
-		leadRequest.setBookingId(bookingId);
+//		String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
+		leadRequest.setBookingId(StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12));
 
-		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(bookingId);
+		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 		if (existsLeadDetails == null) {
 
 			// Condition if category is cruise check available sheet
