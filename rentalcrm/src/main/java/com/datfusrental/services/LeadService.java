@@ -143,7 +143,12 @@ public class LeadService {
 		if(leadDetails != null) {
 			String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatus(leadRequest.getBookingId());
 			
-			leadDetails.setStatus(paymentStatus);
+			if(paymentStatus.equalsIgnoreCase("PAID")) {
+				leadDetails.setStatus("WON");
+			} else {
+				leadDetails.setStatus(paymentStatus);
+			}
+			
 			leadDetails.setUpdatedAt(new Date());
 			leadHelper.updateLeadDetails(leadDetails);
 			

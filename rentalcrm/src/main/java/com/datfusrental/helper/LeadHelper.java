@@ -270,15 +270,15 @@ public class LeadHelper {
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
-						.setParameter("superadminId", leadRequest.getSuperadminId())
+						"SELECT LD FROM LeadDetails LD WHERE LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+//						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 						.getResultList();
 			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId ORDER BY LD.id DESC")
-						.setParameter("superadminId", leadRequest.getSuperadminId())
+						"SELECT LD FROM LeadDetails LD ORDER BY LD.id DESC")
+//						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setFirstResult(Constant.FIRST_RESULT)
 						.setMaxResults(Constant.MAX_RESULT)
 						.getResultList();
