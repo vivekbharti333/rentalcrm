@@ -20,27 +20,26 @@ public class AssignedLeadHelper {
 
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getLeadByStatus(LeadRequestObject leadRequest) {
-		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
-				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE status =:status AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
-//						.setParameter("superadminId", leadRequest.getSuperadminId())
-						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
-						.setParameter("status", leadRequest.getStatus())
-						.getResultList();
-			
-		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SALES_EXECUTIVE.name())) {
-			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.createdBy =:createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
-					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIME)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
-					.setParameter("status", leadRequest.getStatus())
-					.setParameter("createdBy", leadRequest.getLoginId())
-					
-					.getResultList(); 
-		
-	} 
-		return results; 
+	    List<LeadDetails> results = new ArrayList<>();
+
+	    if (RoleType.SUPERADMIN.name().equalsIgnoreCase(leadRequest.getRoleType())) {
+	        results = leadDetailsDao.getEntityManager().createQuery(
+	                "SELECT LD FROM LeadDetails LD WHERE LD.status = :status AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+	        		.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        		.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	            .setParameter("status", leadRequest.getStatus())
+	            .getResultList();
+
+	    } else if (RoleType.SALES_EXECUTIVE.name().equalsIgnoreCase(leadRequest.getRoleType())) {
+	        results = leadDetailsDao.getEntityManager().createQuery(
+	                "SELECT LD FROM LeadDetails LD WHERE LD.status = :status AND LD.createdBy = :createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+	            .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	            .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	            .setParameter("status", leadRequest.getStatus())
+	            .setParameter("createdBy", leadRequest.getLoginId())
+	            .getResultList();
+	    }
+
+	    return results;
 	}
 }

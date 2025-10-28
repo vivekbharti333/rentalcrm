@@ -260,29 +260,32 @@ public class LeadService {
 	}
 
 	public List<LeadDetails> getLeadByStatus(Request<LeadRequestObject> leadRequestObject) {
-		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
-			leadRequest.setFirstDate(new Date());
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-		} else
+	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+	        case "TODAY":
+	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+	            break;
+	        case "TOMORROW":
+	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
+	            break;
+	        case "MONTH":
+	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
+	            leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+	            break;
+	        default:
+	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+	    }
 
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
-		} else
+	    System.out.println(leadRequest.getRequestedFor());
+	    System.out.println(leadRequest.getFirstDate());
+	    System.out.println(leadRequest.getLastDate());
+	    System.out.println(leadRequest.getStatus());
 
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
-		} 
-		
-		System.out.println(leadRequest.getRequestedFor());
-		System.out.println(leadRequest.getFirstDate());
-		System.out.println(leadRequest.getLastDate());
-
-		List<LeadDetails> leadList = assignedLeadHelper.getLeadByStatus(leadRequest);
-		return leadList;
+	    return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
 
 }

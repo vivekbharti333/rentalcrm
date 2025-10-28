@@ -25,27 +25,22 @@ public class GetDate {
 //	   private Date lastDateMonth;
 
 	   public Date driveDate(String requestedFor) {
-		    LocalDate today = this.localDate;  // Assuming this.localDate is already set
+		    LocalDate today = this.localDate;  // should be initialized elsewhere
 		    ZoneId zone = ZoneId.systemDefault();
 
 		    switch (requestedFor.toUpperCase()) {
 		        case "PREVIOUS_DATE":
 		            return Date.from(today.minusDays(1).atStartOfDay(zone).toInstant());
-
 		        case "NEXT_DATE":
 		            return Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
-
 		        case "NEXT_TO_NEXT_DATE":
 		            return Date.from(today.plusDays(2).atStartOfDay(zone).toInstant());
-
 		        case "MONTH_FIRST_DATE":
 		            return Date.from(today.withDayOfMonth(1).atStartOfDay(zone).toInstant());
-
 		        case "MONTH_LAST_DATE":
 		            return Date.from(today.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay(zone).toInstant());
-
 		        default:
-		            return Date.from(today.atStartOfDay(zone).toInstant()); // fallback to today
+		            return Date.from(today.atStartOfDay(zone).toInstant());
 		    }
 		}
 
