@@ -2,29 +2,38 @@ package com.datfusrental.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
+import com.datfusrental.dao.LeadDetailsHistoryDao;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AssignedLeadHelper;
 import com.datfusrental.helper.LeadByPickAndDropHelper;
 import com.datfusrental.helper.LeadByStatusHelper;
+import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.paymentgateways.CashfreePaymentGateways;
+import com.datfusrental.util.EntityDiffUtil;
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.DoubleArraySerializer;
+
 
 @Service
 public class LeadService {
@@ -42,6 +51,12 @@ public class LeadService {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private LeadDetailsHistoryHelper leadDetailsHistoryHelper;
+	
+	@Autowired
+	EntityDiffUtil entityDiffUtil;
 
 	@Autowired
 	private LeadByPickAndDropHelper leadByPickAndDropHelper;
@@ -165,35 +180,32 @@ public class LeadService {
 
 	@Transactional
 	public LeadRequestObject updateLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
-		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-		leadHelper.validateLeadRequest(leadRequest);
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+	    leadHelper.validateLeadRequest(leadRequest);
 
-		System.out.println(leadRequest.getCreatedBy() + " Created By");
+	    System.out.println(leadRequest.getId() + " id");
+	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
+	    
+	    if (existingLead != null) {
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getCreatedBy(), leadRequest.getToken());
-//		if (isValid) {
-//			String bookingId = StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12);
-		System.out.println(leadRequest.getId() + " id");
-		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
-		if (existsLeadDetails != null) {
+	        // ✅ Clone the old entity before updating
+	        LeadDetails oldLead = new LeadDetails();
+	        BeanUtils.copyProperties(existingLead, oldLead);
 
-			// Lead Details
-			existsLeadDetails = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existsLeadDetails);
-			existsLeadDetails = leadHelper.updateLeadDetails(existsLeadDetails);
+	        // ✅ Update and persist new lead
+	        existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
+	        existingLead = leadHelper.updateLeadDetails(existingLead);
 
-			leadRequest.setRespCode(Constant.SUCCESS_CODE);
-			leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
-			return leadRequest;
-		} else {
-			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-			return leadRequest;
-		}
-//		} else {
-//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
-//			return leadRequest;
-//		}
+	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead);
+
+	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
+	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+	        return leadRequest;
+	    } else {
+	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+	        return leadRequest;
+	    }
 	}
 
 	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {

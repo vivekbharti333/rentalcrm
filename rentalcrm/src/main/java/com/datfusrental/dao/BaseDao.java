@@ -29,6 +29,7 @@ public class BaseDao<T> {
 		return this.entityManager;
 	}
 	
+	
 	@Transactional
 	public Session getSession() {
 		Session session = this.entityManager.unwrap(Session.class);

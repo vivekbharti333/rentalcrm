@@ -206,7 +206,7 @@ public class LeadHelper {
 
 		leadDetails.setUpdatedAt(new Date());
 
-		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
 
 		return leadDetails;

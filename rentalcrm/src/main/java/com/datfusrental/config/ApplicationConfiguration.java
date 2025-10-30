@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import com.datfusrental.util.EntityDiffUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -44,5 +45,6 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 	    mapper.registerModule(new JavaTimeModule());
 	    return mapper;
 	}
+	
 
 }
