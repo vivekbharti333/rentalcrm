@@ -386,14 +386,44 @@ public class CategoryHelper {
 	
 	public CategoryDetails getUpdatedCategoryDetailsByReqObj(ItemRequestObject itemRequest, CategoryDetails categoryDetails) {
 
+//		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
+//		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
+//		categoryDetails.setCategory(itemRequest.getCategory());
+//		categoryDetails.setSubCategory(itemRequest.getSubCategory());
+//		categoryDetails.setUpdatedAt(new Date());
+		
+		
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
+//		categoryDetails.setCategoryTypeName(this.getCategoryType(itemRequest).get(0).getCategoryTypeName());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
+		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
 		categoryDetails.setSubCategory(itemRequest.getSubCategory());
-//		categoryDetails.setStatus(Status.ACTIVE.name());
-//		categoryDetails.setSuperadminId(itemRequest.getSuperadminId());
-//		categoryDetails.setCreatedAt(new Date());
+		
+		categoryDetails.setSecurityAmount(itemRequest.getSecurityAmount());
+		categoryDetails.setVendorRate(itemRequest.getVendorRate());
+		categoryDetails.setVendorRateForKids(itemRequest.getVendorRateForKids());
+		
+		categoryDetails.setCompanyRate(itemRequest.getCompanyRate());
+		categoryDetails.setCompanyRateForKids(itemRequest.getCompanyRateForKids());
+		
+		categoryDetails.setStartTime(itemRequest.getStartTime());
+		categoryDetails.setEndTime(itemRequest.getEndTime());
+		
+		categoryDetails.setPickupHub(itemRequest.getPickupHub());
+		categoryDetails.setDropHub(itemRequest.getDropHub());
+		
+		categoryDetails.setPickDropHub(itemRequest.getPickDropHub());
+		categoryDetails.setActivityLocation(itemRequest.getActivityLocation());
+		
+		categoryDetails.setQuantity(itemRequest.getQuantity());
+		categoryDetails.setKidQuantity(itemRequest.getKidQuantity());
+		categoryDetails.setInfantQuantity(itemRequest.getInfantQuantity());
+		
+		categoryDetails.setDescription(itemRequest.getDescription());
 		categoryDetails.setUpdatedAt(new Date());
+		
+		
 		return categoryDetails;
 	}
 
