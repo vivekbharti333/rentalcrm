@@ -269,8 +269,8 @@ public class CategoryService {
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
 //		if (isValid) {
 			
-			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getSubCategory(),itemRequest.getCategory(), itemRequest.getSuperadminId());
-			if(existsCategoryDetails == null) {
+//			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getSubCategory(),itemRequest.getCategory(), itemRequest.getSuperadminId());
+//			if(existsCategoryDetails == null) {
 				
 				if(itemRequest.getCategoryImage() != null || !itemRequest.getCategoryImage().isEmpty()) {
 					
@@ -288,11 +288,11 @@ public class CategoryService {
 				itemRequest.setRespCode(Constant.SUCCESS_CODE);
 				itemRequest.setRespMesg(Constant.REGISTERED_SUCCESS);
 				return itemRequest;
-			}else {
-				itemRequest.setRespCode(Constant.ALREADY_EXISTS);
-				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
-				return itemRequest;
-			}
+//			}else {
+//				itemRequest.setRespCode(Constant.ALREADY_EXISTS);
+//				itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
+//				return itemRequest;
+//			}
 //		} else {
 //			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
 //			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
@@ -307,7 +307,7 @@ public class CategoryService {
 		
 		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getCreatedBy(), itemRequest.getToken());
 		if (isValid) {
-			
+			System.out.println("Category : "+itemRequest.getCategoryId());
 			CategoryDetails categoryDetails = categoryHelper.getCategoryDetailsById(itemRequest.getCategoryId());
 			if(categoryDetails != null) {
 				categoryDetails = categoryHelper.getUpdatedCategoryDetailsByReqObj(itemRequest, categoryDetails);

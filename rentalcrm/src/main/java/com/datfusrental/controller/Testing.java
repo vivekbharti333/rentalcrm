@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.datfusrental.email.Netcore;
 import com.datfusrental.invoice.ItextInvoice;
 
 import javax.mail.*;
@@ -28,6 +29,9 @@ public class Testing {
 
 	@Autowired
 	private HttpServletRequest request;
+	
+	@Autowired
+	private Netcore netcore;
 
 	@RequestMapping(value = "/log")
 	public ModelAndView test(HttpServletResponse response) throws Exception {
@@ -36,7 +40,9 @@ public class Testing {
 
 	@RequestMapping(value = "/testing")
 	public String testing(HttpServletResponse response) throws IOException {
-		this.sendemail();
+		
+		netcore.sentEmail();
+//		this.sendemail();
 		return "Security Working";
 	}
 	
