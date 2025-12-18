@@ -151,32 +151,56 @@ public class LeadService {
 	}
 	
 	public LeadRequestObject updatePaymentDetails(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
-		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-		leadHelper.validateLeadRequest(leadRequest);
-		
-		LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
-		if(leadDetails != null) {
-			String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatus(leadRequest.getBookingId());
-			
-			if(paymentStatus.equalsIgnoreCase("PAID")) {
-				leadDetails.setStatus("WON");
-			} else {
-				leadDetails.setStatus(paymentStatus);
-			}
-			
-			leadDetails.setUpdatedAt(new Date());
-			leadHelper.updateLeadDetails(leadDetails);
-			
-			leadRequest.setRespCode(Constant.SUCCESS_CODE);
-			leadRequest.setRespMesg("Your Payment is "+paymentStatus);
-			return leadRequest;
-			
-		} else {
-			leadRequest.setRespCode(Constant.SUCCESS_CODE);
-			leadRequest.setRespMesg("Invalid booking id or Payment");
-			return leadRequest;
-		}
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+	    leadHelper.validateLeadRequest(leadRequest);
+
+	    LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
+	    if (leadDetails != null) {
+	    	
+	    	System.out.println("Enter 1");
+
+	        // 1) Get order ID using payment link ID
+	        String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId());
+
+	        System.out.println("Enter 2 : "+orderId);
+	        if (orderId == null) {
+	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	            leadRequest.setRespMesg("No order found for this payment link.");
+	            return leadRequest;
+	        }
+
+	        // 2) Get payment status using order ID
+	        String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
+	        
+	        System.out.println("Enter 3 : "+paymentStatus);
+
+	        if (paymentStatus == null) {
+	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	            leadRequest.setRespMesg("Unable to fetch payment status.");
+	            return leadRequest;
+	        }
+
+	        // 3) Update status based on payment
+	        if (paymentStatus.equalsIgnoreCase("SUCCESS") || paymentStatus.equalsIgnoreCase("PAID")) {
+	            leadDetails.setStatus("WON");
+	        } else {
+	            leadDetails.setStatus(paymentStatus);
+	        }
+
+	        leadDetails.setUpdatedAt(new Date());
+	        leadHelper.updateLeadDetails(leadDetails);
+
+	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
+	        leadRequest.setRespMesg("Your Payment is " + paymentStatus);
+	        return leadRequest;
+
+	    } else {
+	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        leadRequest.setRespMesg("Invalid booking id or Payment");
+	        return leadRequest;
+	    }
 	}
+
 
 	@Transactional
 	public LeadRequestObject updateLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {

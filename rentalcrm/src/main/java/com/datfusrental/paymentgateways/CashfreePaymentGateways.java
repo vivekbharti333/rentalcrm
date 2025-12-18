@@ -121,65 +121,78 @@ public class CashfreePaymentGateways {
         return response;
     }
     
-    
-    public String getCashFreePaymentStatus(String bookingId) {
-    	 OkHttpClient client = new OkHttpClient();
-    	 PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
+    public String getCashFreePaymentOrderIdByLinkIdStatus(String linkId) {
+        OkHttpClient client = new OkHttpClient();
+        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
 
-         Request request = new Request.Builder()
-                 .url("https://api.cashfree.com/pg/links/" + bookingId)
-                 .get()
-                 .addHeader("x-api-version", "2025-01-01")
-                 .addHeader("x-client-id", pgDetails.getClientId())
-                 .addHeader("x-client-secret", pgDetails.getSecurityKey())
-                 .build();
+        Request request = new Request.Builder()
+                .url("https://api.cashfree.com/pg/links/" + linkId + "/orders")
+                .get()
+                .addHeader("x-api-version", "2025-01-01")
+                .addHeader("x-client-id", pgDetails.getClientId())
+                .addHeader("x-client-secret", pgDetails.getSecurityKey())
+                .addHeader("Accept", "application/json")
+                .build();
 
-         try (Response response = client.newCall(request).execute()) {
-             if (response.isSuccessful() && response.body() != null) {
-                 String responseBody = response.body().string();
-                 System.out.println("Response: " + responseBody);
-                 
-                 
-//                 ObjectMapper mapper = new ObjectMapper();
-                 JsonNode root = objectMapper.readTree(responseBody);
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+                JsonNode root = objectMapper.readTree(responseBody);
 
-//                 System.out.println("cf_link_id: " + root.get("cf_link_id").asText());
-//                 System.out.println("customer_name: " + root.get("customer_details").get("customer_name").asText());
-//                 System.out.println("country_code: " + root.get("customer_details").get("country_code").asText());
-//                 System.out.println("customer_phone: " + root.get("customer_details").get("customer_phone").asText());
-//                 System.out.println("customer_email: " + root.get("customer_details").get("customer_email").asText());
-//
-//                 System.out.println("enable_invoice: " + root.get("enable_invoice").asBoolean());
-//                 System.out.println("entity: " + root.get("entity").asText());
-//                 System.out.println("link_amount: " + root.get("link_amount").asInt());
-//                 System.out.println("link_amount_paid: " + root.get("link_amount_paid").asInt());
-//                 System.out.println("link_auto_reminders: " + root.get("link_auto_reminders").asBoolean());
-//                 System.out.println("link_created_at: " + root.get("link_created_at").asText());
-//                 System.out.println("link_currency: " + root.get("link_currency").asText());
-//                 System.out.println("link_expiry_time: " + root.get("link_expiry_time").asText());
-//                 System.out.println("link_id: " + root.get("link_id").asText());
-//
-//                 System.out.println("return_url: " + root.get("link_meta").get("return_url").asText());
-//                 System.out.println("upi_intent: " + root.get("link_meta").get("upi_intent").asText());
-//
-//                 System.out.println("send_email: " + root.get("link_notify").get("send_email").asBoolean());
-//                 System.out.println("send_sms: " + root.get("link_notify").get("send_sms").asBoolean());
-//
-//                 System.out.println("link_partial_payments: " + root.get("link_partial_payments").asBoolean());
-//                 System.out.println("link_purpose: " + root.get("link_purpose").asText());
-//                 System.out.println("link_qrcode: " + root.get("link_qrcode").asText().substring(0, 30) + "..."); // shortened
-//                 System.out.println("link_status: " + root.get("link_status").asText());
-//                 System.out.println("link_url: " + root.get("link_url").asText());
-//                 System.out.println("terms_and_conditions: " + root.get("terms_and_conditions").asText());
-//                 System.out.println("thank_you_msg: " + root.get("thank_you_msg").asText());
-                 
-                 return root.get("link_status").asText();
-             } else {
-                 System.out.println("Request failed. Code: " + response.code());
-             }
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
-		return null;
+                if (root.isArray() && root.size() > 0) {
+                    JsonNode firstOrder = root.get(0);
+
+                    // the "order_id" returned for the first order
+                    if (firstOrder.has("order_id")) {
+                        return firstOrder.get("order_id").asText();
+                    }
+                }
+            } else {
+                System.out.println("Request failed. Code: " + response.code());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+    
+    public String getCashFreePaymentStatusByOrderId(String orderId) {
+        OkHttpClient client = new OkHttpClient();
+        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
+
+        Request request = new Request.Builder()
+                .url("https://api.cashfree.com/pg/orders/" + orderId + "/payments")
+                .get()
+                .addHeader("x-api-version", "2025-01-01")
+                .addHeader("x-client-id", pgDetails.getClientId())
+                .addHeader("x-client-secret", pgDetails.getSecurityKey())
+                .addHeader("Accept", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+
+                // Parse the root JSON as an array
+                JsonNode rootArray = objectMapper.readTree(responseBody);
+
+                if (rootArray.isArray() && rootArray.size() > 0) {
+                    JsonNode firstPayment = rootArray.get(0);
+
+                    // Read the payment_status field
+                    if (firstPayment.has("payment_status")) {
+                        return firstPayment.get("payment_status").asText();
+                    }
+                }
+            } else {
+                System.out.println("Request failed. Code: " + response.code());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }
