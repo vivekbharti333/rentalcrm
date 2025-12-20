@@ -87,7 +87,8 @@ public class CashfreePaymentGateways {
         jsonBody.put("link_notify", linkNotify);
 
         JSONObject linkMeta = new JSONObject();
-        linkMeta.put("return_url", "https://romeyourway.com/payment-status/" + leadRequest.getBookingId());
+//        linkMeta.put("return_url", "https://romeyourway.com/payment-status/" + leadRequest.getBookingId());
+        linkMeta.put("return_url", leadRequest.getPgRespUrl() + leadRequest.getBookingId());
         jsonBody.put("link_meta", linkMeta);
 
         System.out.println(" Response : "+jsonBody.toString());

@@ -91,6 +91,7 @@ public class LeadRequestObject {
 	
 	private String paymentUrl;
 	private String pgUrl;
+	private String pgRespUrl;
 	
 	private int respCode;
 	private String respMesg;
