@@ -48,15 +48,15 @@ public class CategoryService {
 		if (!isValid) {
 			CategoryType existsCategoryType = categoryHelper.getCategoryTypeByCategoryTypeName(itemRequest.getCategoryTypeName(), itemRequest.getSuperadminId());
 			if (existsCategoryType == null) {
-				if(itemRequest.getCategoryTypeImage() != null || !itemRequest.getCategoryTypeImage().isEmpty()) {
-					
-					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
-					String fileName = "CATTYP"+itemRequest.getCategoryTypeName() + itemRequest.getSuperadminId().replaceAll(" ", "");
-					String finalFileName = basePath + File.separator + fileName;
-					String serverPath =  fileName;
-					finalFileName = getBase64Image.uploadPhotos(itemRequest.getCategoryTypeImage(), finalFileName);
-					itemRequest.setCategoryTypeImage(serverPath);
-				}
+//				if(itemRequest.getCategoryTypeImage() != null || !itemRequest.getCategoryTypeImage().isEmpty()) {
+//					
+//					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+//					String fileName = "CATTYP"+itemRequest.getCategoryTypeName() + itemRequest.getSuperadminId().replaceAll(" ", "");
+//					String finalFileName = basePath + File.separator + fileName;
+//					String serverPath =  fileName;
+//					finalFileName = getBase64Image.uploadPhotos(itemRequest.getCategoryTypeImage(), finalFileName);
+//					itemRequest.setCategoryTypeImage(serverPath);
+//				}
 //
 				CategoryType categoryType = categoryHelper.getCategoryTypeByReqObj(itemRequest);
 				categoryType = categoryHelper.saveCategoryType(categoryType);
@@ -162,15 +162,15 @@ public class CategoryService {
 			SuperCategoryDetails existsSuperCategory = categoryHelper.getSuperCategoryDetailsBySuperadminId(itemRequest.getCategoryTypeId(),itemRequest.getSuperCategory(),itemRequest.getSuperadminId());
 			if (existsSuperCategory == null) {
 				
-				if(itemRequest.getSuperCategoryImage() != null || !itemRequest.getSuperCategoryImage().isEmpty()) {
-					
-					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
-					String fileName = "SUPCAT"+itemRequest.getSuperCategory() + itemRequest.getSuperadminId().replaceAll(" ", "");
-					String finalFileName = basePath + File.separator + fileName;
-					String serverPath =  fileName;
-					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSuperCategoryImage(), finalFileName);
-					itemRequest.setSuperCategoryImage(serverPath);
-				}
+//				if(itemRequest.getSuperCategoryImage() != null || !itemRequest.getSuperCategoryImage().isEmpty()) {
+//					
+//					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+//					String fileName = "SUPCAT"+itemRequest.getSuperCategory() + itemRequest.getSuperadminId().replaceAll(" ", "");
+//					String finalFileName = basePath + File.separator + fileName;
+//					String serverPath =  fileName;
+//					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSuperCategoryImage(), finalFileName);
+//					itemRequest.setSuperCategoryImage(serverPath);
+//				}
 //
 				SuperCategoryDetails superCategoryDetails = categoryHelper.getSuperCategoryDetailsByReqObj(itemRequest);
 				superCategoryDetails = categoryHelper.saveSuperCategoryDetails(superCategoryDetails);
@@ -272,15 +272,15 @@ public class CategoryService {
 //			CategoryDetails existsCategoryDetails = categoryHelper.getCategoryDetailsBySuperadminId(itemRequest.getSubCategory(),itemRequest.getCategory(), itemRequest.getSuperadminId());
 //			if(existsCategoryDetails == null) {
 				
-				if(itemRequest.getCategoryImage() != null || !itemRequest.getCategoryImage().isEmpty()) {
-					
-					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
-					String fileName = "CAT"+itemRequest.getCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
-					String finalFileName = basePath + File.separator + fileName;
-					String serverPath =  fileName;
-					finalFileName = getBase64Image.uploadPhotos(itemRequest.getCategoryImage(), finalFileName);
-					itemRequest.setCategoryImage(serverPath);
-				}
+//				if(itemRequest.getCategoryImage() != null || !itemRequest.getCategoryImage().isEmpty()) {
+//					
+//					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+//					String fileName = "CAT"+itemRequest.getCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
+//					String finalFileName = basePath + File.separator + fileName;
+//					String serverPath =  fileName;
+//					finalFileName = getBase64Image.uploadPhotos(itemRequest.getCategoryImage(), finalFileName);
+//					itemRequest.setCategoryImage(serverPath);
+//				}
 
 				CategoryDetails categoryDetails = categoryHelper.getCategoryDetailsByReqObj(itemRequest);
 				categoryDetails = categoryHelper.saveCategoryDetails(categoryDetails);
@@ -380,15 +380,15 @@ public class CategoryService {
 			SubCategoryDetails existsSubCategoryMaster = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getCategoryId(), itemRequest.getSuperadminId());
 			if(existsSubCategoryMaster == null) {
 				
-				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
-					
-					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
-					String fileName = "SUBCAT"+itemRequest.getSubCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
-					String finalFileName = basePath + File.separator + fileName;
-					String serverPath =  fileName;
-					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
-					itemRequest.setSubCategoryImage(serverPath);
-				}
+//				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
+//					
+//					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+//					String fileName = "SUBCAT"+itemRequest.getSubCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
+//					String finalFileName = basePath + File.separator + fileName;
+//					String serverPath =  fileName;
+//					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
+//					itemRequest.setSubCategoryImage(serverPath);
+//				}
 				SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByReqObj(itemRequest);
 				subCategoryDetails = categoryHelper.saveSubCategoryDetails(subCategoryDetails);
 				
@@ -418,15 +418,15 @@ public class CategoryService {
 			SubCategoryDetails subCategoryDetails = categoryHelper.getSubCategoryDetailsByCategoryIdAndSuperadminId(itemRequest.getSubCategory(), itemRequest.getCategoryId(), itemRequest.getSuperadminId());
 			if(subCategoryDetails != null) {
 				
-				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
-					
-					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
-					String fileName = "SUBCAT"+itemRequest.getSubCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
-					String finalFileName = basePath + File.separator + fileName;
-					String serverPath =  fileName;
-					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
-					itemRequest.setSubCategoryImage(serverPath);
-				}
+//				if(itemRequest.getSubCategoryImage() != null || !itemRequest.getSubCategoryImage().isEmpty()) {
+//					
+//					String basePath = getBase64Image.getPathToUploadFile(ImageType.CATEGORY.name());
+//					String fileName = "SUBCAT"+itemRequest.getSubCategory().replaceAll(" ", "") + itemRequest.getSuperadminId();
+//					String finalFileName = basePath + File.separator + fileName;
+//					String serverPath =  fileName;
+//					finalFileName = getBase64Image.uploadPhotos(itemRequest.getSubCategoryImage(), finalFileName);
+//					itemRequest.setSubCategoryImage(serverPath);
+//				}
 				
 				subCategoryDetails = categoryHelper.getUpdatedSubCategoryDetailsByReqObj(subCategoryDetails, itemRequest);
 				subCategoryDetails = categoryHelper.updateSubCategoryDetails(subCategoryDetails);

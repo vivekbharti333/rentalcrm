@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.tomcat.util.codec.binary.Base64;
+//import org.apache.tomcat.util.codec.binary.Base64;
 //import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Component;
 
@@ -51,35 +51,35 @@ public class GetBase64Image {
 		return path.toString();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked"})
-	public String uploadPhotos(String file, String fileName) {
-		try {
-			String fileBasefile = "";
-			String[] values = file.split(",");
-			ArrayList list = new ArrayList(Arrays.asList(values));
-			if (list.size() >= 2) {
-				fileBasefile = (String) list.get(1);
-			} else {
-				fileBasefile = fileName;
-			}
-			byte[] imageByteArray = Base64.decodeBase64(fileBasefile);
-			FileOutputStream imageOutFile = new FileOutputStream(fileName);
-			imageOutFile.write(imageByteArray);
-			imageOutFile.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			PrintWriter writer;
-			try {
-				writer = new PrintWriter("/var/lib/tomcat8/webapps/test.txt", "UTF-8");
-				writer.println(e.getMessage());
-				writer.close();
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
-			}
-		}
-		return fileName;
-	}
+//	@SuppressWarnings({ "rawtypes", "unchecked"})
+//	public String uploadPhotos(String file, String fileName) {
+//		try {
+//			String fileBasefile = "";
+//			String[] values = file.split(",");
+//			ArrayList list = new ArrayList(Arrays.asList(values));
+//			if (list.size() >= 2) {
+//				fileBasefile = (String) list.get(1);
+//			} else {
+//				fileBasefile = fileName;
+//			}
+//			byte[] imageByteArray = Base64.decodeBase64(fileBasefile);
+//			FileOutputStream imageOutFile = new FileOutputStream(fileName);
+//			imageOutFile.write(imageByteArray);
+//			imageOutFile.close();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			PrintWriter writer;
+//			try {
+//				writer = new PrintWriter("/var/lib/tomcat8/webapps/test.txt", "UTF-8");
+//				writer.println(e.getMessage());
+//				writer.close();
+//			} catch (FileNotFoundException e1) {
+//				e1.printStackTrace();
+//			} catch (UnsupportedEncodingException e1) {
+//				e1.printStackTrace();
+//			}
+//		}
+//		return fileName;
+//	}
 
 }
