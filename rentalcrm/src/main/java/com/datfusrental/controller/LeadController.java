@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -92,22 +93,59 @@ public class LeadController {
 		}
 	}
 	
+//	@RequestMapping(path = "getLeadListByStatus", method = RequestMethod.POST)
+//	public Response<LeadDetails> getLeadListByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
+//			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+//		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+//		try {
+//			List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
+//			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+//		}
+//	}
+	
 	@RequestMapping(path = "getLeadListByStatus", method = RequestMethod.POST)
-	public Response<LeadDetails> getLeadListByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
-		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
-		try {
-			List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
-			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
-		}
+	public Response<LeadDetails> getLeadListByStatus(
+	        @RequestBody Request<LeadRequestObject> leadRequestObject,
+	        @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+	    GenricResponse<LeadDetails> response = new GenricResponse<>();
+
+	    try {
+	        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	            return response.createErrorResponse(401, "Token missing or invalid");
+	        }
+
+	        String token = authHeader.substring(7); // remove "Bearer "
+
+	        // TODO: validate token here
+	        System.out.println("Token = " + token);
+
+	        List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
+	        return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+	    }
 	}
+
 	
 	@RequestMapping(path = "getAllLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getAllLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+	public Response<LeadDetails> getAllLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			 @RequestHeader(value = "Authorization", required = false) String authHeader) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
-		try {
+			try {
+		        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+		            return response.createErrorResponse(401, "Token missing or invalid");
+		        }
+
+		        String token = authHeader.substring(7); // remove "Bearer "
+
+		        // TODO: validate token here
+		        System.out.println("Token = " + token);
+			
 			List<LeadDetails> followupOneList = leadService.getAllLeadList(leadRequestObject);
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
@@ -117,7 +155,8 @@ public class LeadController {
 	}
 	
 	@RequestMapping(path = "getAllHotLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getAllHotLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+	public Response<LeadDetails> getAllHotLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getAllHotLeadList(leadRequestObject);
@@ -129,7 +168,8 @@ public class LeadController {
 	}
 	
 	@RequestMapping(path = "getPickupLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getPickAndDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+	public Response<LeadDetails> getPickAndDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getPickupLeadList(leadRequestObject);
@@ -142,7 +182,8 @@ public class LeadController {
 	
 	
 	@RequestMapping(path = "getDropLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+	public Response<LeadDetails> getDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getDropLeadList(leadRequestObject);
@@ -154,7 +195,8 @@ public class LeadController {
 	}
 	
 	@RequestMapping(path = "getLeadByStatus", method = RequestMethod.POST)
-	public Response<LeadDetails> getLeadByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+	public Response<LeadDetails> getLeadByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getLeadByStatus(leadRequestObject);
