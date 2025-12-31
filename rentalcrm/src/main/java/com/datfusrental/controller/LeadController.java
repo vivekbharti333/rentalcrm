@@ -133,19 +133,9 @@ public class LeadController {
 
 	
 	@RequestMapping(path = "getAllLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getAllLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
-			 @RequestHeader(value = "Authorization", required = false) String authHeader) {
+	public Response<LeadDetails> getAllLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
-			try {
-		        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-		            return response.createErrorResponse(401, "Token missing or invalid");
-		        }
-
-		        String token = authHeader.substring(7); // remove "Bearer "
-
-		        // TODO: validate token here
-		        System.out.println("Token = " + token);
-			
+		try {
 			List<LeadDetails> followupOneList = leadService.getAllLeadList(leadRequestObject);
 			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
 		} catch (Exception e) {
@@ -155,8 +145,7 @@ public class LeadController {
 	}
 	
 	@RequestMapping(path = "getAllHotLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getAllHotLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
-			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+	public Response<LeadDetails> getAllHotLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getAllHotLeadList(leadRequestObject);
@@ -168,8 +157,7 @@ public class LeadController {
 	}
 	
 	@RequestMapping(path = "getPickupLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getPickAndDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
-			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+	public Response<LeadDetails> getPickAndDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getPickupLeadList(leadRequestObject);
@@ -182,8 +170,7 @@ public class LeadController {
 	
 	
 	@RequestMapping(path = "getDropLeadList", method = RequestMethod.POST)
-	public Response<LeadDetails> getDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject,
-			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+	public Response<LeadDetails> getDropLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getDropLeadList(leadRequestObject);
@@ -195,8 +182,7 @@ public class LeadController {
 	}
 	
 	@RequestMapping(path = "getLeadByStatus", method = RequestMethod.POST)
-	public Response<LeadDetails> getLeadByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
-			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+	public Response<LeadDetails> getLeadByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
 		try {
 			List<LeadDetails> followupOneList = leadService.getLeadByStatus(leadRequestObject);

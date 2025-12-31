@@ -20,10 +20,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @EnableWebMvc
 public class ApplicationConfiguration implements WebMvcConfigurer {
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		
-	}
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -46,5 +42,18 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 	    return mapper;
 	}
 	
+	
+	 @Override
+	    public void addInterceptors(InterceptorRegistry registry) {
+	        registry.addInterceptor(new TokenInterceptor())
+	                .addPathPatterns("/**")          // apply to all APIs
+	                .excludePathPatterns(
+	                        "/doLogin",
+	                        "doLogin",
+	                        "/generateToken",
+	                        "/health",
+	                        "/public/**"
+	                );
+	    }
 
 }
