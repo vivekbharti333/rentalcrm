@@ -50,6 +50,8 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 	                .excludePathPatterns(
 	                        "/doLogin",
 	                        "doLogin",
+	                        "/registerLead",
+	                        "registerLead",
 	                        "/generateToken",
 	                        "/health",
 	                        "/public/**"
