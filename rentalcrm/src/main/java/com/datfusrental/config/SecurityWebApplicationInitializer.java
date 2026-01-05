@@ -1,8 +1,17 @@
-package com.datfusrental.config;
+//package com.datfusrental.config;
+//
+//import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+//
+////public class SecurityWebApplicationInitializer extends AbstractSecurityWebApplicationInitializer {
+//	public class SecurityWebApplicationInitializer  {
+//
+//}
 
-import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+	
+	package com.datfusrental.config;
 
-//public class SecurityWebApplicationInitializer extends AbstractSecurityWebApplicationInitializer {
-	public class SecurityWebApplicationInitializer  {
+	import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
-}
+	public class SecurityWebApplicationInitializer
+	        extends AbstractSecurityWebApplicationInitializer {
+	}

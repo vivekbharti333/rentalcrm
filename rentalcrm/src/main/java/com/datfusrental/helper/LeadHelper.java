@@ -221,33 +221,49 @@ public class LeadHelper {
 		return leadDetails;
 	}
 
-
-	@SuppressWarnings("unchecked")
-	public List<LeadDetails> getAllLeadList(LeadRequestObject leadRequest) {
-		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
-			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.status NOT IN ('WON','INFO') ORDER BY LD.id DESC")
-					.setParameter("superadminId", leadRequest.getSuperadminId())
-					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
-					.setParameter("WON", "WON")
-					.setParameter("INFO", "INFO")
-					.getResultList();
-		} else {
-			results = leadDetailsDao.getEntityManager()
-					.createQuery("SELECT LD FROM LeadDetails LD WHERE LD.status NOT IN ('WON','INFO') ORDER BY LD.id DESC")
-					.setParameter("superadminId", leadRequest.getSuperadminId())
-					.setParameter("WON", "WON")
-					.setParameter("INFO", "INFO")
-					.setFirstResult(Constant.FIRST_RESULT)
-					.setMaxResults(Constant.MAX_RESULT)
-					.getResultList();
-		}
-
-		return results;
+	private Date plusOneDay(Date date) {
+	    if (date == null) return null;
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);
+	    cal.add(Calendar.DAY_OF_MONTH, 1);
+	    return cal.getTime();
 	}
-	
+
+
+	public List<LeadDetails> getAllLeadList(LeadRequestObject leadRequest) {
+
+	    List<String> excludedStatus = List.of("WON", "INFO");
+
+	    if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
+
+	        return leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
+	                LeadDetails.class
+	            )
+	            .setParameter("superadminId", leadRequest.getSuperadminId())
+	            .setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()))
+	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate())) 
+	            .setParameter("statusList", excludedStatus)
+	            .setFirstResult(Constant.FIRST_RESULT)
+	            .setMaxResults(Constant.MAX_RESULT)
+	            .getResultList();
+
+	    } else {
+
+	        return leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
+	                LeadDetails.class
+	            )
+	            .setParameter("superadminId", leadRequest.getSuperadminId())
+	            .setParameter("statusList", excludedStatus)
+	            .setFirstResult(Constant.FIRST_RESULT)
+	            .setMaxResults(Constant.MAX_RESULT)
+	            .getResultList();
+	    }
+	}
+
 	
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {

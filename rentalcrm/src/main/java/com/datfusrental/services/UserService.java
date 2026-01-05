@@ -42,6 +42,7 @@ public class UserService {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
+	
 //	@Autowired
 //	private ModelMapper modelMapper;
 	
@@ -51,68 +52,134 @@ public class UserService {
 //	    LoginRequestObject loginRequest = modelMapper.map(userDetails, LoginRequestObject.class);
 //	    return loginRequest;
 //	}
+	
 
-	public LoginRequestObject doLogin(Request<LoginRequestObject> loginRequestObject) throws BizException, Exception {
-		LoginRequestObject loginRequest = loginRequestObject.getPayload();
-		userHelper.validateLoginRequest(loginRequest);
-		
-		System.out.println("User id : "+loginRequest.getLoginId());
-		User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
-		if (user != null) {
-			if(user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
-				
-				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				loginRequest.setRespMesg(Constant.INACTIVE_USER);
-				return loginRequest;
-			}
-			
-			boolean isValid = userHelper.checkValidityOfUser(user.getValidityExpireOn());
-			if (isValid) {
-				if (BCrypt.checkpw(loginRequest.getPassword(), user.getSalt())) {
-					logger.info("Login Successfully: " + loginRequest);
 
-					// generate secret key.
-					String secretKey = jwtTokenUtil.generateSecretKey();
+	public LoginRequestObject doLogin(Request<LoginRequestObject> loginRequestObject)
+	        throws BizException, Exception {
 
-					// update secret key in UserDetails.
-					user.setSecretTokenKey(secretKey);
-					userHelper.UpdateUserDetails(user);
+	    LoginRequestObject loginRequest = loginRequestObject.getPayload();
+	    userHelper.validateLoginRequest(loginRequest);
 
-					String token = jwtTokenUtil.generateJwtToken(user);
+	    User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
 
-					loginRequest.setLoginId(user.getLoginId());
-					loginRequest.setPassword(null);
+	    if (user == null) {
+	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        loginRequest.setRespMesg(Constant.INVALID_LOGIN);
+	        return loginRequest;
+	    }
 
-					loginRequest.setUserPicture(user.getUserPicture());
-					loginRequest.setFirstName(user.getFirstName());
-					loginRequest.setLastName(user.getLastName());
-					loginRequest.setService(user.getService());
-					loginRequest.setPermissions(user.getPermissions());
-					loginRequest.setRoleType(user.getRoleType());
-					loginRequest.setSuperadminId(user.getSuperadminId());
-					loginRequest.setAdminId(user.getAdminId());
-					loginRequest.setTeamLeaderId(user.getTeamleaderId());
-					loginRequest.setToken(token);
+	    if (user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
+	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        loginRequest.setRespMesg(Constant.INACTIVE_USER);
+	        return loginRequest;
+	    }
 
-					loginRequest.setRespCode(Constant.SUCCESS_CODE);
-					loginRequest.setRespMesg(Constant.LOGIN_SUCCESS);
-					return loginRequest;
-				} else {
-					loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-					loginRequest.setRespMesg(Constant.INVALID_LOGIN);
-					return loginRequest;
-				}
-			} else {
-				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				loginRequest.setRespMesg(Constant.EXPIRED_LOGIN);
-				return loginRequest;
-			}
-		} else {
-			loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-			loginRequest.setRespMesg(Constant.INVALID_LOGIN);
-			return loginRequest;
-		}
+	    boolean isValid = userHelper.checkValidityOfUser(user.getValidityExpireOn());
+	    if (!isValid) {
+	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        loginRequest.setRespMesg(Constant.EXPIRED_LOGIN);
+	        return loginRequest;
+	    }
+
+	    // ✅ Password check
+	    if (!BCrypt.checkpw(loginRequest.getPassword(), user.getSalt())) {
+	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        loginRequest.setRespMesg(Constant.INVALID_LOGIN);
+	        return loginRequest;
+	    }
+
+	    // ================= LOGIN SUCCESS =================
+
+	    // 🔥 Generate JWT token
+	    String token = jwtTokenUtil.generateToken(user.getLoginId());
+
+	    // Clear sensitive data
+	    loginRequest.setPassword(null);
+
+	    // Set user info
+	    loginRequest.setLoginId(user.getLoginId());
+	    loginRequest.setUserPicture(user.getUserPicture());
+	    loginRequest.setFirstName(user.getFirstName());
+	    loginRequest.setLastName(user.getLastName());
+	    loginRequest.setService(user.getService());
+	    loginRequest.setPermissions(user.getPermissions());
+	    loginRequest.setRoleType(user.getRoleType());
+	    loginRequest.setSuperadminId(user.getSuperadminId());
+	    loginRequest.setAdminId(user.getAdminId());
+	    loginRequest.setTeamLeaderId(user.getTeamleaderId());
+
+	    // 🔥 IMPORTANT: set token in response
+	    loginRequest.setToken(token);
+
+	    loginRequest.setRespCode(Constant.SUCCESS_CODE);
+	    loginRequest.setRespMesg(Constant.LOGIN_SUCCESS);
+
+	    return loginRequest;
 	}
+
+
+//	public LoginRequestObject doLogin(Request<LoginRequestObject> loginRequestObject) throws BizException, Exception {
+//		LoginRequestObject loginRequest = loginRequestObject.getPayload();
+//		userHelper.validateLoginRequest(loginRequest);
+//		
+//		System.out.println("User id : "+loginRequest.getLoginId());
+//		User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
+//		if (user != null) {
+//			if(user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
+//				
+//				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//				loginRequest.setRespMesg(Constant.INACTIVE_USER);
+//				return loginRequest;
+//			}
+//			
+//			boolean isValid = userHelper.checkValidityOfUser(user.getValidityExpireOn());
+//			if (isValid) {
+//				if (BCrypt.checkpw(loginRequest.getPassword(), user.getSalt())) {
+//					logger.info("Login Successfully: " + loginRequest);
+//
+//					// generate secret key.
+////					String secretKey = jwtTokenUtil.generateSecretKey();
+//
+//					// update secret key in UserDetails.
+////					user.setSecretTokenKey(secretKey);
+////					userHelper.UpdateUserDetails(user);
+//
+////					String token = jwtTokenUtil.generateJwtToken(user);
+//
+//					loginRequest.setLoginId(user.getLoginId());
+//					loginRequest.setPassword(null);
+//
+//					loginRequest.setUserPicture(user.getUserPicture());
+//					loginRequest.setFirstName(user.getFirstName());
+//					loginRequest.setLastName(user.getLastName());
+//					loginRequest.setService(user.getService());
+//					loginRequest.setPermissions(user.getPermissions());
+//					loginRequest.setRoleType(user.getRoleType());
+//					loginRequest.setSuperadminId(user.getSuperadminId());
+//					loginRequest.setAdminId(user.getAdminId());
+//					loginRequest.setTeamLeaderId(user.getTeamleaderId());
+////					loginRequest.setToken(token);
+//
+//					loginRequest.setRespCode(Constant.SUCCESS_CODE);
+//					loginRequest.setRespMesg(Constant.LOGIN_SUCCESS);
+//					return loginRequest;
+//				} else {
+//					loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//					loginRequest.setRespMesg(Constant.INVALID_LOGIN);
+//					return loginRequest;
+//				}
+//			} else {
+//				loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//				loginRequest.setRespMesg(Constant.EXPIRED_LOGIN);
+//				return loginRequest;
+//			}
+//		} else {
+//			loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//			loginRequest.setRespMesg(Constant.INVALID_LOGIN);
+//			return loginRequest;
+//		}
+//	}
 	
 //	public UserRequestObject getUserDetailsByLoginId(Request<UserRequestObject> userRequestObject) throws BizException {
 //		UserRequestObject userRequest = userRequestObject.getPayload();
@@ -144,7 +211,7 @@ public class UserService {
 		
 		System.out.println(userRequest.getFirstName());
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
 //		if (isValid) {
 		
 		if(userRequest.getFirstName() == null || userRequest.getFirstName().equalsIgnoreCase("")) {

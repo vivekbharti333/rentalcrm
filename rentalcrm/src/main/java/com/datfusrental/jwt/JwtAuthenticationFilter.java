@@ -35,17 +35,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return getAuthenticationManager().authenticate(authToken);
     }
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String username = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername();
-        String token;
-		try {
-			token = jwtUtil.generateJwtToken(null);
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-        response.addHeader("Authorization", "Bearer " + null);
-    }
+//    @Override
+//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+//        String username = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername();
+//        String token;
+//		try {
+//			token = jwtUtil.generateJwtToken(null);
+//		} catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//        response.addHeader("Authorization", "Bearer " + null);
+//    }
 }

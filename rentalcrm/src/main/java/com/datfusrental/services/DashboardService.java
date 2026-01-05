@@ -37,14 +37,14 @@ public class DashboardService {
 		DashboardRequestObject dashboardRequest = dashboardRequestObject.getPayload();
 		dashboardHelper.validateDashboardRequest(dashboardRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(dashboardRequest.getLoginId(), dashboardRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(dashboardRequest.getLoginId(), dashboardRequest.getToken());
+//		if (isValid) {
 			Long totalNoOfUser = userHelper.getActiveAndInactiveUserCount(dashboardRequest);
 
 			dashboardRequest.setTotalNoOfUser(totalNoOfUser);
 			
 			
-		}
+//		}
 		return null;
 	}
 

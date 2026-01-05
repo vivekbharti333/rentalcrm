@@ -2,81 +2,54 @@ package com.datfusrental.jwt;
 
 import java.util.Date;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.datfusrental.entities.User;
-import com.datfusrental.helper.UserHelper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
 
 @Component
 public class JwtTokenUtil {
 
-	@Autowired
-	private UserHelper userHelper;
+    private static final Logger logger = Logger.getLogger(JwtTokenUtil.class);
 
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
+    // 🔐 ONE SECRET KEY (keep it safe)
+    private static final String SECRET_KEY = "MyVerySecretKeyForJwt123456789";
 
-	private static final long EXPIRE_DURATION = 12 * 60 * 60 * 1000; // 24 hour
+    // ⏰ 12 hours
+    private static final long EXPIRE_DURATION = 12 * 60 * 60 * 1000;
 
-	public String generateSecretKey() {
+    // ✅ GENERATE TOKEN
+    public String generateToken(String username) {
 
-		byte[] secretKeyBytes = new byte[32]; // 256 bits
-		SecureRandom secureRandom = new SecureRandom();
-		secureRandom.nextBytes(secretKeyBytes);
-		// Encode the secret key as a Base64-encoded string
-		String secretKey = Base64.getEncoder().encodeToString(secretKeyBytes);
-		return secretKey;
-	}
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .compact();
+    }
 
-	public String generateJwtToken(User user)
-			throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
-		return Jwts.builder()
-				.setSubject(user.getLoginId())
-				.setIssuer(user.getSuperadminId())
-				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-				.signWith(SignatureAlgorithm.HS512, user.getSecretTokenKey()).compact();
-	}
+    // ✅ VALIDATE TOKEN
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            logger.error("Invalid JWT token", e);
+            return false;
+        }
+    }
 
-	public boolean validateJwtToken(String loginId, String token) {
-		try {
-			User user = userHelper.getUserDetailsByLoginId(loginId);
-			if (user != null) {
-				Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(user.getSecretTokenKey()))
-						.parseClaimsJws(token).getBody();
-
-				// Check expiration time
-				Date expiration = claims.getExpiration();
-				Date now = new Date();
-				if (expiration.before(now)) {
-					logger.info("Token has expired");
-					return false;
-				} else if(!claims.getSubject().equalsIgnoreCase(loginId)) {
-					logger.info("Token is valid");
-					return false;
-				} else {
-					logger.info("Token is invalid");
-					return true;
-				}
-			} else {
-				logger.info("User Not Found");
-				return false;
-			}
-		} catch (Exception e) {
-			logger.info("Token verification failed");
-			return false;
-		}
-	}
-
+    // ✅ EXTRACT USERNAME
+    public String getUsername(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
 }

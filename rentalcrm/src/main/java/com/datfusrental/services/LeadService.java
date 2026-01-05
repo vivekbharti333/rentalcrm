@@ -73,8 +73,8 @@ public class LeadService {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
+//		if (isValid) {
 			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 			if (leadDetails != null) {
 				if(!leadRequest.getVendorName().equalsIgnoreCase("") || leadRequest.getVendorName() != null) {
@@ -91,11 +91,11 @@ public class LeadService {
 				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 				return leadRequest;
 			}
-		} else {
-			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return leadRequest;
-		}
+//		} else {
+//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return leadRequest;
+//		}
 	}
 
 	@Transactional
@@ -103,7 +103,7 @@ public class LeadService {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
 //		if (isValid) {
 
 		// Generate & set booking id

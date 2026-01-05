@@ -12,25 +12,23 @@ public class TokenInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
-        // ✅ Allow preflight requests
+        // ✅ Let preflight requests pass
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
 
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token missing or invalid");
+            response.sendError(
+                HttpServletResponse.SC_UNAUTHORIZED,
+                "Token missing or invalid"
+            );
             return false;
         }
 
-        String token = authHeader.substring(7);
-
-        // TODO: validate token
+        // TODO: token validation logic if needed
 
         return true;
     }
-
 }
-

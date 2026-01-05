@@ -34,8 +34,8 @@ public class UserRoleService {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userRoleHelper.validateUserRequest(userRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
+//		if (isValid) {
 
 			UserRoleMaster existsUserDetails = userRoleHelper.getUserRoleMasterByRoleType(userRequest.getRoleType());
 			if (existsUserDetails == null) {
@@ -51,11 +51,11 @@ public class UserRoleService {
 				userRequest.setRespMesg(Constant.USER_EXIST);
 				return userRequest;
 			}
-		} else {
-			userRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			userRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return userRequest;
-		}
+//		} else {
+//			userRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			userRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return userRequest;
+//		}
 	}
 
 	@Transactional
@@ -64,8 +64,8 @@ public class UserRoleService {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userRoleHelper.validateUserRequest(userRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
+//		if (isValid) {
 
 			UserRoleMaster userRoleMaster = userRoleHelper.getUserRoleMasterByRoleType(userRequest.getLoginId());
 			if (userRoleMaster != null) {
@@ -81,11 +81,11 @@ public class UserRoleService {
 				userRequest.setRespMesg(Constant.DATA_NOT_FOUND);
 				return userRequest;
 			}
-		} else {
-			userRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			userRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return userRequest;
-		}
+//		} else {
+//			userRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			userRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return userRequest;
+//		}
 	}
 
 	public List<UserRoleMaster> getUserRoleMaster(Request<UserRequestObject> userRequestObject) {
@@ -98,8 +98,8 @@ public class UserRoleService {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userRoleHelper.validateUserRequest(userRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
+//		if (isValid) {
 
 			UserRole existsUserRole = userRoleHelper.getUserRoleBySuperadminId(userRequest.getSuperadminId());
 			if (existsUserRole == null) {
@@ -118,11 +118,11 @@ public class UserRoleService {
 				userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
 				return userRequest;
 			}
-		} else {
-			userRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			userRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return userRequest;
-		}
+//		} else {
+//			userRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			userRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return userRequest;
+//		}
 	}
 
 //	public List<UserRole> getUserRole(Request<UserRequestObject> userRequestObject) {

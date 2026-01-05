@@ -31,7 +31,7 @@ public class LocationService {
 		LocationRequestObject itemRequest = itemRequestObject.getPayload();
 		locationHelper.validateLocationRequest(itemRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
 //		if (isValid) {
 			LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(itemRequest.getLocation(),
 					itemRequest.getLocationType(), itemRequest.getSuperadminId());
@@ -59,8 +59,8 @@ public class LocationService {
 		LocationRequestObject itemRequest = itemRequestObject.getPayload();
 		locationHelper.validateLocationRequest(itemRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
+//		if (isValid) {
 
 			LocationDetails locationDetails = locationHelper.getLocationDetailsById(itemRequest.getId());
 			if (locationDetails != null) {
@@ -76,11 +76,11 @@ public class LocationService {
 				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 				return itemRequest;
 			}
-		} else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
+//		} else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
 	}
 
 	public LocationRequestObject changeLocationStatus(Request<LocationRequestObject> itemRequestObject)
@@ -88,8 +88,8 @@ public class LocationService {
 		LocationRequestObject itemRequest = itemRequestObject.getPayload();
 		locationHelper.validateLocationRequest(itemRequest);
 
-		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
-		if (isValid) {
+//		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
+//		if (isValid) {
 			LocationDetails locationDetails = locationHelper.getLocationDetailsById(itemRequest.getId());
 			if (locationDetails != null) {
 				if (locationDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
@@ -103,11 +103,11 @@ public class LocationService {
 				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 				return itemRequest;
 			}
-		} else {
-			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-			return itemRequest;
-		}
+//		} else {
+//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return itemRequest;
+//		}
 		return itemRequest;
 
 	}
