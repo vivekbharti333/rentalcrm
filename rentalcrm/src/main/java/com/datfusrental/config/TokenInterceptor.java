@@ -12,6 +12,12 @@ public class TokenInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
+        // ✅ Allow preflight requests
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return true;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -21,10 +27,10 @@ public class TokenInterceptor implements HandlerInterceptor {
 
         String token = authHeader.substring(7);
 
-        // ✅ TODO: validate token here
-        // if (!tokenService.isValid(token)) { ... }
+        // TODO: validate token
 
-        return true; // allow request
+        return true;
     }
+
 }
 
