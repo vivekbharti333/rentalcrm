@@ -292,19 +292,18 @@ public class LeadHelper {
 		return results;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	public List<LeadDetails> getFollowupLeadList(LeadRequestObject leadRequest) {
-		List<LeadDetails> results = new ArrayList<>();
 
-		results = leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC")
-				.setParameter("superadminId", leadRequest.getSuperadminId())
-				.setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()), TemporalType.TIMESTAMP)
-	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
-				.getResultList();
-
-		return results;
+	    return leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	        .getResultList();
 	}
+
 
 	
 //	@SuppressWarnings("unchecked")

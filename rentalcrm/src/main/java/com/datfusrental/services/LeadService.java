@@ -255,31 +255,41 @@ public class LeadService {
 	}
 	
 	public List<LeadDetails> getFollowupLeadList(Request<LeadRequestObject> leadRequestObject) {
-		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		LocalDate today = LocalDate.now(); // should be initialized elsewhere
-		ZoneId zone = ZoneId.systemDefault();
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		switch (leadRequest.getRequestedFor().toUpperCase()) {
-		case "FOLLOWUP_ONE":
-			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-			break;
-		case "FOLLOWUP_TWO":
-			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
-			break;
-		case "FOLLOWUP_THREE":
-			leadRequest.setFirstDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
-			leadRequest.setLastDate(Date.from(today.plusDays(4).atStartOfDay(zone).toInstant()));
-			break;
-		default:
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-		}
-			
-		List<LeadDetails> leadList = leadHelper.getFollowupLeadList(leadRequest);
-		return leadList;
+	    LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
+
+	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+
+	        case "FOLLOWUP_ONE":
+	            // 2 days ago
+	            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "FOLLOWUP_TWO":
+	            // 3 days ago
+	            leadRequest.setFirstDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "FOLLOWUP_THREE":
+	            // 4 days ago
+	            leadRequest.setFirstDate(Date.from(today.minusDays(4).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        default:
+	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+	    }
+
+	    System.out.println("First Date : " + leadRequest.getFirstDate());
+	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+
+	    return leadHelper.getFollowupLeadList(leadRequest);
 	}
 
 	public List<LeadDetails> getPickupLeadList(Request<LeadRequestObject> leadRequestObject) {
