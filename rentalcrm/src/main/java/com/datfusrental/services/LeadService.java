@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.LeadDetailsHistoryDao;
@@ -250,6 +253,34 @@ public class LeadService {
 		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
 		return leadList;
 	}
+	
+	public List<LeadDetails> getFollowupLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		LocalDate today = LocalDate.now(); // should be initialized elsewhere
+		ZoneId zone = ZoneId.systemDefault();
+
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
+		case "FOLLOWUP_ONE":
+			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			break;
+		case "FOLLOWUP_TWO":
+			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			break;
+		case "FOLLOWUP_THREE":
+			leadRequest.setFirstDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(4).atStartOfDay(zone).toInstant()));
+			break;
+		default:
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		}
+			
+		List<LeadDetails> leadList = leadHelper.getFollowupLeadList(leadRequest);
+		return leadList;
+	}
 
 	public List<LeadDetails> getPickupLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
@@ -323,5 +354,7 @@ public class LeadService {
 
 	    return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
+
+
 
 }

@@ -269,22 +269,38 @@ public class LeadHelper {
 	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
 
 		List<LeadDetails> results = new ArrayList<>();
-
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		Date startDate = cal.getTime();
-
-		cal.add(Calendar.DAY_OF_MONTH, 1);
-		Date endDate = cal.getTime();
+//
+//		Calendar cal = Calendar.getInstance();
+//		cal.set(Calendar.HOUR_OF_DAY, 0);
+//		cal.set(Calendar.MINUTE, 0);
+//		cal.set(Calendar.SECOND, 0);
+//		cal.set(Calendar.MILLISECOND, 0);
+//		Date startDate = cal.getTime();
+//
+//		cal.add(Calendar.DAY_OF_MONTH, 1);
+//		Date endDate = cal.getTime();
 
 		results = leadDetailsDao.getEntityManager().createQuery(
 				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC")
 				.setParameter("superadminId", leadRequest.getSuperadminId())
-				.setParameter("startDate", startDate, TemporalType.TIMESTAMP)
-				.setParameter("endDate", endDate, TemporalType.TIMESTAMP)
+				.setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()), TemporalType.TIMESTAMP)
+	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
+//				.setParameter("startDate", startDate, TemporalType.TIMESTAMP)
+//				.setParameter("endDate", endDate, TemporalType.TIMESTAMP)
+				.getResultList();
+
+		return results;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<LeadDetails> getFollowupLeadList(LeadRequestObject leadRequest) {
+		List<LeadDetails> results = new ArrayList<>();
+
+		results = leadDetailsDao.getEntityManager().createQuery(
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC")
+				.setParameter("superadminId", leadRequest.getSuperadminId())
+				.setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()), TemporalType.TIMESTAMP)
+	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
 				.getResultList();
 
 		return results;
