@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
@@ -90,6 +91,19 @@ public class LeadController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "getLeadHistoryById", method = RequestMethod.POST)
+	public Response<LeadDetailsHistory> getLeadHistoryById(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+		GenricResponse<LeadDetailsHistory> response = new GenricResponse<LeadDetailsHistory>();
+		try {
+			List<LeadDetailsHistory> followupOneList = leadService.getLeadHistoryById(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		}
 	}
 	

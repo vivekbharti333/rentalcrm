@@ -19,7 +19,9 @@ import org.springframework.stereotype.Component;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.LeadDetailsDao;
+import com.datfusrental.dao.LeadDetailsHistoryDao;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.entities.User;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.RoleType;
@@ -31,6 +33,9 @@ public class LeadHelper {
 
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
+	
+	@Autowired
+	private LeadDetailsHistoryDao leadDetailsHistoryDao;
 	
 	@Autowired
 	private UserHelper userHelper;
@@ -219,6 +224,19 @@ public class LeadHelper {
 	public LeadDetails updateLeadDetails(LeadDetails leadDetails) {
 		leadDetailsDao.update(leadDetails);
 		return leadDetails;
+	}
+	
+	public List<LeadDetailsHistory> getLeadHistoryById(LeadRequestObject leadRequest) {
+
+		 List<LeadDetailsHistory> results = new ArrayList<>();
+		 results = leadDetailsHistoryDao.getEntityManager()
+		            .createQuery("SELECT LH FROM LeadDetailsHistory LH WHERE LH.leadId = :leadId ORDER BY LH.id DESC",
+		                LeadDetailsHistory.class)
+		            .setParameter("leadId", leadRequest.getId())
+		            .setFirstResult(Constant.FIRST_RESULT)
+		            .setMaxResults(Constant.MAX_RESULT)
+		            .getResultList();
+		return results;
 	}
 
 	private Date plusOneDay(Date date) {

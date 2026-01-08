@@ -223,7 +223,7 @@ public class LeadService {
 	        existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
 	        existingLead = leadHelper.updateLeadDetails(existingLead);
 
-	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead);
+	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
 
 	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
 	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
@@ -233,6 +233,13 @@ public class LeadService {
 	        leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 	        return leadRequest;
 	    }
+	}
+	
+	public List<LeadDetailsHistory> getLeadHistoryById(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		List<LeadDetailsHistory> leadHistoryList = leadHelper.getLeadHistoryById(leadRequest);
+		return leadHistoryList;
 	}
 
 	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {
@@ -364,6 +371,8 @@ public class LeadService {
 
 	    return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
+
+
 
 
 

@@ -33,7 +33,7 @@ public class LeadDetailsHistoryHelper {
 	}
 
 	@Transactional
-	public void updateLeadHistory(LeadDetails oldLead, LeadDetails newLead) throws BizException, Exception {
+	public void updateLeadHistory(LeadDetails oldLead, LeadDetails newLead, LeadRequestObject leadRequest) throws BizException, Exception {
 
 		// ✅ Compare old vs new
 		Map<String, Map<String, Object>> differences = entityDiffUtil.getDifferences(oldLead, newLead);
@@ -45,6 +45,7 @@ public class LeadDetailsHistoryHelper {
 		history.setUpdatedBy(newLead.getUpdatedBy());
 		history.setUpdatedAt(new Date());
 		history.setActionType("UPDATED");
+		history.setUpdatedBy(leadRequest.getLoginId());
 		leadDetailsHistoryDao.persist(history);
 
 	}
