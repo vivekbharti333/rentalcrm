@@ -18,28 +18,39 @@ public class LeadByPickAndDropHelper {
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
+//	public List<LeadDetails> getPickupLeadList(LeadRequestObject leadRequest) {
+//		List<LeadDetails> results = new ArrayList<LeadDetails>();
+//		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+//				results = leadDetailsDao.getEntityManager().createQuery(
+//						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
+//						.setParameter("superadminId", leadRequest.getSuperadminId())
+//						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+//						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
+//						.getResultList();
+//		} 
+//		else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
+//				results = leadDetailsDao.getEntityManager().createQuery(
+//					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+//						.setParameter("superadminId", leadRequest.getSuperadminId())
+//						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+//						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
+//						.getResultList();
+//				return results;
+//			} 
+//			
+//		return results;
+//	}
+	
 	public List<LeadDetails> getPickupLeadList(LeadRequestObject leadRequest) {
-		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
-				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
-						.setParameter("superadminId", leadRequest.getSuperadminId())
-						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
-						.getResultList();
-		} 
-		else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
-				results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
-						.setParameter("superadminId", leadRequest.getSuperadminId())
-						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-						.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
-						.getResultList();
-				return results;
-			} 
-			
-		return results;
+
+	    return leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	        .getResultList();
 	}
 	
 	

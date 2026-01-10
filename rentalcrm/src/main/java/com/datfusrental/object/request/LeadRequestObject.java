@@ -2,8 +2,7 @@ package com.datfusrental.object.request;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Lob;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -27,7 +26,9 @@ public class LeadRequestObject {
 	private String pickupHub;
 	private String pickupPoint;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Kolkata")
 	private Date pickupDateTime;
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Kolkata")
 	private Date dropDateTime;
 	
 //	private Date dropDate;

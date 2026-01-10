@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Data;
 
@@ -40,6 +42,7 @@ public class LeadDetails {
 	@Column(name = "sub_category")
 	private String subCategory;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "pickup_date_time")
 	private Date pickupDateTime;
 	
@@ -49,6 +52,7 @@ public class LeadDetails {
 	@Column(name = "pickup_point")
 	private String pickupPoint;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "drop_date_time")
 	private Date dropDateTime;
 	
