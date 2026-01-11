@@ -65,7 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(List.of(
             "http://localhost:*",
-            "https://myrranrentals.work"
+            "https://myrranrentals.work",
+            "https://romeyourway.com/",
+            "https://nautiamigo.com/"
+            
         ));
         config.setAllowedMethods(List.of(
             "GET", "POST", "PUT", "DELETE", "OPTIONS"
