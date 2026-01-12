@@ -71,7 +71,8 @@ public class CashfreePaymentGateways {
         JSONObject jsonBody = new JSONObject(); 
 
         jsonBody.put("link_id", leadRequest.getBookingId());
-        jsonBody.put("link_amount", leadRequest.getBookingAmount());
+//        jsonBody.put("link_amount", leadRequest.getBookingAmount());
+        jsonBody.put("link_amount", leadRequest.getActualAmount());
         jsonBody.put("link_currency", "INR");
         jsonBody.put("link_purpose", leadRequest.getCategory());
 

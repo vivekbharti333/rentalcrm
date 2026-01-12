@@ -289,32 +289,64 @@ public class LeadHelper {
 	}
 
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
+//	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
+//
+//		List<LeadDetails> results = new ArrayList<>();
+////
+////		Calendar cal = Calendar.getInstance();
+////		cal.set(Calendar.HOUR_OF_DAY, 0);
+////		cal.set(Calendar.MINUTE, 0);
+////		cal.set(Calendar.SECOND, 0);
+////		cal.set(Calendar.MILLISECOND, 0);
+////		Date startDate = cal.getTime();
+////
+////		cal.add(Calendar.DAY_OF_MONTH, 1);
+////		Date endDate = cal.getTime();
+//
+//		results = leadDetailsDao.getEntityManager().createQuery(
+//				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC")
+//				.setParameter("superadminId", leadRequest.getSuperadminId())
+////				.setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()), TemporalType.TIMESTAMP)
+////	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
+//				.setParameter("firstDate",new Date(), TemporalType.TIMESTAMP)
+//	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
+//
+//				.getResultList();
+//
+//		return results;
+//	}
+	
+
 	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
 
-		List<LeadDetails> results = new ArrayList<>();
-//
-//		Calendar cal = Calendar.getInstance();
-//		cal.set(Calendar.HOUR_OF_DAY, 0);
-//		cal.set(Calendar.MINUTE, 0);
-//		cal.set(Calendar.SECOND, 0);
-//		cal.set(Calendar.MILLISECOND, 0);
-//		Date startDate = cal.getTime();
-//
-//		cal.add(Calendar.DAY_OF_MONTH, 1);
-//		Date endDate = cal.getTime();
+	    if (leadRequest.getFirstDate() == null || leadRequest.getLastDate() == null) {
+	        return new ArrayList<>();
+	    }
 
-		results = leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC")
-				.setParameter("superadminId", leadRequest.getSuperadminId())
-				.setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()), TemporalType.TIMESTAMP)
-	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
-//				.setParameter("startDate", startDate, TemporalType.TIMESTAMP)
-//				.setParameter("endDate", endDate, TemporalType.TIMESTAMP)
-				.getResultList();
+	    // Calculate end date = lastDate + 1 day
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(leadRequest.getLastDate());
+	    cal.add(Calendar.DAY_OF_MONTH, 1);
+	    Date endDate = cal.getTime();
 
-		return results;
+	    return leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD " +
+	            "WHERE LD.superadminId = :superadminId " +
+	            "AND LD.pickupDateTime >= :startDate " +
+	            "AND LD.pickupDateTime < :endDate " +
+	            "AND LD.createdAt >= :startDate " +
+	            "AND LD.createdAt < :endDate " +
+	            "ORDER BY LD.id DESC",
+	            LeadDetails.class
+	        )
+	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("endDate", endDate, TemporalType.TIMESTAMP)
+	        .getResultList();
 	}
+
 
 
 	public List<LeadDetails> getFollowupLeadList(LeadRequestObject leadRequest) {
