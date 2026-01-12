@@ -140,20 +140,26 @@ public class LeadHelper {
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());
 
-		if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
-			
-			leadDetails.setCreatedBy("WEBSITE");
-			leadDetails.setCreatedByName("WEBSITE");
-			leadDetails.setTeamleaderId("WEBSITE");
-			leadDetails.setAdminId("WEBSITE");
-			leadDetails.setSuperadminId("WEBSITE");
-		} else {
-			leadDetails.setCreatedBy(leadRequest.getCreatedBy());
-			leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
-			leadDetails.setTeamleaderId(user.getTeamleaderId());
-			leadDetails.setAdminId(user.getAdminId());
-			leadDetails.setSuperadminId(leadRequest.getSuperadminId());
-		}
+//		if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+//			
+//			leadDetails.setCreatedBy("WEBSITE");
+//			leadDetails.setCreatedByName("WEBSITE");
+//			leadDetails.setTeamleaderId("WEBSITE");
+//			leadDetails.setAdminId("WEBSITE");
+//			leadDetails.setSuperadminId("1234567890");
+//		} else {
+//			leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+//			leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
+//			leadDetails.setTeamleaderId(user.getTeamleaderId());
+//			leadDetails.setAdminId(user.getAdminId());
+//			leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+//		}
+		
+		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+		leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
+		leadDetails.setTeamleaderId(user.getTeamleaderId());
+		leadDetails.setAdminId(user.getAdminId());
+		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
 		return leadDetails;
 	}
 
