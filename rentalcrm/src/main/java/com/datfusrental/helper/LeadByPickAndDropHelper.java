@@ -10,6 +10,7 @@ import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.RoleType;
+import com.datfusrental.enums.Status;
 import com.datfusrental.object.request.LeadRequestObject;
 
 @Component
@@ -53,6 +54,18 @@ public class LeadByPickAndDropHelper {
 	        .getResultList();
 	}
 	
+
+	public List<LeadDetails> getPickupWonLeadList(LeadRequestObject leadRequest) {
+		return leadDetailsDao.getEntityManager()
+		        .createQuery(
+		            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status =:status AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+		        .setParameter("superadminId", leadRequest.getSuperadminId())
+		        .setParameter("status", Status.WON.name())
+		        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+		        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+		        .getResultList();
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getDropLeadList(LeadRequestObject leadRequest) {
@@ -78,4 +91,6 @@ public class LeadByPickAndDropHelper {
 			
 		return results;
 	}
+
+
 }

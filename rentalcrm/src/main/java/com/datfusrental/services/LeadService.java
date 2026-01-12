@@ -340,6 +340,48 @@ public class LeadService {
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupLeadList(leadRequest);
 		return leadList;
 	}
+	
+	public List<LeadDetails> getPickupWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+	    LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
+	    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+
+	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+
+	        case "TODAY_PICKUP":
+	            // 2 days ago
+	            leadRequest.setFirstDate(firstDate);
+	            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "TOMORROW_PICKUP":
+	            // 3 days ago
+	            leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "AFTER_TOMORROW_PICKUP":
+	            // 4 days ago
+	            leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "CUSTOM":
+	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+	        default:
+//	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+//	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+	    }
+
+	    System.out.println("First Date : " + leadRequest.getFirstDate());
+	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+
+		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupWonLeadList(leadRequest);
+		return leadList;
+	}
 
 	public List<LeadDetails> getDropLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
@@ -391,6 +433,8 @@ public class LeadService {
 
 	    return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
+
+
 
 
 
