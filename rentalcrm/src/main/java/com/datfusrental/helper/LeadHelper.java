@@ -324,36 +324,30 @@ public class LeadHelper {
 	        return new ArrayList<>();
 	    }
 
-	    // Calculate end date = lastDate + 1 day
-	    Calendar cal = Calendar.getInstance();
-	    cal.setTime(leadRequest.getLastDate());
-	    cal.add(Calendar.DAY_OF_MONTH, 1);
-	    Date endDate = cal.getTime();
-
+//	    // Calculate end date = lastDate + 1 day
+//	    Calendar cal = Calendar.getInstance();
+//	    cal.setTime(leadRequest.getLastDate());
+//	    cal.add(Calendar.DAY_OF_MONTH, 1);
+//	    Date endDate = cal.getTime();
+//
+//	    System.out.println("Start : "+leadRequest.getFirstDate());
+//	    System.out.println("End : "+endDate);
+	    
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD " +
-	            "WHERE LD.superadminId = :superadminId " +
-	            "AND LD.pickupDateTime >= :startDate " +
-	            "AND LD.pickupDateTime < :endDate " +
-	            "AND LD.createdAt >= :startDate " +
-	            "AND LD.createdAt < :endDate " +
-	            "ORDER BY LD.id DESC",
-	            LeadDetails.class
-	        )
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
+	            LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-	        .setParameter("endDate", endDate, TemporalType.TIMESTAMP)
+	        .setParameter("endDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
 	}
-
-
 
 	public List<LeadDetails> getFollowupLeadList(LeadRequestObject leadRequest) {
 
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt <= :lastDate ORDER BY LD.id DESC", LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)

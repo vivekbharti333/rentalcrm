@@ -257,6 +257,16 @@ public class LeadService {
 
 	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		
+		LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
+		
+		leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+        
+        System.out.println("1 : "+leadRequest.getFirstDate());
+        System.out.println("2 : "+leadRequest.getLastDate());
+        
 		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
 		return leadList;
 	}
