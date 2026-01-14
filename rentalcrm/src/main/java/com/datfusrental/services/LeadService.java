@@ -35,6 +35,8 @@ import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.paymentgateways.CashfreePaymentGateways;
 import com.datfusrental.util.EntityDiffUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.DoubleArraySerializer;
 
 
@@ -69,6 +71,9 @@ public class LeadService {
 	
 	@Autowired
 	private CashfreePaymentGateways cashfreePaymentGateways;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Transactional
 	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
@@ -172,19 +177,57 @@ public class LeadService {
 	            return leadRequest;
 	        }
 
-	        // 2) Get payment status using order ID
-	        String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
+//	        // 2) Get payment status using order ID
+//	        String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
+//	        
+//	        System.out.println("Enter 3 : "+paymentStatus);
+//
+//	        if (paymentStatus == null) {
+//	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//	            leadRequest.setRespMesg("Unable to fetch payment status.");
+//	            return leadRequest;
+//	        }
+//
+//	        // 3) Update status based on payment
+//	        if (paymentStatus.equalsIgnoreCase("SUCCESS") || paymentStatus.equalsIgnoreCase("PAID")) {
+//	            leadDetails.setStatus("WON");
+//	        } else {
+//	            leadDetails.setStatus(paymentStatus);
+//	        }
 	        
-	        System.out.println("Enter 3 : "+paymentStatus);
+	        String responseBody =
+	                cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
 
-	        if (paymentStatus == null) {
+	        System.out.println("Enter 3 : " + responseBody);
+
+	        if (responseBody == null) {
 	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
 	            leadRequest.setRespMesg("Unable to fetch payment status.");
 	            return leadRequest;
 	        }
 
-	        // 3) Update status based on payment
-	        if (paymentStatus.equalsIgnoreCase("SUCCESS") || paymentStatus.equalsIgnoreCase("PAID")) {
+	        // Extract payment_status from responseBody
+	        String paymentStatus = null;
+	        try {
+	            JsonNode rootArray = objectMapper.readTree(responseBody);
+	            if (rootArray.isArray() && rootArray.size() > 0) {
+	                JsonNode firstPayment = rootArray.get(0);
+	                if (firstPayment.has("payment_status")) {
+	                    paymentStatus = firstPayment.get("payment_status").asText();
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        if (paymentStatus == null) {
+	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	            leadRequest.setRespMesg("Payment status not found.");
+	            return leadRequest;
+	        }
+
+	        // Update lead status
+	        if ("SUCCESS".equalsIgnoreCase(paymentStatus) || "PAID".equalsIgnoreCase(paymentStatus)) {
 	            leadDetails.setStatus("WON");
 	        } else {
 	            leadDetails.setStatus(paymentStatus);
@@ -192,6 +235,8 @@ public class LeadService {
 
 	        leadDetails.setUpdatedAt(new Date());
 	        leadHelper.updateLeadDetails(leadDetails);
+	        
+	        leadRequest.setPgResponseBody(responseBody);
 
 	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
 	        leadRequest.setRespMesg("Your Payment is " + paymentStatus);

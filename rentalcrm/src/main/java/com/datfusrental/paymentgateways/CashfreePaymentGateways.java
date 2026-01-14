@@ -171,28 +171,40 @@ public class CashfreePaymentGateways {
                 .addHeader("x-client-secret", pgDetails.getSecurityKey())
                 .addHeader("Accept", "application/json")
                 .build();
-
+        
         try (Response response = client.newCall(request).execute()) {
+
             if (response.isSuccessful() && response.body() != null) {
-                String responseBody = response.body().string();
-
-                // Parse the root JSON as an array
-                JsonNode rootArray = objectMapper.readTree(responseBody);
-
-                if (rootArray.isArray() && rootArray.size() > 0) {
-                    JsonNode firstPayment = rootArray.get(0);
-
-                    // Read the payment_status field
-                    if (firstPayment.has("payment_status")) {
-                        return firstPayment.get("payment_status").asText();
-                    }
-                }
+                return response.body().string(); // ✅ return full JSON
             } else {
                 System.out.println("Request failed. Code: " + response.code());
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+//        try (Response response = client.newCall(request).execute()) {
+//            if (response.isSuccessful() && response.body() != null) {
+//                String responseBody = response.body().string();
+//
+//                // Parse the root JSON as an array
+//                JsonNode rootArray = objectMapper.readTree(responseBody);
+//
+//                if (rootArray.isArray() && rootArray.size() > 0) {
+//                    JsonNode firstPayment = rootArray.get(0);
+//
+//                    // Read the payment_status field
+//                    if (firstPayment.has("payment_status")) {
+//                        return firstPayment.get("payment_status").asText();
+//                    }
+//                }
+//            } else {
+//                System.out.println("Request failed. Code: " + response.code());
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 

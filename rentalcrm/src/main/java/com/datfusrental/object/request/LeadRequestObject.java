@@ -94,6 +94,8 @@ public class LeadRequestObject {
 	private String pgUrl;
 	private String pgRespUrl;
 	
+	private String pgResponseBody;
+	
 	private int respCode;
 	private String respMesg;
 	
