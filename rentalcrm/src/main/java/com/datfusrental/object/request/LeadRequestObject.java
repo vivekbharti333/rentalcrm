@@ -93,6 +93,8 @@ public class LeadRequestObject {
 	private String paymentUrl;
 	private String pgUrl;
 	private String pgRespUrl;
+	private String otp;
+	private int otpCount;
 	
 	private String pgResponseBody;
 	

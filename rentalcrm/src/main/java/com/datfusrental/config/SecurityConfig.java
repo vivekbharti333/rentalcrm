@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -30,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .authorizeRequests()
 
+                // ✅ MUST allow preflight requests
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                 // ✅ PUBLIC URLs
                 .antMatchers(
                     "/",
@@ -42,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/WEB-INF/views/**"
                 ).permitAll()
 
-                // 🔒 PROTECT APIs
+                // 🔒 PROTECTED APIs
                 .antMatchers("/api/**").authenticated()
 
                 .anyRequest().permitAll()
@@ -51,33 +55,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        // ✅ JWT FILTER
         http.addFilterBefore(
             jwtAuthenticationFilter,
             UsernamePasswordAuthenticationFilter.class
         );
     }
 
-    // ✅ CORS (SECURITY LEVEL)
+    // ✅ CORS CONFIGURATION (PRODUCTION SAFE)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
+
+        // REQUIRED when Authorization header / cookies are used
         config.setAllowCredentials(true);
+
+        // ✅ DO NOT USE TRAILING SLASH
         config.setAllowedOriginPatterns(List.of(
             "http://localhost:*",
             "https://myrranrentals.work",
-            "https://romeyourway.com/",
-            "https://nautiamigo.com/",
-            "https://www.nautiamigo.com/",
-            "https://www.romeyourway.com/",
+            "https://romeyourway.com",
+            "https://www.romeyourway.com",
+            "https://nautiamigo.com",
+            "https://www.nautiamigo.com",
+            "https://www.bookings.nautiamigo.com",
+            "https://*.nautiamigo.com",
             "https://www.bookings.nautiamigo.com"
             
         ));
+
         config.setAllowedMethods(List.of(
             "GET", "POST", "PUT", "DELETE", "OPTIONS"
         ));
+
         config.setAllowedHeaders(List.of(
-            "Authorization", "Content-Type"
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept"
         ));
 
         UrlBasedCorsConfigurationSource source =
