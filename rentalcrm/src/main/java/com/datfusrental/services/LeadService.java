@@ -327,20 +327,20 @@ public class LeadService {
 
 	        case "FOLLOWUP_ONE":
 	            // 2 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+	            leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
 	            break;
 
 	        case "FOLLOWUP_TWO":
 	            // 3 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+	            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
 	            break;
 
 	        case "FOLLOWUP_THREE":
 	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusDays(4).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+	            leadRequest.setFirstDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
 	            break;
 
 	        default:
@@ -488,6 +488,23 @@ public class LeadService {
 
 	    return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
+	
+	public List<LeadDetails> getEnquiryList(Request<LeadRequestObject> leadRequestObject) {
+
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+	    LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
+
+        leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	           
+	    System.out.println("First Date : " + leadRequest.getFirstDate());
+	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+
+	    return leadByStatusHelper.getEnquiryList(leadRequest);
+	}
+
 
 
 
