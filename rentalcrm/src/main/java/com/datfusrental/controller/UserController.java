@@ -208,6 +208,18 @@ public class UserController {
 		}
 	}
 	
+	@RequestMapping(path = "getAdminListForDropDown", method = RequestMethod.POST)
+	public Response<User> getAdminListForDropDown(@RequestBody Request<UserRequestObject> userRequestObject) {
+		GenricResponse<User> response = new GenricResponse<User>();
+		try {
+			List<User> userList = userService.getAdminListForDropDown(userRequestObject);
+			return response.createListResponse(userList, 200);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
 	@RequestMapping(path = "getAddressDetails", method = RequestMethod.POST)
 	public Response<AddressDetails> getAddressDetails(@RequestBody Request<UserRequestObject> userRequestObject) {
 		GenricResponse<AddressDetails> response = new GenricResponse<AddressDetails>();

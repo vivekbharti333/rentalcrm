@@ -195,8 +195,7 @@ public class LeadService {
 //	            leadDetails.setStatus(paymentStatus);
 //	        }
 	        
-	        String responseBody =
-	                cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
+	        String responseBody = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
 
 	        System.out.println("Enter 3 : " + responseBody);
 

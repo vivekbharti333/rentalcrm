@@ -175,8 +175,6 @@ public class UserHelper {
 		if(userRequest.getAdminId() == null || userRequest.getAdminId().equals("")) {
 			user.setAdminId(userRequest.getCreatedBy());
 		}
-		System.out.println("ADMIN:"+userRequest.getAdminId()+":");
-		System.out.println("Teamleader:"+userRequest.getTeamleaderId()+":");
 	
 		return user;
 	}
@@ -197,6 +195,7 @@ public class UserHelper {
 		user.setMobileNo(userRequest.getMobileNo());
 		user.setAlternateMobile(userRequest.getAlternateMobile());
 		user.setEmailId(userRequest.getEmailId());
+		user.setPermissions(userRequest.getPermissions());
 		user.setUpdatedAt(new Date());
 
 		return user;
@@ -257,21 +256,29 @@ public class UserHelper {
 	@SuppressWarnings("unchecked")
 	public List<User> getUserListForDropDown(UserRequestObject userRequest) {
 		
-		List<String> excludedRoleTypes = new ArrayList<String>();
-		if(userRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
-			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name(), RoleType.ADMIN.name());
-			
-		}else if(userRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
-			excludedRoleTypes = Arrays.asList(RoleType.ADMIN.name(), RoleType.TEAM_LEADER.name());
-		}
+//		List<String> excludedRoleTypes = new ArrayList<String>();
+//		if(userRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+//			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name());
+//			
+//		}else if(userRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
+//			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name(), RoleType.SUPERADMIN.name());
+//			
+//		}else if(userRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
+//			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name());
+//		}
 		
 		List<User> results = userDetailsDao.getEntityManager()
-				.createQuery("SELECT UD FROM User UD WHERE roleType IN :roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
-				.setParameter("roleType", excludedRoleTypes)
+				.createQuery("SELECT UD FROM User UD WHERE roleType =:roleType AND UD.superadminId =:superadminId AND status NOT IN :REMOVED")
+				.setParameter("roleType", RoleType.SUPERADMIN.name())
 				.setParameter("superadminId", userRequest.getSuperadminId())
 				.setParameter("REMOVED", Status.REMOVED.name())
 				.getResultList();
 		return results;
+	}
+	
+	public List<User> getAdminListForDropDown(UserRequestObject userRequest) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 
@@ -316,6 +323,8 @@ public class UserHelper {
 		}
 		return count;
 	}
+
+
 
 
 }

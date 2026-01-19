@@ -172,25 +172,19 @@ public class LeadHelper {
 	public LeadDetails getUpdatedLeadDetailsByReqObj(LeadRequestObject leadRequest, LeadDetails leadDetails) {
 
 
-//		leadDetails.setBookingId(leadRequest.getBookingId());
-//		leadDetails.setCompanyName(leadRequest.getCompanyName());
-//		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
-//		leadDetails.setSubCategory(leadRequest.getSubCategory());
-//		leadDetails.setItemName(leadRequest.getItemName());
+		leadDetails.setSubCategory(leadRequest.getSubCategory());
 
 		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());  
-//		leadDetails.setPickupDate(leadRequest.getPickupDate());
-//		leadDetails.setPickupTime(leadRequest.getPickupTime());
 		leadDetails.setPickupHub(leadRequest.getPickupHub());
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
 		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
-//		leadDetails.setDropDate(leadRequest.getDropDate());
-//		leadDetails.setDropTime(leadRequest.getDropTime());
 		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
+		
+		leadDetails.setTotalDays(leadRequest.getTotalDays());
 
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
 		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
@@ -210,6 +204,14 @@ public class LeadHelper {
 		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
 		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+		
+		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
+		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
+		
+		leadDetails.setActualAmount(leadRequest.getActualAmount());
+		
+		leadDetails.setDiscountType(leadRequest.getDiscountType());
+		leadDetails.setDiscount(leadRequest.getDiscount());
 
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());
@@ -217,6 +219,9 @@ public class LeadHelper {
 
 		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
 		leadDetails.setLeadType(leadRequest.getLeadType());
+		
+		leadDetails.setNextFollowupDate(leadRequest.getNextFollowupDate());
+		leadDetails.setNotes(leadRequest.getNotes());
 
 		leadDetails.setUpdatedAt(new Date());
 

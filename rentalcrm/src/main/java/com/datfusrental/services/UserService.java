@@ -452,12 +452,21 @@ public class UserService {
 		List<User> userList = userHelper.getUserListForDropDown(userRequest);
 		return userList;
 	}
+	
+	public List<User> getAdminListForDropDown(Request<UserRequestObject> userRequestObject) {
+		UserRequestObject userRequest = userRequestObject.getPayload();
+		List<User> userList = userHelper.getAdminListForDropDown(userRequest);
+		return userList;
+	}
 
 	public List<AddressDetails> getAddressDetails(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		List<AddressDetails> addressList = userHelper.getAddressDetails(userRequest);
 		return addressList;
 	}
+
+
+
 
 	
 }
