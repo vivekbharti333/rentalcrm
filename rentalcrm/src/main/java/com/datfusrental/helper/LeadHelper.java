@@ -45,6 +45,8 @@ public class LeadHelper {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
 		}
 	}
+	
+	List<String> excludedStatuses = List.of("WON", "LOST", "CANCELLED");
 
 	@Transactional
 	public LeadDetails getLeadDetailsById(Long id) {
@@ -99,6 +101,7 @@ public class LeadHelper {
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
 		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
 		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
+		leadDetails.setAlternateMobile(leadRequest.getAlternateMobile());
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
 		leadDetails.setQuantity(leadRequest.getQuantity());
@@ -123,6 +126,7 @@ public class LeadHelper {
 		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
 		
 		leadDetails.setActualAmount(leadRequest.getActualAmount());
+		leadDetails.setPaymentType(leadRequest.getPaymentType());
 		
 		leadDetails.setDiscountType(leadRequest.getDiscountType());
 		leadDetails.setDiscount(leadRequest.getDiscount());
@@ -189,6 +193,7 @@ public class LeadHelper {
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
 		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
 		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
+		leadDetails.setAlternateMobile(leadRequest.getAlternateMobile());
 		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
 
 		leadDetails.setQuantity(leadRequest.getQuantity());
@@ -204,6 +209,7 @@ public class LeadHelper {
 		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
 		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
 		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+		leadDetails.setPaymentType(leadRequest.getPaymentType());
 		
 		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
 		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
@@ -292,57 +298,16 @@ public class LeadHelper {
 	            .getResultList();
 	    }
 	}
-
-	
-//	@SuppressWarnings("unchecked")
-//	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
-//
-//		List<LeadDetails> results = new ArrayList<>();
-////
-////		Calendar cal = Calendar.getInstance();
-////		cal.set(Calendar.HOUR_OF_DAY, 0);
-////		cal.set(Calendar.MINUTE, 0);
-////		cal.set(Calendar.SECOND, 0);
-////		cal.set(Calendar.MILLISECOND, 0);
-////		Date startDate = cal.getTime();
-////
-////		cal.add(Calendar.DAY_OF_MONTH, 1);
-////		Date endDate = cal.getTime();
-//
-//		results = leadDetailsDao.getEntityManager().createQuery(
-//				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC")
-//				.setParameter("superadminId", leadRequest.getSuperadminId())
-////				.setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()), TemporalType.TIMESTAMP)
-////	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
-//				.setParameter("firstDate",new Date(), TemporalType.TIMESTAMP)
-//	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()), TemporalType.TIMESTAMP) 
-//
-//				.getResultList();
-//
-//		return results;
-//	}
 	
 
 	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
 
-	    if (leadRequest.getFirstDate() == null || leadRequest.getLastDate() == null) {
-	        return new ArrayList<>();
-	    }
-
-//	    // Calculate end date = lastDate + 1 day
-//	    Calendar cal = Calendar.getInstance();
-//	    cal.setTime(leadRequest.getLastDate());
-//	    cal.add(Calendar.DAY_OF_MONTH, 1);
-//	    Date endDate = cal.getTime();
-//
-//	    System.out.println("Start : "+leadRequest.getFirstDate());
-//	    System.out.println("End : "+endDate);
-	    
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
 	            LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("statuses", excludedStatuses)
 	        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	        .setParameter("endDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
@@ -352,36 +317,12 @@ public class LeadHelper {
 
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt <= :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.createdAt >= :firstDate AND LD.createdAt <= :lastDate ORDER BY LD.id DESC", LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("statuses", excludedStatuses)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
 	}
-
-
-	
-//	@SuppressWarnings("unchecked")
-//	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
-//
-//	    List<LeadDetails> results = new ArrayList<>();
-//
-//	    if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
-//
-//	        Date startDate = org.apache.commons.lang3.time.DateUtils.truncate(new Date(), java.util.Calendar.DAY_OF_MONTH);
-//	        Date endDate = org.apache.commons.lang3.time.DateUtils.addDays(startDate, 1);
-//
-//	        results = leadDetailsDao.getEntityManager()
-//	                .createQuery("SELECT LD FROM LeadDetails LD WHERE LD.superadminId=:superadminId AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate ORDER BY LD.id DESC")
-//	                .setParameter("superadminId", leadRequest.getSuperadminId())
-//	                .setParameter("startDate", startDate, TemporalType.TIMESTAMP)
-//	                .setParameter("endDate", endDate, TemporalType.TIMESTAMP)
-//	                .getResultList();
-//	    }
-//
-//	    return results;
-//	}
-
-	
 
 }

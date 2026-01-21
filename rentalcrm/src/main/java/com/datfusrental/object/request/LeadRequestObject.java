@@ -39,6 +39,7 @@ public class LeadRequestObject {
 	private String customeName;
 	private String countryDialCode;
 	private String customerMobile;
+	private String alternateMobile;
 	private String customerEmailId;
 	private int totalDays;
 	private int quantity;
@@ -54,6 +55,8 @@ public class LeadRequestObject {
 	private long totalAmount;
 	private long securityAmount;
 	private long actualAmount;
+
+	private String paymentType;
 	
 	private String discountType;
 	private long discount;
@@ -80,6 +83,7 @@ public class LeadRequestObject {
 	private String status;
 	private String leadOrigine;
 	private String leadType;
+	
 //	private Date followupDate;
 
 	private Date createdAt;

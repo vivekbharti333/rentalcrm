@@ -71,6 +71,9 @@ public class LeadDetails {
 	@Column(name = "customer_mobile")
 	private String customerMobile;
 	
+	@Column(name = "alternate_mobile")
+	private String alternateMobile;
+	
 	@Column(name = "customer_email_id")
 	private String customerEmailId;
 	
@@ -130,6 +133,9 @@ public class LeadDetails {
 	
 	@Column(name = "discount")
 	private long discount;
+	
+	@Column(name = "payment_type")
+	private String paymentType;
 	
 	@Column(name = "vendor_name")
 	private String vendorName;
