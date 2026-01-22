@@ -47,23 +47,40 @@ public class LeadByStatusHelper {
 		return results;
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
+//	public List<LeadDetails> getEnquiryList(LeadRequestObject leadRequest) {
+//		List<String> includedStatus = List.of("ENQUIRY", "INFO");
+//		
+//		List<LeadDetails> results = new ArrayList<LeadDetails>();
+//		results = leadDetailsDao.getEntityManager().createQuery(
+//				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt <= :lastDate ORDER BY LD.id DESC")
+//				.setParameter("superadminId", leadRequest.getSuperadminId())
+//				.setParameter("statusList", includedStatus)
+//				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+//				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
+//				.setFirstResult(Constant.FIRST_RESULT)
+//				.setMaxResults(Constant.MAX_RESULT)
+//				.getResultList();
+//
+//		return results;
+//	}
+
+
 	public List<LeadDetails> getEnquiryList(LeadRequestObject leadRequest) {
-		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		results = leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt >= :firstDate AND LD.createdAt <= :lastDate ORDER BY LD.id DESC")
-				.setParameter("superadminId", leadRequest.getSuperadminId())
-				.setParameter("status", "ENQUIRY")
-				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
-				.setFirstResult(Constant.FIRST_RESULT)
-				.setMaxResults(Constant.MAX_RESULT)
-				.getResultList();
 
-		return results;
+	    List<String> includedStatus = List.of("ENQUIRY", "INFO");
+
+	    return leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("statusList", includedStatus)
+	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	        .setFirstResult(Constant.FIRST_RESULT)
+	        .setMaxResults(Constant.MAX_RESULT)
+	        .getResultList();
 	}
-
-
 
 	
 

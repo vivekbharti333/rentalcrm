@@ -86,15 +86,12 @@ public class LeadHelper {
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
 
 		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
-//		leadDetails.setPickupDate(leadRequest.getPickupDate());
-//		leadDetails.setPickupTime(leadRequest.getPickupTime());
 		leadDetails.setPickupHub(leadRequest.getPickupHub());
 		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
 
 		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
 		leadDetails.setTotalDays(leadRequest.getTotalDays());
-//		leadDetails.setDropDate(leadRequest.getDropDate());
-//		leadDetails.setDropTime(leadRequest.getDropTime());
+
 		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 
@@ -133,7 +130,7 @@ public class LeadHelper {
 
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());
-		leadDetails.setStatus(leadRequest.getStatus());
+//		leadDetails.setStatus(leadRequest.getStatus());
 
 		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
 		leadDetails.setLeadType(leadRequest.getLeadType());
@@ -143,6 +140,12 @@ public class LeadHelper {
 
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());
+		
+		if(leadRequest.getActualAmount() > 0) {
+			leadDetails.setStatus("WON");
+		} else {
+			leadDetails.setStatus(leadRequest.getStatus());
+		}
 
 //		if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
 //			
@@ -221,7 +224,7 @@ public class LeadHelper {
 
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());
-		leadDetails.setStatus(leadRequest.getStatus());
+//		leadDetails.setStatus(leadRequest.getStatus());
 
 		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
 		leadDetails.setLeadType(leadRequest.getLeadType());
@@ -230,6 +233,13 @@ public class LeadHelper {
 		leadDetails.setNotes(leadRequest.getNotes());
 
 		leadDetails.setUpdatedAt(new Date());
+		
+		if(leadRequest.getActualAmount() > 0) {
+			leadDetails.setStatus("WON");
+		} else {
+			leadDetails.setStatus(leadRequest.getStatus());
+		}
+
 
 		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
@@ -267,19 +277,20 @@ public class LeadHelper {
 
 	public List<LeadDetails> getAllLeadList(LeadRequestObject leadRequest) {
 
-	    List<String> excludedStatus = List.of("WON", "INFO");
+//	    List<String> excludedStatus = List.of("WON", "INFO");
 
 	    if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
 
 	        return leadDetailsDao.getEntityManager()
 	            .createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
+	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
+//	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
 	            .setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()))
 	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate())) 
-	            .setParameter("statusList", excludedStatus)
+//	            .setParameter("statusList", excludedStatus)
 	            .setFirstResult(Constant.FIRST_RESULT)
 	            .setMaxResults(Constant.MAX_RESULT)
 	            .getResultList();
@@ -288,11 +299,12 @@ public class LeadHelper {
 
 	        return leadDetailsDao.getEntityManager()
 	            .createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
+	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId ORDER BY LD.id DESC",
+//	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
-	            .setParameter("statusList", excludedStatus)
+//	            .setParameter("statusList", excludedStatus)
 	            .setFirstResult(Constant.FIRST_RESULT)
 	            .setMaxResults(Constant.MAX_RESULT)
 	            .getResultList();

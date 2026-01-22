@@ -88,6 +88,7 @@ public class LeadService {
 //				if(!leadRequest.getVendorName().equalsIgnoreCase("") || leadRequest.getVendorName() != null) {
 //					leadDetails.setVendorName(leadRequest.getVendorName());
 //				}
+				leadDetails.setPaymentType(leadRequest.getPaymentType());
 				leadDetails.setStatus(leadRequest.getStatus());
 				leadHelper.updateLeadDetails(leadDetails);
 
