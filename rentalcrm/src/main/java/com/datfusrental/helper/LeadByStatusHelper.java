@@ -85,16 +85,6 @@ public class LeadByStatusHelper {
 	}
 
 	
-//	public List<LeadDetails> getListToConvertIntoLost(LeadRequestObject leadRequest) {
-//	    List<String> includedStatus = List.of("ENQUIRY", "INFO");
-//	    return leadDetailsDao.getEntityManager()
-//	        .createQuery(
-//	            "UPDATE LD FROM LeadDetails LD WHERE  LD.status IN :statusList AND LD.pickupDateTime < :firstDate ORDER BY LD.id DESC", LeadDetails.class)
-//	        .setParameter("statusList", includedStatus)
-//	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-//	        .getResultList();
-//	}
-	
 	@Transactional
 	public int updateStatusToLost(LeadRequestObject leadRequest) {
 
