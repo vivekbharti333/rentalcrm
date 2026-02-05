@@ -261,14 +261,14 @@ public class LeadService {
 	    if (existingLead != null) {
 
 	        // ✅ Clone the old entity before updating
-	        LeadDetails oldLead = new LeadDetails();
-	        BeanUtils.copyProperties(existingLead, oldLead);
+//	        LeadDetails oldLead = new LeadDetails();
+//	        BeanUtils.copyProperties(existingLead, oldLead);
 
 	        // ✅ Update and persist new lead
 	        existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
 	        existingLead = leadHelper.updateLeadDetails(existingLead);
 
-	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
+//	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
 
 	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
 	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
