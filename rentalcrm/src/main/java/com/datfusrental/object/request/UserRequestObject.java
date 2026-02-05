@@ -14,6 +14,7 @@ public class UserRequestObject {
 	private String token;
 	private String userPicture;
 	private String userCode;
+	private String pseudoName;
 	private String loginId;
 	private String password;
 	private String salt;

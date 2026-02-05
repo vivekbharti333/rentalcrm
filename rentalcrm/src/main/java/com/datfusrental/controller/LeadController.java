@@ -131,11 +131,7 @@ public class LeadController {
 	        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 	            return response.createErrorResponse(401, "Token missing or invalid");
 	        }
-
 	        String token = authHeader.substring(7); // remove "Bearer "
-
-	        // TODO: validate token here
-	        System.out.println("Token = " + token);
 
 	        List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
 	        return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));

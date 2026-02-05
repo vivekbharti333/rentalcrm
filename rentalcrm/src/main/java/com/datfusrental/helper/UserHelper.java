@@ -131,6 +131,7 @@ public class UserHelper {
 		user.setService(userRequest.getService());
 		user.setPermissions(userRequest.getPermissions());
 		user.setUserPicture(userRequest.getUserPicture());
+		user.setPseudoName(userRequest.getPseudoName());
 		user.setFirstName(userRequest.getFirstName());
 		user.setLastName(userRequest.getLastName());
 		user.setMobileNo(userRequest.getMobileNo());

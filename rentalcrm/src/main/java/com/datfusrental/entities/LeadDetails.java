@@ -62,6 +62,9 @@ public class LeadDetails {
 	@Column(name ="drop_point")
 	private String dropPoint;
 	
+	@Column(name = "activity_location")
+	private String activityLocation;
+	
 	@Column(name = "custome_name")
 	private String customeName;
 	

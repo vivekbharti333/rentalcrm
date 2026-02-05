@@ -94,6 +94,8 @@ public class LeadHelper {
 
 		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
+		
+		leadDetails.setActivityLocation(leadRequest.getActivityLocation());
 
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
 		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
@@ -109,6 +111,7 @@ public class LeadHelper {
 		leadDetails.setVendorRateForKids(leadRequest.getVendorRateForKids());
 
 		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setCompanyRateForKids(leadRequest.getCompanyRateForKids());
 		
 		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
 		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
@@ -141,10 +144,14 @@ public class LeadHelper {
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());
 		
-		if(leadRequest.getActualAmount() > 0) {
-			leadDetails.setStatus("WON");
+		if (!leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+			if (leadRequest.getActualAmount() > 0) {
+				leadDetails.setStatus("WON");
+			} else {
+				leadDetails.setStatus(leadRequest.getStatus());
+			}
 		} else {
-			leadDetails.setStatus(leadRequest.getStatus());
+			leadDetails.setStatus("ENQUIRY");
 		}
 
 //		if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
@@ -284,7 +291,6 @@ public class LeadHelper {
 	        return leadDetailsDao.getEntityManager()
 	            .createQuery(
 	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
-//	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -300,7 +306,6 @@ public class LeadHelper {
 	        return leadDetailsDao.getEntityManager()
 	            .createQuery(
 	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId ORDER BY LD.id DESC",
-//	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN :statusList ORDER BY LD.id DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -336,5 +341,7 @@ public class LeadHelper {
 	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
 	}
+	
+	
 
 }

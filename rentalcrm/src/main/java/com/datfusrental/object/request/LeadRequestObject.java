@@ -2,6 +2,8 @@ package com.datfusrental.object.request;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
@@ -26,6 +28,8 @@ public class LeadRequestObject {
 	private String pickupHub;
 	private String pickupPoint;
 	
+	private String activityLocation;
+	
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Kolkata")
 	private Date pickupDateTime;
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Kolkata")
@@ -49,6 +53,7 @@ public class LeadRequestObject {
 	private long vendorRateForKids;
 	private long payToVendor;
 	private long companyRate;
+	private long companyRateForKids;
 	private long payToCompany;
 	private long bookingAmount;
 	private long balanceAmount;

@@ -78,7 +78,7 @@ public class CashfreePaymentGateways {
 
         JSONObject customerDetails = new JSONObject();
         customerDetails.put("customer_phone", leadRequest.getCustomerMobile());
-        customerDetails.put("customer_email", leadRequest.getCustomerEmailId()); // TODO: replace with actual email
+        customerDetails.put("customer_email", leadRequest.getCustomerEmailId()); 
         customerDetails.put("customer_name", leadRequest.getCustomeName());
         jsonBody.put("customer_details", customerDetails);
 

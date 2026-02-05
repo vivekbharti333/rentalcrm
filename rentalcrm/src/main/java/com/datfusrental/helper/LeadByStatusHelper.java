@@ -1,9 +1,11 @@
 package com.datfusrental.helper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.TemporalType;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -81,6 +83,31 @@ public class LeadByStatusHelper {
 	        .setMaxResults(Constant.MAX_RESULT)
 	        .getResultList();
 	}
+
+	
+//	public List<LeadDetails> getListToConvertIntoLost(LeadRequestObject leadRequest) {
+//	    List<String> includedStatus = List.of("ENQUIRY", "INFO");
+//	    return leadDetailsDao.getEntityManager()
+//	        .createQuery(
+//	            "UPDATE LD FROM LeadDetails LD WHERE  LD.status IN :statusList AND LD.pickupDateTime < :firstDate ORDER BY LD.id DESC", LeadDetails.class)
+//	        .setParameter("statusList", includedStatus)
+//	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+//	        .getResultList();
+//	}
+	
+	@Transactional
+	public int updateStatusToLost(LeadRequestObject leadRequest) {
+
+	    List<String> includedStatus = List.of("ENQUIRY", "INFO");
+
+	    return leadDetailsDao.getEntityManager()
+	        .createQuery("UPDATE LeadDetails LD SET LD.status = :newStatus WHERE LD.status IN :statusList AND LD.pickupDateTime < :cutoffDate")
+	        .setParameter("newStatus", "LOST")
+	        .setParameter("statusList", includedStatus)
+	        .setParameter("cutoffDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .executeUpdate();
+	}
+
 
 	
 

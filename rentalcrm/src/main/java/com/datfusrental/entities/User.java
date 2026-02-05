@@ -39,6 +39,9 @@ public class User {
 	@Column(name = "user_code")
 	private String userCode;
 	
+	@Column(name = "pseudo_name")
+	private String pseudoName;
+	
 	@Column(name = "first_name")
 	private String firstName;
 	

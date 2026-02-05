@@ -507,7 +507,18 @@ public class LeadService {
 
 
 
+	public int updateStatusToLost() {
 
+	    LeadRequestObject leadRequest = new LeadRequestObject();
+
+	    LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
+
+	    leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+        System.out.println("First Date : "+leadRequest.getFirstDate());
+   
+	    return leadByStatusHelper.updateStatusToLost(leadRequest);
+	}
 
 
 

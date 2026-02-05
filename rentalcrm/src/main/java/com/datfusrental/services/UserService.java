@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
+import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.entities.User;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
@@ -41,6 +43,9 @@ public class UserService {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private LeadService leadService;
 	
 	
 //	@Autowired
@@ -90,6 +95,10 @@ public class UserService {
 	    }
 
 	    // ================= LOGIN SUCCESS =================
+	    
+	    // Lead to lost
+	    leadService.updateStatusToLost();	    
+	  
 
 	    // 🔥 Generate JWT token
 	    String token = jwtTokenUtil.generateToken(user.getLoginId());
