@@ -284,19 +284,19 @@ public class LeadHelper {
 
 	public List<LeadDetails> getAllLeadList(LeadRequestObject leadRequest) {
 
-//	    List<String> excludedStatus = List.of("WON", "INFO");
+	    List<String> excludedStatus = List.of("WON", "ASSIGNED", "LOST");
 
 	    if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
 
 	        return leadDetailsDao.getEntityManager()
 	            .createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
+	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
 	            .setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()))
 	            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate())) 
-//	            .setParameter("statusList", excludedStatus)
+	            .setParameter("statuses", excludedStatus)
 	            .setFirstResult(Constant.FIRST_RESULT)
 	            .setMaxResults(Constant.MAX_RESULT)
 	            .getResultList();
@@ -305,11 +305,11 @@ public class LeadHelper {
 
 	        return leadDetailsDao.getEntityManager()
 	            .createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId ORDER BY LD.id DESC",
+	                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) ORDER BY LD.id DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
-//	            .setParameter("statusList", excludedStatus)
+	            .setParameter("statuses", excludedStatus)
 	            .setFirstResult(Constant.FIRST_RESULT)
 	            .setMaxResults(Constant.MAX_RESULT)
 	            .getResultList();

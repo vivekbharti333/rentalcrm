@@ -88,10 +88,10 @@ public class LeadByStatusHelper {
 	@Transactional
 	public int updateStatusToLost(LeadRequestObject leadRequest) {
 
-	    List<String> includedStatus = List.of("ENQUIRY", "INFO");
+	    List<String> includedStatus = List.of("WON", "ASSIGNED");
 
 	    return leadDetailsDao.getEntityManager()
-	        .createQuery("UPDATE LeadDetails LD SET LD.status = :newStatus WHERE LD.status IN :statusList AND LD.pickupDateTime < :cutoffDate")
+	        .createQuery("UPDATE LeadDetails LD SET LD.status = :newStatus WHERE LD.status NOT IN :statusList AND LD.pickupDateTime < :cutoffDate")
 	        .setParameter("newStatus", "LOST")
 	        .setParameter("statusList", includedStatus)
 	        .setParameter("cutoffDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
