@@ -122,4 +122,16 @@ public class LocationHelper {
 		return results;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<LocationDetails> getLocationDetailsForApproval(LocationRequestObject locationRequest) {
+		List<LocationDetails> results = new ArrayList<>();
+			results = locationDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LocationDetails LD WHERE LD.locationType =:locationType AND LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id desc")
+					.setParameter("locationType", locationRequest.getLocationType())
+					.setParameter("status", Status.INACTIVE.name())
+					.setParameter("superadminId", locationRequest.getSuperadminId())
+					.getResultList();
+		return results;
+	}
+
 }

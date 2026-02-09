@@ -118,4 +118,10 @@ public class LocationService {
 		return locationDetails;
 	}
 
+	public List<LocationDetails> getLocationDetailsForApproval(Request<LocationRequestObject> locationRequestObject) {
+		LocationRequestObject locationRequest = locationRequestObject.getPayload();
+		List<LocationDetails> locationDetails = locationHelper.getLocationDetailsForApproval(locationRequest);
+		return locationDetails;
+	}
+
 }

@@ -29,6 +29,8 @@ public class LeadRequestObject {
 	private String pickupPoint;
 	
 	private String activityLocation;
+	private String otherPickLocation;
+	private String otherDropLocation;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Kolkata")
 	private Date pickupDateTime;

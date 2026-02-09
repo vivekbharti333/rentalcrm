@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
+import com.datfusrental.dao.LocationDetailsDao;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
+import com.datfusrental.entities.LocationDetails;
 import com.datfusrental.enums.RequestFor;
+import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AssignedLeadHelper;
 import com.datfusrental.helper.LeadByPickAndDropHelper;
@@ -41,6 +44,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+	
+	@Autowired
+	private LocationDetailsDao locationDetailsDao;
 
 	@Autowired
 	private GetDate getDate;
@@ -130,6 +136,28 @@ public class LeadService {
 			// Lead Details
 			LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
 			leadDetails = leadHelper.saveLeadDetails(leadDetails);
+			
+			//Save Other Location
+			if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A") || !leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")) {
+				
+				LocationDetails locationDetails = new LocationDetails();
+
+				if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")){
+					locationDetails.setLocation(leadRequest.getOtherDropLocation());
+				}
+				if(!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")){
+					locationDetails.setLocation(leadRequest.getOtherPickLocation());
+				}
+
+				locationDetails.setLocationType("PICK");
+				locationDetails.setStatus(Status.INACTIVE.name());
+				locationDetails.setSuperadminId(leadRequest.getSuperadminId());
+				locationDetails.setCreatedAt(new Date());
+				locationDetails.setUpdatedAt(new Date());
+				
+				locationDetailsDao.persist(locationDetails);
+			}
+			
 			
 			//Payment Gateways
 			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
