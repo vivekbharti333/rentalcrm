@@ -118,6 +118,12 @@ public class User {
 	@Column(name = "validity_expire_on")
 	private Date validityExpireOn;
 	
+	@Column(name = "user_wallet_amount")
+	private Long userWalletAmount;
+	
+	@Column(name = "company_wallet_amount")
+	private Long companyWalletAmount;
+	
 	@Column(name = "created_at")
 	private Date createdAt;
 	

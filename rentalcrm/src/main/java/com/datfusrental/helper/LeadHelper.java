@@ -143,6 +143,8 @@ public class LeadHelper {
 
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setUpdatedAt(new Date());
+		leadDetails.setChangeStatusDate(new Date());
+		
 		
 		if (!leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
 			if (leadRequest.getActualAmount() > 0) {
@@ -342,6 +344,4 @@ public class LeadHelper {
 	        .getResultList();
 	}
 	
-	
-
 }

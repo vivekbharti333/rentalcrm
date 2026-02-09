@@ -227,6 +227,30 @@ public class LeadController {
 		}
 	}
 	
+	@RequestMapping(path = "getWonLeadList", method = RequestMethod.POST)
+	public Response<LeadDetails> getWonLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getWonLeadList(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "getWebsiteLeadList", method = RequestMethod.POST)
+	public Response<LeadDetails> getWebsiteLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getWebsiteLeadList(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
 	@RequestMapping(path = "getEnquiryList", method = RequestMethod.POST)
 	public Response<LeadDetails> getEnquiryList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();

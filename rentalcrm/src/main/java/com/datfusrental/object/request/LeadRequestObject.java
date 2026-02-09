@@ -93,6 +93,7 @@ public class LeadRequestObject {
 
 	private Date createdAt;
 	private Date updatedAt;
+	private Date changeStatusDate;
 	
 	private String requestedFor;
 	private Date firstDate;

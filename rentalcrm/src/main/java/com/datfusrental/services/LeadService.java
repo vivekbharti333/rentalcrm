@@ -1,26 +1,20 @@
 package com.datfusrental.services;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.ZoneId;
-
 import com.datfusrental.common.GetDate;
 import com.datfusrental.constant.Constant;
-import com.datfusrental.dao.LeadDetailsHistoryDao;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.enums.RequestFor;
@@ -30,14 +24,14 @@ import com.datfusrental.helper.LeadByPickAndDropHelper;
 import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
-import com.datfusrental.jwt.JwtTokenUtil;
+import com.datfusrental.helper.WebsiteLeadHelper;
+import com.datfusrental.helper.WonLeadHelper;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.paymentgateways.CashfreePaymentGateways;
 import com.datfusrental.util.EntityDiffUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.DoubleArraySerializer;
 
 
 @Service
@@ -55,7 +49,10 @@ public class LeadService {
 	private LeadByStatusHelper leadByStatusHelper;
 
 	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	private WonLeadHelper wonLeadHelper;
+	
+	@Autowired
+	private WebsiteLeadHelper websiteLeadHelper;
 	
 	@Autowired
 	private LeadDetailsHistoryHelper leadDetailsHistoryHelper;
@@ -90,6 +87,7 @@ public class LeadService {
 //				}
 				leadDetails.setPaymentType(leadRequest.getPaymentType());
 				leadDetails.setStatus(leadRequest.getStatus());
+				leadDetails.setChangeStatusDate(new Date());
 				leadHelper.updateLeadDetails(leadDetails);
 
 				leadRequest.setRespCode(Constant.SUCCESS_CODE);
@@ -309,9 +307,6 @@ public class LeadService {
 		leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
         leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
         
-        System.out.println("1 : "+leadRequest.getFirstDate());
-        System.out.println("2 : "+leadRequest.getLastDate());
-        
 		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
 		return leadList;
 	}
@@ -347,10 +342,6 @@ public class LeadService {
 	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
 	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
 	    }
-
-	    System.out.println("First Date : " + leadRequest.getFirstDate());
-	    System.out.println("Last Date  : " + leadRequest.getLastDate());
-
 	    return leadHelper.getFollowupLeadList(leadRequest);
 	}
 
@@ -480,12 +471,6 @@ public class LeadService {
 	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
 	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
 	    }
-
-	    System.out.println(leadRequest.getRequestedFor());
-	    System.out.println(leadRequest.getFirstDate());
-	    System.out.println(leadRequest.getLastDate());
-	    System.out.println(leadRequest.getStatus());
-
 	    return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
 	
@@ -498,11 +483,57 @@ public class LeadService {
 
         leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
         leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	           
-	    System.out.println("First Date : " + leadRequest.getFirstDate());
-	    System.out.println("Last Date  : " + leadRequest.getLastDate());
 
 	    return leadByStatusHelper.getEnquiryList(leadRequest);
+	}
+	
+	
+	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+			LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		    LocalDate today = LocalDate.now();
+		    ZoneId zone = ZoneId.systemDefault();
+		    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+
+		    switch (leadRequest.getRequestedFor().toUpperCase()) {
+
+		        case "TODAY_WON":
+		            // 2 days ago
+		            leadRequest.setFirstDate(firstDate);
+		            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+		            break;
+
+		        case "YESTERDAY_WON":
+		            // 3 days ago
+		            leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+		            leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
+		            break;
+
+		        case "BEFORE_YESTERDAY_WON":
+		            // 4 days ago
+		            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+		            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+		            break;
+
+		        case "CUSTOM":
+		            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+		            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+		        default:
+		    }
+		    
+		    System.out.println("First Date :"+leadRequest.getFirstDate());
+		    System.out.println("Last Date :"+leadRequest.getLastDate());
+
+			List<LeadDetails> leadList = wonLeadHelper.getWonLeadList(leadRequest);
+			return leadList;
+		}
+
+	
+	public List<LeadDetails> getWebsiteLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		List<LeadDetails> leadList = websiteLeadHelper.getWebsiteLeadList(leadRequest);
+		return leadList;
 	}
 
 

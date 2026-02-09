@@ -143,6 +143,8 @@ public class UserHelper {
 		user.setEmergencyContactNo2(userRequest.getEmergencyContactNo2());
 		user.setAlternateMobile(userRequest.getAlternateMobile());
 		user.setEmailId(userRequest.getEmailId());
+		user.setUserWalletAmount(0L);
+		user.setCompanyWalletAmount(0L);
 		user.setIdDocumentType(userRequest.getIdDocumentType());
 		user.setIdDocumentPicture(userRequest.getIdDocumentPicture());
 		user.setPanNumber(userRequest.getPanNumber());

@@ -186,4 +186,7 @@ public class LeadDetails {
 	
 	@Column(name = "updated_At")
 	private Date updatedAt;
+	
+	@Column(name = "change_status_date")
+	private Date changeStatusDate;
 }

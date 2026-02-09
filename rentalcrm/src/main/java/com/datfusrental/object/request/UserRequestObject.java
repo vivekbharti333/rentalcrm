@@ -39,6 +39,9 @@ public class UserRequestObject {
 	
 	public List<AddressRequestObject> addressList;
 	
+	private Long userWalletAmount;
+	private Long companyWalletAmount;
+	
 	private String service;
 	private String permissions;
 	
