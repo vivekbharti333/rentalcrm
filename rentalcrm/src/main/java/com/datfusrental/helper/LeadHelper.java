@@ -213,6 +213,12 @@ public class LeadHelper {
 		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
 
 		leadDetails.setVendorRate(leadRequest.getVendorRate());
+		leadDetails.setVendorRateForKids(leadRequest.getVendorRateForKids());
+
+		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setCompanyRateForKids(leadRequest.getCompanyRateForKids());
+
+		leadDetails.setVendorRate(leadRequest.getVendorRate());
 		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
 		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
 		leadDetails.setPayToCompany(leadRequest.getPayToCompany());

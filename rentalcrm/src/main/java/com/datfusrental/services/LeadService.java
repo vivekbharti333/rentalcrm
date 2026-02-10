@@ -27,6 +27,7 @@ import com.datfusrental.helper.LeadByPickAndDropHelper;
 import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
+import com.datfusrental.helper.LocationHelper;
 import com.datfusrental.helper.WebsiteLeadHelper;
 import com.datfusrental.helper.WonLeadHelper;
 import com.datfusrental.object.request.LeadRequestObject;
@@ -44,6 +45,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+	
+	@Autowired
+	private LocationHelper locationHelper;
 	
 	@Autowired
 	private LocationDetailsDao locationDetailsDao;
@@ -138,27 +142,43 @@ public class LeadService {
 			leadDetails = leadHelper.saveLeadDetails(leadDetails);
 			
 			//Save Other Location
-			if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A") || !leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")) {
+			if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")){
 				
-				LocationDetails locationDetails = new LocationDetails();
-
-				if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")){
-					locationDetails.setLocation(leadRequest.getOtherDropLocation());
-				}
-				if(!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")){
+				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherPickLocation());
+				if (existsLocationDetails == null) {
+					
+					LocationDetails locationDetails = new LocationDetails();
 					locationDetails.setLocation(leadRequest.getOtherPickLocation());
+					
+					locationDetails.setLocationType("PICK");
+					locationDetails.setStatus(Status.INACTIVE.name());
+					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
+					locationDetails.setCreatedAt(new Date());
+					locationDetails.setUpdatedAt(new Date());
+					
+					locationDetailsDao.persist(locationDetails);
+					
 				}
-
-				locationDetails.setLocationType("PICK");
-				locationDetails.setStatus(Status.INACTIVE.name());
-				locationDetails.setSuperadminId(leadRequest.getSuperadminId());
-				locationDetails.setCreatedAt(new Date());
-				locationDetails.setUpdatedAt(new Date());
 				
-				locationDetailsDao.persist(locationDetails);
 			}
-			
-			
+			if(!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")){
+				
+				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherDropLocation());
+				if (existsLocationDetails == null) {
+					LocationDetails locationDetails = new LocationDetails();
+					locationDetails.setLocation(leadRequest.getOtherDropLocation());
+					
+					locationDetails.setLocationType("PICK");
+					locationDetails.setStatus(Status.INACTIVE.name());
+					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
+					locationDetails.setCreatedAt(new Date());
+					locationDetails.setUpdatedAt(new Date());
+					
+					locationDetailsDao.persist(locationDetails);
+				}
+			}
+
+
 			//Payment Gateways
 			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
 				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));

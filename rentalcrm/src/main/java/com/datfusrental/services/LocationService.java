@@ -33,8 +33,7 @@ public class LocationService {
 
 //		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
 //		if (isValid) {
-			LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(itemRequest.getLocation(),
-					itemRequest.getLocationType(), itemRequest.getSuperadminId());
+			LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(itemRequest.getLocation());
 			if (existsLocationDetails == null) {
 				LocationDetails locationDetails = locationHelper.getLocationDetailsByReqObj(itemRequest);
 				locationDetails = locationHelper.saveLocationDetails(locationDetails);

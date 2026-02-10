@@ -53,15 +53,13 @@ public class LocationHelper {
 	}
 
 	@Transactional
-	public LocationDetails getLocationDetailsByType(String location, String locationType, String superadminId) {
+	public LocationDetails getLocationDetailsByType(String location) {
 
 		CriteriaBuilder criteriaBuilder = locationDetailsDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<LocationDetails> criteriaQuery = criteriaBuilder.createQuery(LocationDetails.class);
 		Root<LocationDetails> root = criteriaQuery.from(LocationDetails.class);
-		Predicate restriction1 = criteriaBuilder.equal(root.get("location"), location);
-		Predicate restriction2 = criteriaBuilder.equal(root.get("locationType"), locationType);
-		Predicate restriction3 = criteriaBuilder.equal(root.get("superadminId"), superadminId);
-		criteriaQuery.where(restriction1, restriction2, restriction3);
+		Predicate restriction = criteriaBuilder.equal(root.get("location"), location);
+		criteriaQuery.where(restriction);
 		LocationDetails locationDetails = locationDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
 		return locationDetails;
 	}
@@ -89,7 +87,6 @@ public class LocationHelper {
 	public LocationDetails getUpdatedLocationDetailsByReqObj(LocationRequestObject locationRequest, LocationDetails locationDetails) {
 
 		locationDetails.setLocation(locationRequest.getLocation());
-		locationDetails.setLocationType(locationRequest.getLocationType());
 		locationDetails.setUpdatedAt(new Date());
 
 		return locationDetails;
