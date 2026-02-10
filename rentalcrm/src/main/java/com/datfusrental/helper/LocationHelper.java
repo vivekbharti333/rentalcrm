@@ -118,20 +118,26 @@ public class LocationHelper {
 					.setParameter("superadminId", locationRequest.getSuperadminId())
 					.getResultList();
 
+		}  else if (locationRequest.getRequestedFor().equalsIgnoreCase(RequestFor.NEW.name())) {
+			results = locationDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LocationDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id desc")
+					.setParameter("status", Status.INACTIVE.name())
+					.setParameter("superadminId", locationRequest.getSuperadminId())
+					.getResultList();
+
 		}
 		return results;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<LocationDetails> getLocationDetailsForApproval(LocationRequestObject locationRequest) {
-		List<LocationDetails> results = new ArrayList<>();
-			results = locationDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LocationDetails LD WHERE LD.locationType =:locationType AND LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id desc")
-					.setParameter("locationType", locationRequest.getLocationType())
-					.setParameter("status", Status.INACTIVE.name())
-					.setParameter("superadminId", locationRequest.getSuperadminId())
-					.getResultList();
-		return results;
-	}
+//	@SuppressWarnings("unchecked")
+//	public List<LocationDetails> getLocationDetailsForApproval(LocationRequestObject locationRequest) {
+//		List<LocationDetails> results = new ArrayList<>();
+//			results = locationDetailsDao.getEntityManager().createQuery(
+//					"SELECT LD FROM LocationDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id desc")
+//					.setParameter("status", Status.INACTIVE.name())
+//					.setParameter("superadminId", locationRequest.getSuperadminId())
+//					.getResultList();
+//		return results;
+//	}
 
 }

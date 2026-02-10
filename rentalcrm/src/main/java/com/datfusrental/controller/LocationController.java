@@ -89,17 +89,17 @@ public class LocationController {
 		}
 	}
 	
-	@RequestMapping(path = "getLocationDetailsForApproval", method = RequestMethod.POST)
-	public Response<LocationDetails> getLocationDetailsForApproval(@RequestBody Request<LocationRequestObject> locationRequestObject) {
-		GenricResponse<LocationDetails> response = new GenricResponse<LocationDetails>();
-		try {
-			List<LocationDetails> locationDetailsList = locationService.getLocationDetailsForApproval(locationRequestObject);
-			return response.createListResponse(locationDetailsList, 200, String.valueOf(locationDetailsList.size()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
-		}
-	}
+//	@RequestMapping(path = "getLocationDetailsForApproval", method = RequestMethod.POST)
+//	public Response<LocationDetails> getLocationDetailsForApproval(@RequestBody Request<LocationRequestObject> locationRequestObject) {
+//		GenricResponse<LocationDetails> response = new GenricResponse<LocationDetails>();
+//		try {
+//			List<LocationDetails> locationDetailsList = locationService.getLocationDetailsForApproval(locationRequestObject);
+//			return response.createListResponse(locationDetailsList, 200, String.valueOf(locationDetailsList.size()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+//		}
+//	}
 
 
 }
