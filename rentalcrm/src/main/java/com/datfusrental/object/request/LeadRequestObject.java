@@ -83,6 +83,7 @@ public class LeadRequestObject {
 	private String superadminId;
 	private String adminId;
 	private String teamleaderId;
+	private String pseudoName;
 	private String createdBy;
 	private String createdByName;
 	private String loginId;

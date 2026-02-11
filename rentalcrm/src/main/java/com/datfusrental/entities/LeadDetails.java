@@ -147,6 +147,9 @@ public class LeadDetails {
 	@Column(name = "remarks")
 	private String remarks;
 	
+	@Column(name = "pseudo_name")
+	private String pseudoName;
+	
 	@Column(name = "created_by")
 	private String createdBy;
 	

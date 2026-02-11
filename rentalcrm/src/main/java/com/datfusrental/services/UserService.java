@@ -116,6 +116,7 @@ public class UserService {
 	    loginRequest.setRoleType(user.getRoleType());
 	    loginRequest.setSuperadminId(user.getSuperadminId());
 	    loginRequest.setAdminId(user.getAdminId());
+	    loginRequest.setPseudoName(user.getPseudoName());
 	    loginRequest.setTeamLeaderId(user.getTeamleaderId());
 
 	    // 🔥 IMPORTANT: set token in response
