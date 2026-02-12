@@ -443,11 +443,8 @@ public class UserService {
 	public List<User> getUserDetails(Request<UserRequestObject> userRequestObject) {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		List<User> userList = new ArrayList<User>();
-//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
-//		if (isValid) {
 		userList = userHelper.getUserDetails(userRequest);  
 		System.out.println(userHelper.getUserDetails(userRequest));
-//	}
 		return userList;
 	}
 	
