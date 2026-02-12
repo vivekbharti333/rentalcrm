@@ -409,11 +409,20 @@ public class LeadService {
 	            leadRequest.setFirstDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
 	            leadRequest.setLastDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
 	            break;
+	            
+	        case "FOLLOWUP_END":
+	            // 4 days ago
+	            leadRequest.setFirstDate(Date.from(today.minusYears(10).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+	            break;
 
 	        default:
 	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
 	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
 	    }
+	    
+	    System.out.println(leadRequest.getFirstDate());
+	    System.out.println(leadRequest.getLastDate());
 	    return leadHelper.getFollowupLeadList(leadRequest);
 	}
 
