@@ -248,9 +248,8 @@ public class UserHelper {
 	@SuppressWarnings("unchecked")
 	public List<User> getUserDetailsByRoleType(UserRequestObject userRequest) {
 		List<User> results = userDetailsDao.getEntityManager().createQuery(
-				"SELECT UD FROM UserDetails UD WHERE UD.roleType =:roleType AND UD.createdBy =:createdBy AND UD.superadminId =:superadminId ORDER BY UD.id DESC")
+				"SELECT UD FROM User UD WHERE UD.roleType =:roleType AND UD.superadminId =:superadminId ORDER BY UD.id DESC")
 				.setParameter("roleType", userRequest.getRoleType())
-				.setParameter("createdBy", userRequest.getCreatedBy())
 				.setParameter("superadminId", userRequest.getSuperadminId())
 				.getResultList();
 		return results;
