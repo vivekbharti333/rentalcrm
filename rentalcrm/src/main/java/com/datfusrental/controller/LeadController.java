@@ -47,6 +47,21 @@ public class LeadController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
+	
+	@RequestMapping(path = "assignLeadToVendor", method = RequestMethod.POST)
+	public Response<LeadRequestObject> assignLeadToVendor(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<LeadRequestObject> responseObj = new GenricResponse<LeadRequestObject>();
+		try {
+			LeadRequestObject responce = leadService.assignLeadToVendor(leadRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "registerLead", method = RequestMethod.POST)
 	public Response<LeadRequestObject> registerLead(@RequestBody Request<LeadRequestObject> leadRequestObject,

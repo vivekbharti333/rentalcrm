@@ -114,6 +114,30 @@ public class LeadService {
 //			return leadRequest;
 //		}
 	}
+	
+	
+	@Transactional
+	public LeadRequestObject assignLeadToVendor(Request<LeadRequestObject> leadRequestObject)
+			throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
+
+		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+		if (leadDetails != null) {
+			
+			leadDetails.setVendorName(leadRequest.getVendorName());
+			leadDetails.setChangeStatusDate(new Date());
+			leadHelper.updateLeadDetails(leadDetails);
+
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg("Successfully Assigned to " + leadRequest.getVendorName());
+			return leadRequest;
+		} else {
+			leadRequest.setRespCode(Constant.NOT_EXISTS);
+			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return leadRequest;
+		}
+	}
 
 	@Transactional
 	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
