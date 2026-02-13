@@ -171,6 +171,9 @@ public class LeadDetails {
 	@Column(name = "status")
 	private String status;
 	
+	@Column(name = "second_status")
+	private String secondStatus;
+	
 	@Column(name = "lead_origine")
 	private String leadOrigine;
 	

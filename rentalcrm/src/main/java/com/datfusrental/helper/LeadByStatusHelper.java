@@ -49,6 +49,32 @@ public class LeadByStatusHelper {
 		return results;
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	public List<LeadDetails> getLeadListBySecondStatus(LeadRequestObject leadRequest) {
+		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("secondStatus", leadRequest.getSecondStatus())
+					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
+					.getResultList();
+			return results;
+		} else {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("secondStatus", leadRequest.getSecondStatus())
+					.setFirstResult(Constant.FIRST_RESULT)
+					.setMaxResults(Constant.MAX_RESULT)
+					.getResultList();
+		}
+		return results;
+	}
+
+	
 //	@SuppressWarnings("unchecked")
 //	public List<LeadDetails> getEnquiryList(LeadRequestObject leadRequest) {
 //		List<String> includedStatus = List.of("ENQUIRY", "INFO");

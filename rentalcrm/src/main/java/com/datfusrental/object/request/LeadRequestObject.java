@@ -89,6 +89,7 @@ public class LeadRequestObject {
 	private String loginId;
 	private String updatedBy;
 	private String status;
+	private String secondStatus;
 	private String leadOrigine;
 	private String leadType;
 	

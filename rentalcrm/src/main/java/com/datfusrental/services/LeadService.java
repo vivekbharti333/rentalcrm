@@ -117,6 +117,33 @@ public class LeadService {
 	
 	
 	@Transactional
+	public LeadRequestObject changeSecondStatus(Request<LeadRequestObject> leadRequestObject)
+			throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
+
+			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+			if (leadDetails != null) {
+
+				leadDetails.setSecondStatus(leadRequest.getSecondStatus());
+				leadHelper.updateLeadDetails(leadDetails);
+
+				leadRequest.setRespCode(Constant.SUCCESS_CODE);
+				leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getSecondStatus());
+				return leadRequest;
+			} else {
+				leadRequest.setRespCode(Constant.NOT_EXISTS);
+				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+				return leadRequest;
+			}
+//		} else {
+//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
+//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
+//			return leadRequest;
+//		}
+	}
+	
+	@Transactional
 	public LeadRequestObject assignLeadToVendor(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
@@ -356,11 +383,18 @@ public class LeadService {
 		List<LeadDetailsHistory> leadHistoryList = leadHelper.getLeadHistoryById(leadRequest);
 		return leadHistoryList;
 	}
-
+	
 	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
 		List<LeadDetails> leadList = leadByStatusHelper.getLeadListByStatus(leadRequest);
+		return leadList;
+	}
+
+	public List<LeadDetails> getLeadListBySecondStatus(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		List<LeadDetails> leadList = leadByStatusHelper.getLeadListBySecondStatus(leadRequest);
 		return leadList;
 	}
 

@@ -48,6 +48,22 @@ public class LeadController {
 		}
 	}
 	
+	@RequestMapping(path = "changeSecondStatus", method = RequestMethod.POST)
+	public Response<LeadRequestObject> changeSecondStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<LeadRequestObject> responseObj = new GenricResponse<LeadRequestObject>();
+		try {
+			LeadRequestObject responce = leadService.changeSecondStatus(leadRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	
 	@RequestMapping(path = "assignLeadToVendor", method = RequestMethod.POST)
 	public Response<LeadRequestObject> assignLeadToVendor(@RequestBody Request<LeadRequestObject> leadRequestObject,
 			HttpServletRequest request) {
@@ -122,19 +138,6 @@ public class LeadController {
 		}
 	}
 	
-//	@RequestMapping(path = "getLeadListByStatus", method = RequestMethod.POST)
-//	public Response<LeadDetails> getLeadListByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
-//			@RequestHeader(value = "Authorization", required = false) String authHeader) {
-//		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
-//		try {
-//			List<LeadDetails> followupOneList = leadService.getLeadListByStatus(leadRequestObject);
-//			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
-//		}
-//	}
-	
 	@RequestMapping(path = "getLeadListByStatus", method = RequestMethod.POST)
 	public Response<LeadDetails> getLeadListByStatus(
 	        @RequestBody Request<LeadRequestObject> leadRequestObject,
@@ -156,6 +159,18 @@ public class LeadController {
 	    }
 	}
 
+	@RequestMapping(path = "getLeadListBySecondStatus", method = RequestMethod.POST)
+	public Response<LeadDetails> getLeadListBySecondStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getLeadListBySecondStatus(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
 	
 	@RequestMapping(path = "getAllLeadList", method = RequestMethod.POST)
 	public Response<LeadDetails> getAllLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
