@@ -65,6 +65,9 @@ public class UserService {
 
 	    LoginRequestObject loginRequest = loginRequestObject.getPayload();
 	    userHelper.validateLoginRequest(loginRequest);
+	    
+	    // Lead to lost
+	    leadService.updateStatusToLost();	    
 
 	    User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
 
@@ -96,10 +99,6 @@ public class UserService {
 
 	    // ================= LOGIN SUCCESS =================
 	    
-	    // Lead to lost
-	    leadService.updateStatusToLost();	    
-	  
-
 	    // 🔥 Generate JWT token
 	    String token = jwtTokenUtil.generateToken(user.getLoginId());
 

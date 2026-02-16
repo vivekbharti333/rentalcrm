@@ -79,7 +79,7 @@ public class LeadRequestObject {
 	private String remarks;
 	private Date nextFollowupDate;
 	
-
+	private String enquirySource;
 	private String superadminId;
 	private String adminId;
 	private String teamleaderId;
