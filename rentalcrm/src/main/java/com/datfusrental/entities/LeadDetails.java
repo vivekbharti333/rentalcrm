@@ -193,6 +193,7 @@ public class LeadDetails {
 	@Column(name = "updated_At")
 	private Date updatedAt;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "change_status_date")
 	private Date changeStatusDate;
 }

@@ -20,7 +20,7 @@ public class WonLeadHelper {
 	private LeadDetailsDao leadDetailsDao;
 
 	@SuppressWarnings("unchecked")
-	public List<LeadDetails> getWonLeadList(LeadRequestObject leadRequest) {
+	public List<LeadDetails> getWonLeadList1(LeadRequestObject leadRequest) {
 	    List<LeadDetails> results = new ArrayList<>();
 
 //	    if (RoleType.SUPERADMIN.name().equalsIgnoreCase(leadRequest.getRoleType())) {
@@ -43,4 +43,30 @@ public class WonLeadHelper {
 
 	    return results;
 	}
+	
+	
+	public List<LeadDetails> getWonLeadList(LeadRequestObject leadRequest) {
+
+	    return leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD " +
+	            "WHERE LD.status = :status " +
+	            "AND LD.changeStatusDate >= :fromDate " +
+	            "AND LD.changeStatusDate < :toDate " +
+	            "ORDER BY LD.pickupDateTime DESC",
+	            LeadDetails.class
+	        )
+	        .setParameter("status", Status.WON.name())
+	        .setParameter("fromDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	        .getResultList();
+	}
+
+
+
+	
+	
+	
 }
+
+

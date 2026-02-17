@@ -53,13 +53,13 @@ public class LeadByStatusHelper {
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getLeadListBySecondStatus(LeadRequestObject leadRequest) {
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		List<String> includedStatus = List.of("LOST");
+		List<String> excluedStatus = List.of("LOST","WON","ASSIGNED");
 		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status  AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("secondStatus", leadRequest.getSecondStatus())
-					.setParameter("status", includedStatus)
+					.setParameter("status", excluedStatus)
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 					.getResultList();
@@ -69,7 +69,7 @@ public class LeadByStatusHelper {
 					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("secondStatus", leadRequest.getSecondStatus())
-					.setParameter("status", includedStatus)
+					.setParameter("status", excluedStatus)
 					.setFirstResult(Constant.FIRST_RESULT)
 					.setMaxResults(Constant.MAX_RESULT)
 					.getResultList();

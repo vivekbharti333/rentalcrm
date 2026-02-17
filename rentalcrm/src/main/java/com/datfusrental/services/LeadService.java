@@ -657,45 +657,117 @@ public class LeadService {
 	}
 	
 	
+//	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+//			LeadRequestObject leadRequest = leadRequestObject.getPayload();
+//
+//		    LocalDate today = LocalDate.now();
+//		    ZoneId zone = ZoneId.systemDefault();
+//		    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+//
+//		    switch (leadRequest.getRequestedFor().toUpperCase()) {
+//
+//		        case "TODAY_WON":
+//		            // 2 days ago
+//		            leadRequest.setFirstDate(firstDate);
+//		            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+//		            break;
+//
+//		        case "YESTERDAY_WON":
+//		            // 3 days ago
+//		            leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+//		            leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
+//		            break;
+//
+//		        case "BEFORE_YESTERDAY_WON":
+//		            // 4 days ago
+//		            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+//		            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+//		            break;
+//
+//		        case "CUSTOM":
+//		            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+//		            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+//		        default:
+//		    }
+//		    
+//		    System.out.println("First Date :"+leadRequest.getFirstDate());
+//		    System.out.println("Last Date :"+leadRequest.getLastDate());
+//
+//			List<LeadDetails> leadList = wonLeadHelper.getWonLeadList(leadRequest);
+//			return leadList;
+//		}
+	
 	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) {
-			LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		    LocalDate today = LocalDate.now();
-		    ZoneId zone = ZoneId.systemDefault();
-		    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		    switch (leadRequest.getRequestedFor().toUpperCase()) {
+	    LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
 
-		        case "TODAY_WON":
-		            // 2 days ago
-		            leadRequest.setFirstDate(firstDate);
-		            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-		            break;
+	    switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-		        case "YESTERDAY_WON":
-		            // 3 days ago
-		            leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
-		            leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
-		            break;
+	        case "TODAY_WON":
+	            // Today (00:00 today → 00:00 tomorrow)
+	            leadRequest.setFirstDate(
+	                Date.from(today.atStartOfDay(zone).toInstant())
+	            );
+	            leadRequest.setLastDate(
+	                Date.from(today.plusDays(1).atStartOfDay(zone).toInstant())
+	            );
+	            break;
 
-		        case "BEFORE_YESTERDAY_WON":
-		            // 4 days ago
-		            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
-		            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
-		            break;
+	        case "YESTERDAY_WON":
+	            // Yesterday (00:00 yesterday → 00:00 today)
+	            leadRequest.setFirstDate(
+	                Date.from(today.minusDays(1).atStartOfDay(zone).toInstant())
+	            );
+	            leadRequest.setLastDate(
+	                Date.from(today.atStartOfDay(zone).toInstant())
+	            );
+	            break;
 
-		        case "CUSTOM":
-		            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-		            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-		        default:
-		    }
-		    
-		    System.out.println("First Date :"+leadRequest.getFirstDate());
-		    System.out.println("Last Date :"+leadRequest.getLastDate());
+	        case "BEFORE_YESTERDAY_WON":
+	            // Day before yesterday
+	            leadRequest.setFirstDate(
+	                Date.from(today.minusDays(2).atStartOfDay(zone).toInstant())
+	            );
+	            leadRequest.setLastDate(
+	                Date.from(today.minusDays(1).atStartOfDay(zone).toInstant())
+	            );
+	            break;
 
-			List<LeadDetails> leadList = wonLeadHelper.getWonLeadList(leadRequest);
-			return leadList;
-		}
+	        case "CUSTOM":
+	            // Custom range (inclusive of both dates)
+	            LocalDate customStart = leadRequest.getFirstDate()
+	                    .toInstant()
+	                    .atZone(zone)
+	                    .toLocalDate();
+
+	            LocalDate customEnd = leadRequest.getLastDate()
+	                    .toInstant()
+	                    .atZone(zone)
+	                    .toLocalDate();
+
+	            leadRequest.setFirstDate(
+	                Date.from(customStart.atStartOfDay(zone).toInstant())
+	            );
+	            leadRequest.setLastDate(
+	                Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant())
+	            );
+	            break;
+
+	        default:
+	            throw new IllegalArgumentException(
+	                "Invalid requestedFor value: " + leadRequest.getRequestedFor()
+	            );
+	    }
+
+	    System.out.println("First Date : " + leadRequest.getFirstDate());
+	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+
+	    return wonLeadHelper.getWonLeadList(leadRequest);
+	}
+
 
 	
 	public List<LeadDetails> getWebsiteLeadList(Request<LeadRequestObject> leadRequestObject) {
