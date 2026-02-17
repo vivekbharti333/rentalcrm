@@ -1,6 +1,7 @@
 package com.datfusrental.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class LeadService {
+	
+	
+	private Date startOfDay(LocalDate date, ZoneId zone) {
+	    return Date.from(date.atStartOfDay(zone).toInstant());
+	}
+
+	private Date endOfDay(LocalDate date, ZoneId zone) {
+	    return Date.from(date.atTime(23, 59, 59).atZone(zone).toInstant());
+	}
+
 
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -396,18 +407,37 @@ public class LeadService {
 		return leadList;
 	}
 
+//	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
+//		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+//		
+//		LocalDate today = LocalDate.now();
+//	    ZoneId zone = ZoneId.systemDefault();
+//		
+//		leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+//        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+//        
+//		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
+//		return leadList;
+//	}
+	
 	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
-		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-		
-		LocalDate today = LocalDate.now();
+
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+	    LocalDate today = LocalDate.now(ZoneId.systemDefault());
 	    ZoneId zone = ZoneId.systemDefault();
-		
-		leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
-        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-        
-		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
-		return leadList;
+
+	    // today range [00:00, next day 00:00)
+	    leadRequest.setFirstDate(
+	        Date.from(today.atStartOfDay(zone).toInstant())
+	    );
+	    leadRequest.setLastDate(
+	        Date.from(today.plusDays(1).atStartOfDay(zone).toInstant())
+	    );
+
+	    return leadHelper.getAllHotLeadList(leadRequest);
 	}
+
 	
 	public List<LeadDetails> getFollowupLeadList(Request<LeadRequestObject> leadRequestObject) {
 
@@ -416,36 +446,68 @@ public class LeadService {
 	    LocalDate today = LocalDate.now();
 	    ZoneId zone = ZoneId.systemDefault();
 
+//	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+//
+//	        case "FOLLOWUP_ONE":
+//	            // 2 days ago
+//	            leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+//	            leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
+//	            break;
+//
+//	        case "FOLLOWUP_TWO":
+//	            // 3 days ago
+//	            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+//	            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+//	            break;
+//
+//	        case "FOLLOWUP_THREE":
+//	            // 4 days ago
+//	            leadRequest.setFirstDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+//	            leadRequest.setLastDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+//	            break;
+//	            
+//	        case "FOLLOWUP_END":
+//	            // 4 days ago
+//	            leadRequest.setFirstDate(Date.from(today.minusYears(10).atStartOfDay(zone).toInstant()));
+//	            leadRequest.setLastDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
+//	            break;
+//
+//	        default:
+//	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+//	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+//	    }
+	    
 	    switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	        case "FOLLOWUP_ONE":
-	            // 2 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
-	            break;
+	    case "FOLLOWUP_ONE":
+	        // Yesterday
+	        leadRequest.setFirstDate(startOfDay(today.minusDays(1), zone));
+	        leadRequest.setLastDate(endOfDay(today.minusDays(1), zone));
+	        break;
 
-	        case "FOLLOWUP_TWO":
-	            // 3 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
-	            break;
+	    case "FOLLOWUP_TWO":
+	        // Day before yesterday
+	        leadRequest.setFirstDate(startOfDay(today.minusDays(2), zone));
+	        leadRequest.setLastDate(endOfDay(today.minusDays(2), zone));
+	        break;
 
-	        case "FOLLOWUP_THREE":
-	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
-	            break;
-	            
-	        case "FOLLOWUP_END":
-	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.minusYears(10).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.minusDays(3).atStartOfDay(zone).toInstant()));
-	            break;
+	    case "FOLLOWUP_THREE":
+	        // 3 days ago
+	        leadRequest.setFirstDate(startOfDay(today.minusDays(3), zone));
+	        leadRequest.setLastDate(endOfDay(today.minusDays(3), zone));
+	        break;
 
-	        default:
-	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
-	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-	    }
+	    case "FOLLOWUP_END":
+	        // Older than 3 days
+	        leadRequest.setFirstDate(startOfDay(today.minusYears(10), zone));
+	        leadRequest.setLastDate(endOfDay(today.minusDays(3), zone));
+	        break;
+
+	    default:
+	        leadRequest.setFirstDate(startOfDay(today, zone));
+	        leadRequest.setLastDate(endOfDay(today, zone));
+	}
+
 	    
 	    System.out.println(leadRequest.getFirstDate());
 	    System.out.println(leadRequest.getLastDate());
@@ -647,16 +709,32 @@ public class LeadService {
 
 	public int updateStatusToLost() {
 
-	    LeadRequestObject leadRequest = new LeadRequestObject();
+	    LocalDate today = LocalDate.now(ZoneId.systemDefault());
+	    LocalDateTime endOfPrevDay = today.minusDays(1).atTime(23, 59, 59);
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
-
-	    leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
-        System.out.println("First Date : "+leadRequest.getFirstDate());
-   
-	    return leadByStatusHelper.updateStatusToLost(leadRequest);
+	    Date cutoffDate = Date.from(endOfPrevDay.atZone(ZoneId.systemDefault()).toInstant());
+	    return leadByStatusHelper.updateStatusToLost(cutoffDate);
 	}
+
+	
+	
+//	public List<LeadDetails> updateStatusToLost() {
+//
+//	    LeadRequestObject leadRequest = new LeadRequestObject();
+//
+//		LocalDate today = LocalDate.now(ZoneId.systemDefault());
+//
+//		// end of previous day → 23:59:59.999
+//		LocalDateTime endOfPrevDay = today.minusDays(1).atTime(23, 59, 59);
+//
+//		Date cutoffDate = Date.from(endOfPrevDay.atZone(ZoneId.systemDefault()).toInstant());
+//
+//		leadRequest.setFirstDate(cutoffDate);
+//
+//		System.out.println("First Date : " + leadRequest.getFirstDate());
+//   
+//	    return leadByStatusHelper.getLostCandidateLeads(leadRequest);
+//	}
 
 
 

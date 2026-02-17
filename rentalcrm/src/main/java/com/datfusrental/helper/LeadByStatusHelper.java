@@ -53,20 +53,23 @@ public class LeadByStatusHelper {
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getLeadListBySecondStatus(LeadRequestObject leadRequest) {
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		List<String> includedStatus = List.of("LOST");
 		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status  AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("secondStatus", leadRequest.getSecondStatus())
+					.setParameter("status", includedStatus)
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE)
 					.getResultList();
 			return results;
 		} else {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("secondStatus", leadRequest.getSecondStatus())
+					.setParameter("status", includedStatus)
 					.setFirstResult(Constant.FIRST_RESULT)
 					.setMaxResults(Constant.MAX_RESULT)
 					.getResultList();
@@ -112,19 +115,23 @@ public class LeadByStatusHelper {
 
 	
 	@Transactional
-	public int updateStatusToLost(LeadRequestObject leadRequest) {
+	public int updateStatusToLost(Date cutoffDate) {
 
-	    List<String> includedStatus = List.of("WON", "ASSIGNED");
+	    List<String> excludedStatus = List.of("WON", "ASSIGNED");
 
 	    return leadDetailsDao.getEntityManager()
-	        .createQuery("UPDATE LeadDetails LD SET LD.status = :newStatus WHERE LD.status NOT IN :statusList AND LD.pickupDateTime <= :cutoffDate")
+	        .createQuery(
+	            "UPDATE LeadDetails LD SET LD.status = :newStatus " +
+	            "WHERE LD.status NOT IN :statusList " +
+	            "AND LD.pickupDateTime <= :cutoffDate"
+	        )
 	        .setParameter("newStatus", "LOST")
-	        .setParameter("statusList", includedStatus)
-	        .setParameter("cutoffDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("statusList", excludedStatus)
+	        .setParameter("cutoffDate", cutoffDate, TemporalType.TIMESTAMP)
 	        .executeUpdate();
 	}
 
-
+	
 	
 
 }

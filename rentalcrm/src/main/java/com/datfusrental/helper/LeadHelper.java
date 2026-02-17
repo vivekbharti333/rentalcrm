@@ -326,12 +326,33 @@ public class LeadHelper {
 	}
 	
 
+//	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
+//
+//	    return leadDetailsDao.getEntityManager()
+//	        .createQuery(
+//	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
+//	            LeadDetails.class)
+//	        .setParameter("superadminId", leadRequest.getSuperadminId())
+//	        .setParameter("statuses", excludedStatuses)
+//	        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+//	        .setParameter("endDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+//	        .getResultList();
+//	}
+	
 	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
 
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
-	            LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD " +
+	            "WHERE LD.superadminId = :superadminId " +
+	            "AND LD.status NOT IN (:statuses) " +
+	            "AND LD.pickupDateTime >= :startDate " +
+	            "AND LD.pickupDateTime < :endDate " +
+	            "AND LD.createdAt >= :startDate " +
+	            "AND LD.createdAt < :endDate " +
+	            "ORDER BY LD.id DESC",
+	            LeadDetails.class
+	        )
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("statuses", excludedStatuses)
 	        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
@@ -339,16 +360,24 @@ public class LeadHelper {
 	        .getResultList();
 	}
 
+
 	public List<LeadDetails> getFollowupLeadList(LeadRequestObject leadRequest) {
 
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.createdAt >= :firstDate AND LD.createdAt <= :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD " +
+	            "WHERE LD.superadminId = :superadminId " +
+	            "AND LD.status NOT IN (:statuses) " +
+	            "AND LD.createdAt BETWEEN :firstDate AND :lastDate " +
+	            "ORDER BY LD.id DESC",
+	            LeadDetails.class
+	        )
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("statuses", excludedStatuses)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
 	}
+
 	
 }
