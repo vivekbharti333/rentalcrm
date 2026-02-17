@@ -88,31 +88,23 @@ public class LeadService {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
-//		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
-//		if (isValid) {
-			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
-			if (leadDetails != null) {
-//				if(!leadRequest.getVendorName().equalsIgnoreCase("") || leadRequest.getVendorName() != null) {
-//					leadDetails.setVendorName(leadRequest.getVendorName());
-//				}
-				leadDetails.setPaymentType(leadRequest.getPaymentType());
-				leadDetails.setStatus(leadRequest.getStatus());
-				leadDetails.setChangeStatusDate(new Date());
-				leadHelper.updateLeadDetails(leadDetails);
+		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+		if (leadDetails != null) {
 
-				leadRequest.setRespCode(Constant.SUCCESS_CODE);
-				leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getStatus());
-				return leadRequest;
-			} else {
-				leadRequest.setRespCode(Constant.NOT_EXISTS);
-				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-				return leadRequest;
-			}
-//		} else {
-//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
-//			return leadRequest;
-//		}
+			leadDetails.setPaymentType(leadRequest.getPaymentType());
+			leadDetails.setNotes(leadRequest.getNotes());
+			leadDetails.setStatus(leadRequest.getStatus());
+			leadDetails.setChangeStatusDate(new Date());
+			leadHelper.updateLeadDetails(leadDetails);
+
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getStatus());
+			return leadRequest;
+		} else {
+			leadRequest.setRespCode(Constant.NOT_EXISTS);
+			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return leadRequest;
+		}
 	}
 	
 	

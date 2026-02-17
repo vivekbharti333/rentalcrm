@@ -48,12 +48,13 @@ public class LeadByPickAndDropHelper {
 		List<String> excludedStatus = List.of("WON", "ASSIGNED");
 
 		return leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC",
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC",
 				LeadDetails.class)
 				.setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", excludedStatus)
 				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
+				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+				.getResultList();
 	}
 
 	public List<LeadDetails> getPickupWonLeadList(LeadRequestObject leadRequest) {
@@ -65,7 +66,8 @@ public class LeadByPickAndDropHelper {
 				.setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", excludedStatus)
 				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
+				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+				.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
