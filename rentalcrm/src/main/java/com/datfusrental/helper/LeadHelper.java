@@ -46,7 +46,7 @@ public class LeadHelper {
 		}
 	}
 	
-	List<String> excludedStatuses = List.of("WON", "LOST", "CANCELLED");
+	List<String> excludedStatuses = List.of("WON", "LOST", "CANCELLED", "ASSIGNED");
 
 	@Transactional
 	public LeadDetails getLeadDetailsById(Long id) {
