@@ -174,6 +174,7 @@ public class LeadHelper {
 		leadDetails.setPseudoName(leadRequest.getPseudoName());
 		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
 		leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
+		leadDetails.setPseudoName(user.getPseudoName());
 		leadDetails.setTeamleaderId(user.getTeamleaderId());
 		leadDetails.setAdminId(user.getAdminId());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
