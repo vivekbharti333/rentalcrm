@@ -87,12 +87,14 @@ public class LocationService {
 		LocationRequestObject itemRequest = itemRequestObject.getPayload();
 		locationHelper.validateLocationRequest(itemRequest);
 
-//		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
-//		if (isValid) {
 			LocationDetails locationDetails = locationHelper.getLocationDetailsById(itemRequest.getId());
 			if (locationDetails != null) {
 				if (locationDetails.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
 					locationDetails.setStatus(Status.ACTIVE.name());
+					
+				} else if (locationDetails.getStatus().equalsIgnoreCase(Status.PENDING.name())) {
+					locationDetails.setStatus(Status.ACTIVE.name());
+					
 				} else {
 					locationDetails.setStatus(Status.INACTIVE.name());
 				}
@@ -102,11 +104,6 @@ public class LocationService {
 				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 				return itemRequest;
 			}
-//		} else {
-//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-//			return itemRequest;
-//		}
 		return itemRequest;
 
 	}

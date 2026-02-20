@@ -194,12 +194,26 @@ public class UserHelper {
 
 		user.setUserPicture(userRequest.getUserPicture());
 		user.setRoleType(userRequest.getRoleType());
+		user.setService(userRequest.getService());
+		user.setPermissions(userRequest.getPermissions());
+		user.setUserPicture(userRequest.getUserPicture());
+		user.setPseudoName(userRequest.getPseudoName());
 		user.setFirstName(userRequest.getFirstName());
 		user.setLastName(userRequest.getLastName());
 		user.setMobileNo(userRequest.getMobileNo());
+		user.setEmergencyContactRelation1(userRequest.getEmergencyContactRelation1());
+		user.setEmergencyContactName1(userRequest.getEmergencyContactName1());
+		user.setEmergencyContactNo1(userRequest.getEmergencyContactNo1());
+		user.setEmergencyContactRelation2(userRequest.getEmergencyContactRelation2());
+		user.setEmergencyContactName2(userRequest.getEmergencyContactName2());
+		user.setEmergencyContactNo2(userRequest.getEmergencyContactNo2());
 		user.setAlternateMobile(userRequest.getAlternateMobile());
 		user.setEmailId(userRequest.getEmailId());
-		user.setPermissions(userRequest.getPermissions());
+//		user.setUserWalletAmount(0L);
+//		user.setCompanyWalletAmount(0L);
+		user.setIdDocumentType(userRequest.getIdDocumentType());
+		user.setIdDocumentPicture(userRequest.getIdDocumentPicture());
+		user.setPanNumber(userRequest.getPanNumber());
 		user.setUpdatedAt(new Date());
 
 		return user;

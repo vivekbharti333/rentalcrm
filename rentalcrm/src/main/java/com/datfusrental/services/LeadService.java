@@ -205,7 +205,7 @@ public class LeadService {
 					locationDetails.setLocation(leadRequest.getOtherPickLocation());
 					
 					locationDetails.setLocationType("PICK");
-					locationDetails.setStatus(Status.INACTIVE.name());
+					locationDetails.setStatus(Status.PENDING.name());
 					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
 					locationDetails.setCreatedAt(new Date());
 					locationDetails.setUpdatedAt(new Date());
@@ -223,7 +223,7 @@ public class LeadService {
 					locationDetails.setLocation(leadRequest.getOtherDropLocation());
 					
 					locationDetails.setLocationType("PICK");
-					locationDetails.setStatus(Status.INACTIVE.name());
+					locationDetails.setStatus(Status.PENDING.name());
 					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
 					locationDetails.setCreatedAt(new Date());
 					locationDetails.setUpdatedAt(new Date());

@@ -283,7 +283,7 @@ public class UserService {
 			user = userHelper.getUpdatedUserDetailsByReqObj(user, userRequest);
 			user = userHelper.UpdateUserDetails(user);
 			
-			if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
+//			if(userRequest.getRequestedFor().equalsIgnoreCase("WEB")) {
 				for (AddressRequestObject addressRequest : userRequest.getAddressList()) {
 					AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(user.getId(), addressRequest.getAddressType(), user.getSuperadminId());
 					
@@ -291,14 +291,14 @@ public class UserService {
 						addressService.updateAddressDetailsByRequest(addressRequest,addressDetails);
 					}
 				}
-			}else {
-				AddressRequestObject addressRequestObj = addressHelper.setAddressRequestObjectByUserReqObj(userRequest);
-				AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(user.getId(), addressRequestObj.getAddressType(), user.getSuperadminId());
-				
-				if(addressDetails != null) {
-					addressService.updateAddressDetailsByRequest(addressRequestObj,addressDetails);
-				}
-			}
+//			}else {
+////				AddressRequestObject addressRequestObj = addressHelper.setAddressRequestObjectByUserReqObj(userRequest);
+////				AddressDetails addressDetails = addressHelper.getAddressDetailsByUserIdAndAddressType(user.getId(), addressRequestObj.getAddressType(), user.getSuperadminId());
+////				
+////				if(addressDetails != null) {
+////					addressService.updateAddressDetailsByRequest(addressRequestObj,addressDetails);
+//				}
+//			}
 			
 
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
