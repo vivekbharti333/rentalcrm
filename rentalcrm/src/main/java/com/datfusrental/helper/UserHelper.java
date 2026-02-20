@@ -76,6 +76,7 @@ public class UserHelper {
 			return false;
 		}
 	}
+	
 
 	@Transactional
 	public User getUserDetailsByLoginId(String loginId) {
@@ -209,6 +210,12 @@ public class UserHelper {
 		userDetailsDao.update(user);
 		return user;
 	}
+	
+//	@Transactional
+//	public User removeUserDetails(User user) {
+//		userDetailsDao.delete(user);
+//		return user;
+//	}
 	
 
 	@SuppressWarnings("unchecked")

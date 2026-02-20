@@ -124,12 +124,12 @@ public class UserController {
 		}
 	}
 	
-	@RequestMapping(path = "removeUserParmanent", method = RequestMethod.POST)
-	public Response<UserRequestObject> removeUserParmanent(@RequestBody Request<UserRequestObject> userRequestObject,
+	@RequestMapping(path = "removeUser", method = RequestMethod.POST)
+	public Response<UserRequestObject> removeUser(@RequestBody Request<UserRequestObject> userRequestObject,
 			HttpServletRequest request) {
 		GenricResponse<UserRequestObject> responseObj = new GenricResponse<UserRequestObject>();
 		try {
-			UserRequestObject responce = userService.removeUserParmanent(userRequestObject);
+			UserRequestObject responce = userService.removeUser(userRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());

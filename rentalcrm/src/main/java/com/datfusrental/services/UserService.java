@@ -277,9 +277,6 @@ public class UserService {
 			throws BizException, Exception {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
-		
-//		Boolean isValid = jwtTokenUtil.validateJwtToken(userRequest.getCreatedBy(), userRequest.getToken());
-//		if (isValid) {
 			
 		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
 		if (user != null) {
@@ -370,11 +367,11 @@ public class UserService {
 		}
 	}
 	
-	public UserRequestObject removeUserParmanent(Request<UserRequestObject> userRequestObject) 
+	public UserRequestObject removeUser(Request<UserRequestObject> userRequestObject) 
 			throws BizException, Exception {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
-		User user = userHelper.getUserDetailsByLoginIdAndSuperadminId(userRequest.getLoginId(), userRequest.getSuperadminId());
+		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
 		if (user != null) {
 			
 			user.setStatus(Status.REMOVED.name());
@@ -385,6 +382,9 @@ public class UserService {
 			user = userHelper.UpdateUserDetails(user);
 			
 			userRequest.setStatus(user.getStatus());
+			
+//			userHelper.removeUserDetails(user);
+			
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.REMOVED_SUCCESS);
 			return userRequest;
