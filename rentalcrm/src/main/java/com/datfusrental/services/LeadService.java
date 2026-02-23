@@ -234,9 +234,9 @@ public class LeadService {
 
 
 			//Payment Gateways
-//			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
-//				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));
-//			}
+			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));
+			}
 
 			// history
 
