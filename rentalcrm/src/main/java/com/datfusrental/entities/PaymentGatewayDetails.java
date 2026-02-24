@@ -42,6 +42,9 @@ public class PaymentGatewayDetails {
 	@Column(name = "status")
 	private String status;
 	
+	@Column(name = "company_name")
+	private String companyName;
+	
 	@Column(name = "created_at")
 	private Date createdAt;
 	

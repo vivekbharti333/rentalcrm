@@ -32,7 +32,7 @@ public class PaymentGatewaysService {
 		PaymentGatewaysRequestObject paymentGatewaysRequest = paymentGatewaysRequestObject.getPayload();
 		paymentGatewaysHelper.validatePaymentGatewaysRequest(paymentGatewaysRequest);
 		
-		PaymentGatewayDetails existsPaymentGatewayDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(paymentGatewaysRequest.getPaymentGatewaysName());
+		PaymentGatewayDetails existsPaymentGatewayDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(paymentGatewaysRequest.getPaymentGatewaysName(), paymentGatewaysRequest.getCompanyName());
 		if(existsPaymentGatewayDetails == null) {
 			PaymentGatewayDetails paymentGatewayDetails = paymentGatewaysHelper.getPaymentGatewayDetailsReqObj(paymentGatewaysRequest);
 			paymentGatewayDetails = paymentGatewaysHelper.savePaymentGateways(paymentGatewayDetails);
