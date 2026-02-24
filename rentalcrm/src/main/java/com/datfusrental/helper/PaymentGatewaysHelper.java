@@ -33,13 +33,14 @@ public class PaymentGatewaysHelper {
 	}
 
 	@Transactional
-	public PaymentGatewayDetails getPaymentGatewayDetailsByName(String paymentGatewaysName) {
+	public PaymentGatewayDetails getPaymentGatewayDetailsByName(String paymentGatewaysName, String companyName) {
 
 		CriteriaBuilder criteriaBuilder = paymentGatewaysDetailsDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<PaymentGatewayDetails> criteriaQuery = criteriaBuilder.createQuery(PaymentGatewayDetails.class);
 		Root<PaymentGatewayDetails> root = criteriaQuery.from(PaymentGatewayDetails.class);
-		Predicate restriction = criteriaBuilder.equal(root.get("paymentGatewaysName"), paymentGatewaysName);
-		criteriaQuery.where(restriction);
+		Predicate restriction1 = criteriaBuilder.equal(root.get("paymentGatewaysName"), paymentGatewaysName);
+		Predicate restriction2 = criteriaBuilder.equal(root.get("companyName"), companyName);
+		criteriaQuery.where(restriction1, restriction2);
 		PaymentGatewayDetails paymentGatewayDetails = paymentGatewaysDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
 		return paymentGatewayDetails;
 	}
@@ -54,6 +55,7 @@ public class PaymentGatewaysHelper {
 		paymentGatewayDetails.setSalt(paymentGatewaysRequest.getSalt());
 		paymentGatewayDetails.setVersion(paymentGatewaysRequest.getVersion());
 		paymentGatewayDetails.setStatus(Status.ACTIVE.name());
+		paymentGatewayDetails.setCompanyName(paymentGatewaysRequest.getCompanyName());
 		paymentGatewayDetails.setCreatedAt(new Date());
 		paymentGatewayDetails.setUpdatedAt(new Date());
 

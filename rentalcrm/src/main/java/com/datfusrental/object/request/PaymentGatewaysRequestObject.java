@@ -15,6 +15,7 @@ public class PaymentGatewaysRequestObject {
 	private String salt;
 	private String version;
 	private String status;
+	private String companyName;
 	private Date createdAt;
 	private Date updatedAt;
 

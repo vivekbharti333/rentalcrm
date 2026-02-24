@@ -269,7 +269,7 @@ public class LeadService {
 	    	System.out.println("Enter 1");
 
 	        // 1) Get order ID using payment link ID
-	        String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId());
+	        String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId(), leadRequest);
 
 	        System.out.println("Enter 2 : "+orderId);
 	        if (orderId == null) {
@@ -296,7 +296,7 @@ public class LeadService {
 //	            leadDetails.setStatus(paymentStatus);
 //	        }
 	        
-	        String responseBody = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
+	        String responseBody = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId,leadRequest);
 
 	        System.out.println("Enter 3 : " + responseBody);
 

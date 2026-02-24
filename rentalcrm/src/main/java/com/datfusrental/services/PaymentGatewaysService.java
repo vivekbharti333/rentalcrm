@@ -21,18 +21,12 @@ public class PaymentGatewaysService {
 	@Autowired
 	private PaymentGatewaysHelper paymentGatewaysHelper;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-	
-	@Autowired
-	private UserHelper userHelper;
-
 
 	public PaymentGatewaysRequestObject addPaymentGatewaysDetails(Request<PaymentGatewaysRequestObject> paymentGatewaysRequestObject) throws BizException {
 		PaymentGatewaysRequestObject paymentGatewaysRequest = paymentGatewaysRequestObject.getPayload();
 		paymentGatewaysHelper.validatePaymentGatewaysRequest(paymentGatewaysRequest);
 		
-		PaymentGatewayDetails existsPaymentGatewayDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(paymentGatewaysRequest.getPaymentGatewaysName());
+		PaymentGatewayDetails existsPaymentGatewayDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(paymentGatewaysRequest.getPaymentGatewaysName(), paymentGatewaysRequest.getCompanyName());
 		if(existsPaymentGatewayDetails == null) {
 			PaymentGatewayDetails paymentGatewayDetails = paymentGatewaysHelper.getPaymentGatewayDetailsReqObj(paymentGatewaysRequest);
 			paymentGatewayDetails = paymentGatewaysHelper.savePaymentGateways(paymentGatewayDetails);
@@ -45,7 +39,6 @@ public class PaymentGatewaysService {
 			paymentGatewaysRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 			return paymentGatewaysRequest;
 		}
-		
 
 	}
 

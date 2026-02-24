@@ -41,7 +41,7 @@ public class CashfreePaymentGateways {
         String param = this.getCashfreePaymentParam(leadRequest);
 
         // Make API call
-        HttpResponse<String> response = this.getCashfreePaymentRequestPage(param);
+        HttpResponse<String> response = this.getCashfreePaymentRequestPage(param, leadRequest);
 
         String linkUrl = null;
 
@@ -100,10 +100,10 @@ public class CashfreePaymentGateways {
     /**
      * Call Cashfree API 
      */
-    public HttpResponse<String> getCashfreePaymentRequestPage(String param)
+    public HttpResponse<String> getCashfreePaymentRequestPage(String param, LeadRequestObject leadRequest)
             throws IOException, InterruptedException {
     	
-    	PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
+    	PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getEnquirySource() );
 
         HttpClient client = HttpClient.newHttpClient();
 
@@ -123,9 +123,9 @@ public class CashfreePaymentGateways {
         return response;
     }
     
-    public String getCashFreePaymentOrderIdByLinkIdStatus(String linkId) {
+    public String getCashFreePaymentOrderIdByLinkIdStatus(String linkId, LeadRequestObject leadRequest) {
         OkHttpClient client = new OkHttpClient();
-        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
+        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getEnquirySource());
 
         Request request = new Request.Builder()
                 .url("https://api.cashfree.com/pg/links/" + linkId + "/orders")
@@ -159,9 +159,9 @@ public class CashfreePaymentGateways {
     }
 
     
-    public String getCashFreePaymentStatusByOrderId(String orderId) {
+    public String getCashFreePaymentStatusByOrderId(String orderId, LeadRequestObject leadRequest) {
         OkHttpClient client = new OkHttpClient();
-        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name());
+        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getEnquirySource());
 
         Request request = new Request.Builder()
                 .url("https://api.cashfree.com/pg/orders/" + orderId + "/payments")
