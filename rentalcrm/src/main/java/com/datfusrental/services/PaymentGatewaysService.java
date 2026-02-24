@@ -39,7 +39,6 @@ public class PaymentGatewaysService {
 			paymentGatewaysRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
 			return paymentGatewaysRequest;
 		}
-		
 
 	}
 
