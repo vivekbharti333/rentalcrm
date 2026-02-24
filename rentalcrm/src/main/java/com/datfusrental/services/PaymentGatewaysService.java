@@ -21,12 +21,6 @@ public class PaymentGatewaysService {
 	@Autowired
 	private PaymentGatewaysHelper paymentGatewaysHelper;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-	
-	@Autowired
-	private UserHelper userHelper;
-
 
 	public PaymentGatewaysRequestObject addPaymentGatewaysDetails(Request<PaymentGatewaysRequestObject> paymentGatewaysRequestObject) throws BizException {
 		PaymentGatewaysRequestObject paymentGatewaysRequest = paymentGatewaysRequestObject.getPayload();
