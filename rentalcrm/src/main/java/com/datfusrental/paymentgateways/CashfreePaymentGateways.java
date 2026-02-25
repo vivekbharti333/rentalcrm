@@ -103,7 +103,11 @@ public class CashfreePaymentGateways {
     public HttpResponse<String> getCashfreePaymentRequestPage(String param, LeadRequestObject leadRequest)
             throws IOException, InterruptedException {
     	
+<<<<<<< HEAD
     	PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getCompanyName() );
+=======
+    	PaymentGatewayDetails pgDetails =  paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getEnquirySource() );
+>>>>>>> branch 'master' of https://github.com/vivekbharti333/rentalcrm.git
 
         HttpClient client = HttpClient.newHttpClient();
 
@@ -125,7 +129,11 @@ public class CashfreePaymentGateways {
     
     public String getCashFreePaymentOrderIdByLinkIdStatus(String linkId, LeadRequestObject leadRequest) {
         OkHttpClient client = new OkHttpClient();
+<<<<<<< HEAD
         PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getCompanyName());
+=======
+        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getEnquirySource());
+>>>>>>> branch 'master' of https://github.com/vivekbharti333/rentalcrm.git
 
         Request request = new Request.Builder()
                 .url("https://api.cashfree.com/pg/links/" + linkId + "/orders")
@@ -161,7 +169,11 @@ public class CashfreePaymentGateways {
     
     public String getCashFreePaymentStatusByOrderId(String orderId, LeadRequestObject leadRequest) {
         OkHttpClient client = new OkHttpClient();
+<<<<<<< HEAD
         PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getCompanyName());
+=======
+        PaymentGatewayDetails pgDetails = paymentGatewaysHelper.getPaymentGatewayDetailsByName(PaymentGateway.CASHFREE.name(), leadRequest.getEnquirySource());
+>>>>>>> branch 'master' of https://github.com/vivekbharti333/rentalcrm.git
 
         Request request = new Request.Builder()
                 .url("https://api.cashfree.com/pg/orders/" + orderId + "/payments")
