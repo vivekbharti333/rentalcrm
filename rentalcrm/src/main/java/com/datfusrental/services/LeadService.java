@@ -369,6 +369,44 @@ public class LeadService {
 	        existingLead = leadHelper.updateLeadDetails(existingLead);
 
 //	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
+	        
+	        
+	      //Save Other Location
+			if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")){
+				
+				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherPickLocation());
+				if (existsLocationDetails == null) {
+					
+					LocationDetails locationDetails = new LocationDetails();
+					locationDetails.setLocation(leadRequest.getOtherPickLocation());
+					
+					locationDetails.setLocationType("PICK");
+					locationDetails.setStatus(Status.PENDING.name());
+					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
+					locationDetails.setCreatedAt(new Date());
+					locationDetails.setUpdatedAt(new Date());
+					
+					locationDetailsDao.persist(locationDetails);
+					
+				}
+				
+			}
+			if(!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")){
+				
+				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherDropLocation());
+				if (existsLocationDetails == null) {
+					LocationDetails locationDetails = new LocationDetails();
+					locationDetails.setLocation(leadRequest.getOtherDropLocation());
+					
+					locationDetails.setLocationType("PICK");
+					locationDetails.setStatus(Status.PENDING.name());
+					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
+					locationDetails.setCreatedAt(new Date());
+					locationDetails.setUpdatedAt(new Date());
+					
+					locationDetailsDao.persist(locationDetails);
+				}
+			}
 
 	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
 	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
