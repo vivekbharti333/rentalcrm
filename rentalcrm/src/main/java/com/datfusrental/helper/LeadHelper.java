@@ -190,6 +190,7 @@ public class LeadHelper {
 	public LeadDetails getUpdatedLeadDetailsByReqObj(LeadRequestObject leadRequest, LeadDetails leadDetails) {
 
 
+		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
 		leadDetails.setCategory(leadRequest.getCategory());
 		leadDetails.setSubCategory(leadRequest.getSubCategory());
