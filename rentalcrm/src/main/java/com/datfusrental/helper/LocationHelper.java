@@ -87,6 +87,7 @@ public class LocationHelper {
 	public LocationDetails getUpdatedLocationDetailsByReqObj(LocationRequestObject locationRequest, LocationDetails locationDetails) {
 
 		locationDetails.setLocation(locationRequest.getLocation());
+		locationDetails.setStatus(Status.ACTIVE.name());
 		locationDetails.setUpdatedAt(new Date());
 
 		return locationDetails;

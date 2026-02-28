@@ -47,23 +47,22 @@ public class WonLeadHelper {
 	
 	public List<LeadDetails> getWonLeadList(LeadRequestObject leadRequest) {
 
+	    List<String> includedStatuses = List.of("WON", "ASSIGNED");
+
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
 	            "SELECT LD FROM LeadDetails LD " +
-	            "WHERE LD.status = :status " +
+	            "WHERE LD.status IN :includedStatuses " +
 	            "AND LD.changeStatusDate >= :fromDate " +
 	            "AND LD.changeStatusDate < :toDate " +
 	            "ORDER BY LD.pickupDateTime DESC",
 	            LeadDetails.class
 	        )
-	        .setParameter("status", Status.WON.name())
+	        .setParameter("includedStatuses", includedStatuses)
 	        .setParameter("fromDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	        .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
 	}
-
-
-
 	
 	
 	

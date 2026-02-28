@@ -579,6 +579,12 @@ public class LeadService {
 	            leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
 	            break;
 
+	        case "END_PICKUP":
+	            // 4 days ago
+	            leadRequest.setFirstDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.plusDays(400).atStartOfDay(zone).toInstant()));
+	            break;
+
 	        case "CUSTOM":
 	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
 	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));

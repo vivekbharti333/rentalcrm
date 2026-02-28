@@ -135,6 +135,7 @@ public class UserHelper {
 		user.setPseudoName(userRequest.getPseudoName());
 		user.setFirstName(userRequest.getFirstName());
 		user.setLastName(userRequest.getLastName());
+		user.setGender(userRequest.getGender());
 		user.setMobileNo(userRequest.getMobileNo());
 		user.setEmergencyContactRelation1(userRequest.getEmergencyContactRelation1());
 		user.setEmergencyContactName1(userRequest.getEmergencyContactName1());
@@ -200,6 +201,7 @@ public class UserHelper {
 		user.setPseudoName(userRequest.getPseudoName());
 		user.setFirstName(userRequest.getFirstName());
 		user.setLastName(userRequest.getLastName());
+		user.setGender(userRequest.getGender());
 		user.setMobileNo(userRequest.getMobileNo());
 		user.setEmergencyContactRelation1(userRequest.getEmergencyContactRelation1());
 		user.setEmergencyContactName1(userRequest.getEmergencyContactName1());
@@ -249,16 +251,16 @@ public class UserHelper {
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.ADMIN.name())) {
 			List<User> results = userDetailsDao.getEntityManager().createQuery(
-					"SELECT UD FROM User UD WHERE UD.adminId =:adminId AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-					.setParameter("adminId", userRequest.getCreatedBy())
+					"SELECT UD FROM User UD WHERE UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
+//					.setParameter("adminId", userRequest.getCreatedBy())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name())
 					.getResultList();
 			return results;
 		} else if (userRequest.getRoleType().equals(RoleType.TEAM_LEADER.name())) {
 			List<User> results = userDetailsDao.getEntityManager().createQuery(
-					"SELECT UD FROM User UD WHERE UD.createdBy =:createdBy AND UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
-					.setParameter("teamleaderId", userRequest.getTeamleaderId())
+					"SELECT UD FROM User UD WHERE UD.superadminId =:superadminId AND status NOT IN :REMOVED ORDER BY UD.id DESC")
+//					.setParameter("teamleaderId", userRequest.getTeamleaderId())
 					.setParameter("superadminId", userRequest.getSuperadminId())
 					.setParameter("REMOVED", Status.REMOVED.name()).getResultList();
 			return results;

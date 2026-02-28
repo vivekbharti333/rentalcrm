@@ -23,6 +23,7 @@ public class UserRequestObject {
 	private String roleType;
 	private String firstName;
 	private String lastName;
+	private String gender;
 	private String mobileNo;
 	private String alternateMobile;
 	private String emailId;
@@ -67,6 +68,19 @@ public class UserRequestObject {
 	private String teamleaderId;
 	private String adminId;
 	private String superadminId;
+	
+//	Vendor details
+    private String whatsappLink;
+    private String productName;
+    private String whatsappNo;
+    private String vendorState;
+    private String vendorRegion;
+    private String vendorCity;
+    private String panCard;
+    private String aadharCard;
+    private String gst;
+    private String vendorWebsiteLink;
+    private String accountDetails;
 	
 	private String requestedFor;
 	private String searchParam;
