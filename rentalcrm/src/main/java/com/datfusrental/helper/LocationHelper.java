@@ -51,6 +51,18 @@ public class LocationHelper {
 		LocationDetails locationDetails = locationDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
 		return locationDetails;
 	}
+	
+	@Transactional
+	public LocationDetails getLocationDetailsByName(String location) {
+
+		CriteriaBuilder criteriaBuilder = locationDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<LocationDetails> criteriaQuery = criteriaBuilder.createQuery(LocationDetails.class);
+		Root<LocationDetails> root = criteriaQuery.from(LocationDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("location"), location);
+		criteriaQuery.where(restriction);
+		LocationDetails locationDetails = locationDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return locationDetails;
+	}
 
 	@Transactional
 	public LocationDetails getLocationDetailsByType(String location) {
