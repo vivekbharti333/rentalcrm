@@ -53,33 +53,65 @@ public class LocationService {
 //		}
 	}
 
+//	public LocationRequestObject updateLocation(Request<LocationRequestObject> itemRequestObject)
+//			throws BizException, Exception {
+//		LocationRequestObject itemRequest = itemRequestObject.getPayload();
+//		locationHelper.validateLocationRequest(itemRequest);
+//
+//			LocationDetails locationDetails = locationHelper.getLocationDetailsById(itemRequest.getId());
+//			if (locationDetails != null) {
+//				LocationDetails locationName = locationHelper.getLocationDetailsByName(itemRequest.getLocation());
+//				if(locationName != null) {
+//					itemRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+//					itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
+//					return itemRequest;
+//				}
+//
+//				locationDetails = locationHelper.getUpdatedLocationDetailsByReqObj(itemRequest, locationDetails);
+//				locationDetails = locationHelper.updateLocationDetails(locationDetails);
+//
+//				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+//				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+//				return itemRequest;
+//			} else {
+//				itemRequest.setRespCode(Constant.NOT_EXISTS);
+//				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+//				return itemRequest;
+//			}
+//	}
+	
 	public LocationRequestObject updateLocation(Request<LocationRequestObject> itemRequestObject)
 			throws BizException, Exception {
+
 		LocationRequestObject itemRequest = itemRequestObject.getPayload();
 		locationHelper.validateLocationRequest(itemRequest);
 
-//		Boolean isValid = jwtTokenUtil.validateJwtToken(itemRequest.getLoginId(), itemRequest.getToken());
-//		if (isValid) {
+		LocationDetails locationDetails = locationHelper.getLocationDetailsById(itemRequest.getId());
 
-			LocationDetails locationDetails = locationHelper.getLocationDetailsById(itemRequest.getId());
-			if (locationDetails != null) {
+		if (locationDetails == null) {
+			itemRequest.setRespCode(Constant.NOT_EXISTS);
+			itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return itemRequest;
+		}
 
-				locationDetails = locationHelper.getUpdatedLocationDetailsByReqObj(itemRequest, locationDetails);
-				locationDetails = locationHelper.updateLocationDetails(locationDetails);
+		// ✅ Duplicate check excluding same ID
+		LocationDetails existingLocation = locationHelper.getLocationDetailsByName(itemRequest.getLocation());
 
-				itemRequest.setRespCode(Constant.SUCCESS_CODE);
-				itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
-				return itemRequest;
-			} else {
-				itemRequest.setRespCode(Constant.NOT_EXISTS);
-				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-				return itemRequest;
-			}
-//		} else {
-//			itemRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-//			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
-//			return itemRequest;
-//		}
+		if (existingLocation != null && !existingLocation.getId().equals(itemRequest.getId())) {
+
+			itemRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			itemRequest.setRespMesg(Constant.ALREADY_EXISTS_MSG);
+			return itemRequest;
+		}
+
+		locationDetails = locationHelper.getUpdatedLocationDetailsByReqObj(itemRequest, locationDetails);
+
+		locationDetails = locationHelper.updateLocationDetails(locationDetails);
+
+		itemRequest.setRespCode(Constant.SUCCESS_CODE);
+		itemRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+
+		return itemRequest;
 	}
 
 	public LocationRequestObject changeLocationStatus(Request<LocationRequestObject> itemRequestObject)
@@ -99,13 +131,15 @@ public class LocationService {
 					locationDetails.setStatus(Status.INACTIVE.name());
 				}
 				locationHelper.updateLocationDetails(locationDetails);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg("Status updated successfully");
+				return itemRequest;
 			} else {
 				itemRequest.setRespCode(Constant.NOT_EXISTS);
 				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 				return itemRequest;
 			}
-		return itemRequest;
-
 	}
 
 	public List<LocationDetails> getLocationDetails(Request<LocationRequestObject> locationRequestObject) {
