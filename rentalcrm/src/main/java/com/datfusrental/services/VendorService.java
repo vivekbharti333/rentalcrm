@@ -36,11 +36,31 @@ public class VendorService {
 
 	@Autowired
 	private VendorHelper vendorHelper;
-
 	
 	
+	public UserRequestObject changeVendorStatus(Request<UserRequestObject> userRequestObject)
+			throws BizException, Exception {
+		UserRequestObject userRequest = userRequestObject.getPayload();
+		vendorHelper.validateUserRequest(userRequest);
 
-
+		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(userRequest.getId());
+		if (vendorDetails != null) {
+			if (vendorDetails.getStatus().equalsIgnoreCase(Status.ACTIVE.name())) {
+				vendorDetails.setStatus(Status.INACTIVE.name());
+			} else {
+				vendorDetails.setStatus(Status.ACTIVE.name());
+			}
+			vendorHelper.UpdateVendorDetails(vendorDetails);
+			
+			userRequest.setRespCode(Constant.SUCCESS_CODE);
+			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+			return userRequest;
+		} else {
+			userRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			userRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return userRequest;
+		}
+	}
 
 	@Transactional
 	public UserRequestObject vendorRegistration(Request<UserRequestObject> userRequestObject)
@@ -76,7 +96,7 @@ public class VendorService {
 		if (vendorDetails != null) {
 
 			vendorDetails = vendorHelper.getUpdatedVendorDetailsByReqObj(vendorDetails, userRequest);
-			vendorDetails = vendorHelper.saveVendorDetails(vendorDetails);
+			vendorDetails = vendorHelper.UpdateVendorDetails(vendorDetails);
 			
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);
@@ -95,15 +115,5 @@ public class VendorService {
 		List<VendorDetails> vendorList = vendorHelper.getVendorDetails(userRequest);
 		return vendorList;
 	}
-	
-	
-	
-
-
-
-
-
-
-
 	
 }

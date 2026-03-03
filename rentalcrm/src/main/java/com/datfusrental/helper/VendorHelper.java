@@ -130,7 +130,7 @@ public class VendorHelper {
 		user.setWhatsappLink(userRequest.getWhatsappLink());
 		user.setProductName(userRequest.getProductName());
 
-		user.setStatus(Status.ACTIVE.name());
+//		user.setStatus(Status.ACTIVE.name());
 		user.setRoleType(userRequest.getRoleType());
 
 		user.setWhatsappNo(userRequest.getWhatsappNo());

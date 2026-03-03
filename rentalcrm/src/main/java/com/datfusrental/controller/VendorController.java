@@ -30,6 +30,22 @@ public class VendorController {
 
 	@Autowired
 	VendorService vendorService;
+	
+	@RequestMapping(path = "changeVendorStatus", method = RequestMethod.POST)
+	public Response<UserRequestObject> changeVendorStatus(@RequestBody Request<UserRequestObject> userRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<UserRequestObject> responseObj = new GenricResponse<UserRequestObject>();
+		try {
+
+			UserRequestObject responce = vendorService.changeVendorStatus(userRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "vendorRegistration", method = RequestMethod.POST)
 	public Response<UserRequestObject> vendorRegistration(@RequestBody Request<UserRequestObject> userRequestObject,

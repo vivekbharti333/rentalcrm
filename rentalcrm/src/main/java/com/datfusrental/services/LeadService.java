@@ -155,6 +155,7 @@ public class LeadService {
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 		if (leadDetails != null) {
 			
+			leadDetails.setStatus("ASSIGNED");
 			leadDetails.setVendorName(leadRequest.getVendorName());
 			leadDetails.setChangeStatusDate(new Date());
 			leadHelper.updateLeadDetails(leadDetails);
