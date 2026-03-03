@@ -258,7 +258,9 @@ public class LeadHelper {
 			leadDetails.setStatus(leadRequest.getStatus());
 		}
 
-
+		leadRequest.setPseudoName(leadRequest.getPseudoName());
+		leadRequest.setCreatedByName(leadRequest.getCreatedByName());
+		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
 		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
 		leadDetails.setChangeStatusDate(new Date());;
