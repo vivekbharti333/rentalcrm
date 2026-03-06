@@ -42,24 +42,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class MobileService {
-	
-	
-	private Date startOfDay(LocalDate date, ZoneId zone) {
-	    return Date.from(date.atStartOfDay(zone).toInstant());
-	}
-
-	private Date endOfDay(LocalDate date, ZoneId zone) {
-	    return Date.from(date.atTime(23, 59, 59).atZone(zone).toInstant());
-	}
-
 
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
 	private MobileHelper mobileHelper;
 	
-
-
 	
 	public List<LeadDetails> getMobileInstantList(Request<LeadRequestObject> leadRequestObject) {
 
@@ -106,6 +94,54 @@ public class MobileService {
 
 		return mobileHelper.getMobileInstantList(leadRequest);
 	}
+
+	
+	public List<LeadDetails> getLeadListByCategoryTypeName(Request<LeadRequestObject> leadRequestObject) {
+
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
+
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
+
+		case "TODAY":
+			// Today (00:00 today → 00:00 tomorrow)
+			leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
+
+		case "TOMORROW":
+			// Yesterday (00:00 yesterday → 00:00 today)
+			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			break;
+
+		case "AFTER_TOMORROW":
+			// Day before yesterday
+			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			break;
+
+		case "CUSTOM":
+			// Custom range (inclusive of both dates)
+			LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
+			LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
+
+			leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
+
+		default:
+			throw new IllegalArgumentException("Invalid requestedFor value: " + leadRequest.getRequestedFor());
+		}
+
+		System.out.println("First Date : " + leadRequest.getFirstDate());
+		System.out.println("Last Date  : " + leadRequest.getLastDate());
+
+		return mobileHelper.getLeadListByCategoryTypeName(leadRequest);
+	}
+
 
 
 

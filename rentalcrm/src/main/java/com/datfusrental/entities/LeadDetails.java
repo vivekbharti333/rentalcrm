@@ -140,6 +140,9 @@ public class LeadDetails {
 	@Column(name = "payment_type")
 	private String paymentType;
 	
+	@Column(name = "vendor_id")
+	private Long vendorId;
+	
 	@Column(name = "vendor_name")
 	private String vendorName;
 	

@@ -14,6 +14,7 @@ public class LeadRequestObject {
 	private Long id;
 	private String token;
 	private String bookingId;
+	private Long vendorId;
 	private String companyName;
 	private String categoryTypeName;
 	private Long superCategoryId;

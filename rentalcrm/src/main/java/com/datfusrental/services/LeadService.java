@@ -20,6 +20,7 @@ import com.datfusrental.dao.LocationDetailsDao;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.entities.LocationDetails;
+import com.datfusrental.entities.VendorDetails;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
@@ -29,6 +30,7 @@ import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.helper.LocationHelper;
+import com.datfusrental.helper.VendorHelper;
 import com.datfusrental.helper.WebsiteLeadHelper;
 import com.datfusrental.helper.WonLeadHelper;
 import com.datfusrental.object.request.LeadRequestObject;
@@ -56,6 +58,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+	
+	@Autowired
+	private VendorHelper vendorHelper;
 	
 	@Autowired
 	private LocationHelper locationHelper;
@@ -93,23 +98,78 @@ public class LeadService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+//	@Transactional
+//	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
+//			throws BizException, Exception {
+//		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+//		leadHelper.validateLeadRequest(leadRequest);
+//
+//		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+//		if (leadDetails != null) {
+//			
+//			if(leadDetails.getStatus().equalsIgnoreCase("ASSIGNED") && !leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")) {
+//				
+//				VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
+//				if(vendorDetails != null) {
+//					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - leadRequest.getPayToCompany());
+//					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadRequest.getPayToVendor());
+//
+//					vendorHelper.UpdateVendorDetails(vendorDetails);
+//				}
+//				
+//			}
+//
+//			leadDetails.setPaymentType(leadRequest.getPaymentType());
+//			leadDetails.setNotes(leadRequest.getNotes());
+//			leadDetails.setStatus(leadRequest.getStatus());
+//			leadDetails.setChangeStatusDate(new Date());
+//			leadHelper.updateLeadDetails(leadDetails);
+//
+//			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+//			leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getStatus());
+//			return leadRequest;
+//		} else {
+//			leadRequest.setRespCode(Constant.NOT_EXISTS);
+//			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+//			return leadRequest;
+//		}
+//	}
+	
 	@Transactional
 	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
+
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+
 		if (leadDetails != null) {
+
+			if (leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
+					&& !leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
+
+				VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
+
+				if (vendorDetails != null) {
+
+					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - leadRequest.getPayToCompany());
+					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadRequest.getPayToVendor());
+
+					vendorHelper.UpdateVendorDetails(vendorDetails);
+				}
+			}
 
 			leadDetails.setPaymentType(leadRequest.getPaymentType());
 			leadDetails.setNotes(leadRequest.getNotes());
 			leadDetails.setStatus(leadRequest.getStatus());
 			leadDetails.setChangeStatusDate(new Date());
+
 			leadHelper.updateLeadDetails(leadDetails);
 
 			leadRequest.setRespCode(Constant.SUCCESS_CODE);
 			leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getStatus());
+
 			return leadRequest;
 		} else {
 			leadRequest.setRespCode(Constant.NOT_EXISTS);
@@ -146,28 +206,80 @@ public class LeadService {
 //		}
 	}
 	
+//	@Transactional
+//	public LeadRequestObject assignLeadToVendor(Request<LeadRequestObject> leadRequestObject)
+//			throws BizException, Exception {
+//		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+//		leadHelper.validateLeadRequest(leadRequest);
+//
+//		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+//		if (leadDetails != null) {
+//			
+//			VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadRequest.getVendorId());
+//			if(vendorDetails != null) {
+//				leadDetails.setStatus("ASSIGNED");
+//				leadDetails.setVendorName(vendorDetails.getFirstName()+" "+vendorDetails.getLastName());
+//				leadDetails.setChangeStatusDate(new Date());
+//				leadHelper.updateLeadDetails(leadDetails);
+//				
+//				vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount()+leadRequest.getPayToCompany());
+//				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount()+leadRequest.getPayToVendor());
+//				
+//				vendorHelper.UpdateVendorDetails(vendorDetails);
+//			}
+//			
+//			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+//			leadRequest.setRespMesg("Successfully Assigned to " + leadRequest.getVendorName());
+//			return leadRequest;
+//		} else {
+//			leadRequest.setRespCode(Constant.NOT_EXISTS);
+//			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+//			return leadRequest;
+//		}
+//	}
+	
+	
 	@Transactional
 	public LeadRequestObject assignLeadToVendor(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
+
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
-		if (leadDetails != null) {
-			
-			leadDetails.setStatus("ASSIGNED");
-			leadDetails.setVendorName(leadRequest.getVendorName());
-			leadDetails.setChangeStatusDate(new Date());
-			leadHelper.updateLeadDetails(leadDetails);
 
-			leadRequest.setRespCode(Constant.SUCCESS_CODE);
-			leadRequest.setRespMesg("Successfully Assigned to " + leadRequest.getVendorName());
-			return leadRequest;
-		} else {
+		if (leadDetails == null) {
 			leadRequest.setRespCode(Constant.NOT_EXISTS);
 			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 			return leadRequest;
 		}
+
+		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadRequest.getVendorId());
+
+		if (vendorDetails == null) {
+			leadRequest.setRespCode(Constant.NOT_EXISTS);
+			leadRequest.setRespMesg("Vendor not found");
+			return leadRequest;
+		}
+
+		String vendorName = vendorDetails.getFirstName() + " " + vendorDetails.getLastName();
+
+		leadDetails.setStatus("ASSIGNED");
+		leadDetails.setVendorName(vendorName);
+		leadDetails.setChangeStatusDate(new Date());
+
+		leadHelper.updateLeadDetails(leadDetails);
+
+		vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadRequest.getPayToCompany());
+		vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadRequest.getPayToVendor());
+
+		vendorHelper.UpdateVendorDetails(vendorDetails);
+
+		leadRequest.setVendorName(vendorName);
+		leadRequest.setRespCode(Constant.SUCCESS_CODE);
+		leadRequest.setRespMesg("Successfully Assigned to " + vendorName);
+
+		return leadRequest;
 	}
 
 	@Transactional

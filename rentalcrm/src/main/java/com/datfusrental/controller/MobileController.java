@@ -48,6 +48,18 @@ public class MobileController {
 	}
 	
 	
+	@RequestMapping(path = "getLeadListByCategoryTypeName", method = RequestMethod.POST)
+	public Response<LeadDetails> getLeadListByCategoryTypeName(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> bookingList = mobileService.getLeadListByCategoryTypeName(leadRequestObject);
+			return response.createListResponse(bookingList, 200, String.valueOf(bookingList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
 	
 	
 	

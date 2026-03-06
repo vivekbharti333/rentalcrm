@@ -93,6 +93,12 @@ public class VendorDetails {
 	@Column(name = "user_wallet_amount")
 	private Long userWalletAmount;
 	
+	@Column(name = "company_wallet_amount")
+	private Long companyWalletAmount;
+	
+	@Column(name = "paid_amount")
+	private Long paidAmount;
+	
 	@Column(name = "created_at")
 	private Date createdAt;
 	
