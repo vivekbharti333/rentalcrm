@@ -45,7 +45,7 @@ public class LeadByPickAndDropHelper {
 
 	public List<LeadDetails> getPickupLeadList(LeadRequestObject leadRequest) {
 
-		List<String> excludedStatus = List.of("WON", "ASSIGNED");
+		List<String> excludedStatus = List.of("WON", "ASSIGNED", "LOST");
 
 		return leadDetailsDao.getEntityManager().createQuery(
 				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC",
@@ -58,13 +58,13 @@ public class LeadByPickAndDropHelper {
 	}
 
 	public List<LeadDetails> getPickupWonLeadList(LeadRequestObject leadRequest) {
-		List<String> excludedStatus = List.of("WON", "ASSIGNED");
+		List<String> includeStatus = List.of("WON", "ASSIGNED");
 
 		return leadDetailsDao.getEntityManager().createQuery(
 				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC",
 				LeadDetails.class)
 				.setParameter("superadminId", leadRequest.getSuperadminId())
-				.setParameter("statuses", excludedStatus)
+				.setParameter("statuses", includeStatus)
 				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 				.getResultList();
