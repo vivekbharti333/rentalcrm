@@ -153,8 +153,8 @@ public class LeadService {
 
 				if (vendorDetails != null) {
 
-					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - leadRequest.getPayToCompany());
-					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadRequest.getPayToVendor());
+					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - leadDetails.getPayToCompany());
+					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadDetails.getPayToVendor());
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
 				}
