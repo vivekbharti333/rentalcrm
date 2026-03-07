@@ -104,7 +104,7 @@ public class VendorHelper {
 
 		// Wallet defaults
 		user.setUserWalletAmount(0L);
-
+		user.setCompanyWalletAmount(0L);
 		user.setCreatedBy(userRequest.getCreatedBy());
 		user.setSuperadminId(userRequest.getSuperadminId());
 

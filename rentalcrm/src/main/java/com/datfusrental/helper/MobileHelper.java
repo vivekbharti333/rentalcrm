@@ -72,6 +72,19 @@ public class MobileHelper {
 	    } else {
 	        includeCategoryTypeName = List.of("Cruise", "Watersports", "Adventure", "Yacht", "Sightseeing");
 	    }
+	    
+	    System.out.println(leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
+	            "AND LD.categoryTypeName IN (:categoryTypeName) " +
+	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
+	            "ORDER BY LD.id DESC", LeadDetails.class)
+	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	        .setParameter("categoryTypeName", includeCategoryTypeName)
+	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	        .getResultList());
+	    
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
 	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +

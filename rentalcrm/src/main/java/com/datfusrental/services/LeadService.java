@@ -270,8 +270,8 @@ public class LeadService {
 
 		leadHelper.updateLeadDetails(leadDetails);
 
-		vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadRequest.getPayToCompany());
-		vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadRequest.getPayToVendor());
+		vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadDetails.getPayToCompany());
+		vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
 
 		vendorHelper.UpdateVendorDetails(vendorDetails);
 
