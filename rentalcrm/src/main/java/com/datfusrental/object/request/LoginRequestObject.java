@@ -19,6 +19,7 @@ public class LoginRequestObject {
 	private String permissions;
 
 	private String pseudoName;
+	private String alternateMobile;
 	private String createdBy;
 	private String teamLeaderId;
 	private String adminId;
