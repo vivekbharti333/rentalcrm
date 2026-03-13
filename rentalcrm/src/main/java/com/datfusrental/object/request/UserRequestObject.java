@@ -81,6 +81,11 @@ public class UserRequestObject {
     private String gst;
     private String vendorWebsiteLink;
     private String accountDetails;
+    
+    private String coordinatorName;
+    private String coordinatorNumber;
+    private String customerService;
+    private String googlePin;
 	
 	private String requestedFor;
 	private String searchParam;

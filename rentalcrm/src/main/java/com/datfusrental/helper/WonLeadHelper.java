@@ -55,7 +55,7 @@ public class WonLeadHelper {
 	            "WHERE LD.status IN :includedStatuses " +
 	            "AND LD.changeStatusDate >= :fromDate " +
 	            "AND LD.changeStatusDate < :toDate " +
-	            "ORDER BY LD.pickupDateTime DESC",
+	            "ORDER BY LD.changeStatusDate DESC",
 	            LeadDetails.class
 	        )
 	        .setParameter("includedStatuses", includedStatuses)

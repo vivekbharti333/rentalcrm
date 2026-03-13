@@ -81,6 +81,21 @@ public class CategoryDetails {
 	@Column(name = "infant_quantity")
 	private int infantQuantity;
 	
+	@JsonFormat(pattern = "HH:mm")
+	@Column(name = "pickup_time")
+	private LocalTime  pickupTime; 
+	
+	@JsonFormat(pattern = "HH:mm")
+	@Column(name = "drop_time")
+	private LocalTime  dropTime;
+	
+	@Column(name = "pd_adult_rate")
+	private long pdAdultRate;
+	
+	@Column(name = "pd_kid_rate")
+	private long pdKidRate;
+	
+	
 	@Lob
 	@Column(name = "description")
 	private String description;

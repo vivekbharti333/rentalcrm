@@ -359,6 +359,15 @@ public class CategoryHelper {
 		categoryDetails.setStartTime(itemRequest.getStartTime());
 		categoryDetails.setEndTime(itemRequest.getEndTime());
 		
+		categoryDetails.setPickupTime(itemRequest.getPickupTime());
+		categoryDetails.setDropTime(itemRequest.getDropTime());
+		
+		categoryDetails.setPdAdultRate(itemRequest.getPdAdultRate());
+		categoryDetails.setPdKidRate(itemRequest.getPdKidRate());
+
+		
+		
+		
 		categoryDetails.setPickupHub(itemRequest.getPickupHub());
 		categoryDetails.setDropHub(itemRequest.getDropHub());
 		
@@ -412,6 +421,12 @@ public class CategoryHelper {
 		
 		categoryDetails.setPickupHub(itemRequest.getPickupHub());
 		categoryDetails.setDropHub(itemRequest.getDropHub());
+		
+		categoryDetails.setPickupTime(itemRequest.getPickupTime());
+		categoryDetails.setDropTime(itemRequest.getDropTime());
+		
+		categoryDetails.setPdAdultRate(itemRequest.getPdAdultRate());
+		categoryDetails.setPdKidRate(itemRequest.getPdKidRate());
 		
 		categoryDetails.setPickDropHub(itemRequest.getPickDropHub());
 		categoryDetails.setActivityLocation(itemRequest.getActivityLocation());

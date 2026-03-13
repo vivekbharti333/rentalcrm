@@ -96,6 +96,7 @@ public class LeadHelper {
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 		
 		leadDetails.setActivityLocation(leadRequest.getActivityLocation());
+		leadDetails.setSelfPdType(leadRequest.getSelfPdType());
 
 		leadDetails.setCustomeName(leadRequest.getCustomeName());
 		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
@@ -246,6 +247,8 @@ public class LeadHelper {
 
 		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
 		leadDetails.setLeadType(leadRequest.getLeadType());
+		
+		leadDetails.setDropPoint(leadRequest.getDropPoint());
 		
 		leadDetails.setNextFollowupDate(leadRequest.getNextFollowupDate());
 		leadDetails.setNotes(leadRequest.getNotes());

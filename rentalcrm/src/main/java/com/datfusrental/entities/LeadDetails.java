@@ -183,6 +183,9 @@ public class LeadDetails {
 	@Column(name = "lead_type")
 	private String leadType;
 	
+	@Column(name = "self_pd_type")
+	private String selfPdType;
+	
 	@Column(name = "next_followup_date")
 	private Date nextFollowupDate;
 	

@@ -52,6 +52,15 @@ public class ItemRequestObject {
 	@JsonFormat(pattern = "HH:mm")
 	private LocalTime  endTime; 
 	
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime  pickupTime; 
+	
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime  dropTime;
+	
+	private long pdAdultRate;
+	private long pdKidRate;
+	
 	private String description;
 	private String pickupHub;
 	private String dropHub;

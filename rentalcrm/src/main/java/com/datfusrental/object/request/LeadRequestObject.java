@@ -93,6 +93,7 @@ public class LeadRequestObject {
 	private String secondStatus;
 	private String leadOrigine;
 	private String leadType;
+	private String selfPdType;
 	
 //	private Date followupDate;
 
