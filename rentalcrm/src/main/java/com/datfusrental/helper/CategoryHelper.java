@@ -340,9 +340,9 @@ public class CategoryHelper {
 		
 		CategoryDetails categoryDetails = new CategoryDetails();
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
-		categoryDetails.setCategoryTypeName(this.getCategoryType(itemRequest).get(0).getCategoryTypeName());
+		categoryDetails.setCategoryTypeName(itemRequest.getCategoryTypeName());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
-		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
+//		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
 		categoryDetails.setSubCategory(itemRequest.getSubCategory());
 		
@@ -403,7 +403,7 @@ public class CategoryHelper {
 		
 		
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
-//		categoryDetails.setCategoryTypeName(this.getCategoryType(itemRequest).get(0).getCategoryTypeName());
+		categoryDetails.setCategoryTypeName(itemRequest.getCategoryTypeName());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
