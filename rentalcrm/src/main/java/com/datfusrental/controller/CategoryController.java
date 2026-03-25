@@ -215,6 +215,21 @@ public class CategoryController {
 			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		}
 	}
+	
+	@RequestMapping(path = "deleteCategoryDetails", method = RequestMethod.POST)
+	public Response<ItemRequestObject> deleteCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.deleteCategoryDetails(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "addSubCategoryDetails", method = RequestMethod.POST)
 	public Response<ItemRequestObject> addSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject,

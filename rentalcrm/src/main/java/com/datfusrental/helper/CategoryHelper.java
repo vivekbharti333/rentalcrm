@@ -447,7 +447,13 @@ public class CategoryHelper {
 		categoryDetailsDao.update(categoryDetails);
 		return categoryDetails;
 	}
-
+	
+	@Transactional
+	public CategoryDetails deleteCategoryDetails(CategoryDetails categoryDetails) {
+		categoryDetailsDao.delete(categoryDetails);
+		return categoryDetails;
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public List<ItemRequestObject> getCategoryDetails(ItemRequestObject itemRequest) {
@@ -548,7 +554,7 @@ public class CategoryHelper {
 		subCategoryDetailsDao.persist(subCategoryDetails);
 		return subCategoryDetails;
 	}
-
+	
 	public SubCategoryDetails getUpdatedSubCategoryDetailsByReqObj(SubCategoryDetails subCategoryDetails,
 			ItemRequestObject itemRequest) {
 

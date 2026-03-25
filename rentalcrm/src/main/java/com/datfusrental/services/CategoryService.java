@@ -362,6 +362,25 @@ public class CategoryService {
 //		}
 	}
 	
+	@Transactional
+	public ItemRequestObject deleteCategoryDetails(Request<ItemRequestObject> itemRequestObject) throws BizException, Exception {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		categoryHelper.validateItemRequest(itemRequest);
+		
+		CategoryDetails categoryDetails = categoryHelper.getCategoryDetailsById(itemRequest.getCategoryId());
+		if(categoryDetails != null) {
+			categoryHelper.deleteCategoryDetails(categoryDetails);
+			
+			itemRequest.setRespCode(Constant.SUCCESS_CODE);
+			itemRequest.setRespMesg("Delete Successfully");
+			return itemRequest;
+		}else {
+			itemRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return itemRequest;
+		}
+	}
+	
 
 	public List<ItemRequestObject> getCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
 		ItemRequestObject itemRequest = itemRequestObject.getPayload();
@@ -486,6 +505,10 @@ public class CategoryService {
 		List<ItemRequestObject> subCategoryMasterList = categoryHelper.getSubCategoryDetails(itemRequest);
 		return subCategoryMasterList;
 	}
+
+
+
+
 
 
 

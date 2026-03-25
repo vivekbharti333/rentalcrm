@@ -189,6 +189,27 @@ public class LeadDetails {
 	@Column(name = "next_followup_date")
 	private Date nextFollowupDate;
 	
+	@Column(name = "customer_company_name")
+	private String customerCompanyName;
+	
+	@Column(name = "customer_company_address")
+	private String customerCompanyAddress;
+	
+	@Column(name = "customer_company_gst")
+	private String customerCompanyGST;
+	
+	@Column(name = "need_gst_invoice")
+	private Boolean needGstInvoice;
+	
+	@Column(name = "gst_amount")
+	private long gstAmount;
+	
+	@Column(name = "booking_amount_with_gst")
+	private long bookingAmountWithGst;
+	
+	@Column(name = "balance_amount_with_gst")
+	private long balanceAmountWithGst;
+	
 	@Lob
 	@Column(name = "notes")
 	private String notes;
