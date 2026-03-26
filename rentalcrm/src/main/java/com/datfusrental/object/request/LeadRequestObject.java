@@ -95,6 +95,14 @@ public class LeadRequestObject {
 	private String leadType;
 	private String selfPdType;
 	
+	private String customerCompanyName;
+	private String customerCompanyAddress;
+	private String customerCompanyGST;
+	private Boolean needGstInvoice;
+	private long gstAmount;
+	private long bookingAmountWithGst;
+	private long balanceAmountWithGst;
+	
 //	private Date followupDate;
 
 	private Date createdAt;

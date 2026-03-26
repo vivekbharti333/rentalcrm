@@ -131,6 +131,16 @@ public class LeadHelper {
 		
 		leadDetails.setDiscountType(leadRequest.getDiscountType());
 		leadDetails.setDiscount(leadRequest.getDiscount());
+		
+		//Gst
+		leadDetails.setCustomerCompanyName(leadRequest.getCustomerCompanyName());
+		leadDetails.setCustomerCompanyAddress(leadRequest.getCustomerCompanyAddress());
+		leadDetails.setCustomerCompanyGST(leadRequest.getCustomerCompanyGST());
+		leadDetails.setNeedGstInvoice(leadRequest.getNeedGstInvoice());
+		leadDetails.setGstAmount(leadRequest.getGstAmount());
+		leadDetails.setBookingAmountWithGst(leadRequest.getBookingAmountWithGst());
+		leadDetails.setBalanceAmountWithGst(leadRequest.getBalanceAmountWithGst());
+		
 
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());
@@ -240,6 +250,15 @@ public class LeadHelper {
 		
 		leadDetails.setDiscountType(leadRequest.getDiscountType());
 		leadDetails.setDiscount(leadRequest.getDiscount());
+		
+		//gst
+		leadDetails.setCustomerCompanyName(leadRequest.getCustomerCompanyName());
+		leadDetails.setCustomerCompanyAddress(leadRequest.getCustomerCompanyAddress());
+		leadDetails.setCustomerCompanyGST(leadRequest.getCustomerCompanyGST());
+		leadDetails.setNeedGstInvoice(leadRequest.getNeedGstInvoice());
+		leadDetails.setGstAmount(leadRequest.getGstAmount());
+		leadDetails.setBookingAmountWithGst(leadRequest.getBookingAmountWithGst());
+		leadDetails.setBalanceAmountWithGst(leadRequest.getBalanceAmountWithGst());
 
 		leadDetails.setVendorName(leadRequest.getVendorName());
 		leadDetails.setRemarks(leadRequest.getRemarks());

@@ -340,9 +340,9 @@ public class CategoryHelper {
 		
 		CategoryDetails categoryDetails = new CategoryDetails();
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
-		categoryDetails.setCategoryTypeName(this.getCategoryType(itemRequest).get(0).getCategoryTypeName());
+		categoryDetails.setCategoryTypeName(itemRequest.getCategoryTypeName());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
-		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
+//		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
 		categoryDetails.setSubCategory(itemRequest.getSubCategory());
 		
@@ -403,7 +403,7 @@ public class CategoryHelper {
 		
 		
 		categoryDetails.setCategoryTypeId(itemRequest.getCategoryTypeId());
-//		categoryDetails.setCategoryTypeName(this.getCategoryType(itemRequest).get(0).getCategoryTypeName());
+		categoryDetails.setCategoryTypeName(itemRequest.getCategoryTypeName());
 		categoryDetails.setSuperCategoryId(itemRequest.getSuperCategoryId());
 		categoryDetails.setCategoryImage(itemRequest.getCategoryImage());
 		categoryDetails.setCategory(itemRequest.getCategory());
@@ -447,7 +447,13 @@ public class CategoryHelper {
 		categoryDetailsDao.update(categoryDetails);
 		return categoryDetails;
 	}
-
+	
+	@Transactional
+	public CategoryDetails deleteCategoryDetails(CategoryDetails categoryDetails) {
+		categoryDetailsDao.delete(categoryDetails);
+		return categoryDetails;
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public List<ItemRequestObject> getCategoryDetails(ItemRequestObject itemRequest) {
@@ -548,7 +554,7 @@ public class CategoryHelper {
 		subCategoryDetailsDao.persist(subCategoryDetails);
 		return subCategoryDetails;
 	}
-
+	
 	public SubCategoryDetails getUpdatedSubCategoryDetailsByReqObj(SubCategoryDetails subCategoryDetails,
 			ItemRequestObject itemRequest) {
 
