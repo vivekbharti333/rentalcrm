@@ -406,5 +406,16 @@ public class LeadHelper {
 	        .getResultList();
 	}
 
+	public List<LeadDetails> getBookingDetailsByBookingId(LeadRequestObject leadRequest) {
+		return leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT LD FROM LeadDetails LD WHERE LD.bookingId = :bookingId ORDER BY LD.id DESC",
+	                LeadDetails.class
+	            )
+	            .setParameter("bookingId", leadRequest.getBookingId())
+	            .getResultList();
+	    
+	}
+
 	
 }

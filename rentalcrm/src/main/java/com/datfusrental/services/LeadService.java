@@ -461,7 +461,7 @@ public class LeadService {
 	    
 	    if (existingLead != null) {
 	    	
-	    	if(existingLead.getVendorId() != null) {
+	    	if(existingLead.getVendorId() != null && existingLead.getStatus().equalsIgnoreCase("ASSIGNED")) {
 	    		
 	    		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
 	    			if(vendorDetails != null) {
@@ -950,25 +950,14 @@ public class LeadService {
 	    return leadByStatusHelper.updateStatusToLost(cutoffDate);
 	}
 
-	
-	
-//	public List<LeadDetails> updateStatusToLost() {
-//
-//	    LeadRequestObject leadRequest = new LeadRequestObject();
-//
-//		LocalDate today = LocalDate.now(ZoneId.systemDefault());
-//
-//		// end of previous day → 23:59:59.999
-//		LocalDateTime endOfPrevDay = today.minusDays(1).atTime(23, 59, 59);
-//
-//		Date cutoffDate = Date.from(endOfPrevDay.atZone(ZoneId.systemDefault()).toInstant());
-//
-//		leadRequest.setFirstDate(cutoffDate);
-//
-//		System.out.println("First Date : " + leadRequest.getFirstDate());
-//   
-//	    return leadByStatusHelper.getLostCandidateLeads(leadRequest);
-//	}
+	public List<LeadDetails> getBookingDetailsByBookingId(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		List<LeadDetails> leadList = leadHelper.getBookingDetailsByBookingId(leadRequest);
+		return leadList;
+	}
+
+
 
 
 
