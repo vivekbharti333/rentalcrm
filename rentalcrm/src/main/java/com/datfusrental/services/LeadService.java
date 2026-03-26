@@ -145,19 +145,29 @@ public class LeadService {
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
 		if (leadDetails != null) {
+			
+			VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
 
-			if (leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
-					&& !leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
+			if (vendorDetails != null) {
 
-				VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
-
-				if (vendorDetails != null) {
+				if (leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
+						&& !leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
 
 					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - leadDetails.getPayToCompany());
 					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadDetails.getPayToVendor());
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
+
+				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
+						&& leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
+
+					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadDetails.getPayToCompany());
+					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
+
+					vendorHelper.UpdateVendorDetails(vendorDetails);
 				}
+			} else {
+				// vendor id not found
 			}
 
 			leadDetails.setPaymentType(leadRequest.getPaymentType());
@@ -378,40 +388,18 @@ public class LeadService {
 
 	    LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 	    if (leadDetails != null) {
-	    	
-	    	System.out.println("Enter 1");
 
 	        // 1) Get order ID using payment link ID
 	        String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId(), leadRequest);
 
-	        System.out.println("Enter 2 : "+orderId);
 	        if (orderId == null) {
 	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
 	            leadRequest.setRespMesg("No order found for this payment link.");
 	            return leadRequest;
 	        }
 
-//	        // 2) Get payment status using order ID
-//	        String paymentStatus = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId);
-//	        
-//	        System.out.println("Enter 3 : "+paymentStatus);
-//
-//	        if (paymentStatus == null) {
-//	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-//	            leadRequest.setRespMesg("Unable to fetch payment status.");
-//	            return leadRequest;
-//	        }
-//
-//	        // 3) Update status based on payment
-//	        if (paymentStatus.equalsIgnoreCase("SUCCESS") || paymentStatus.equalsIgnoreCase("PAID")) {
-//	            leadDetails.setStatus("WON");
-//	        } else {
-//	            leadDetails.setStatus(paymentStatus);
-//	        }
 	        
 	        String responseBody = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId,leadRequest);
-
-	        System.out.println("Enter 3 : " + responseBody);
 
 	        if (responseBody == null) {
 	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
@@ -472,6 +460,23 @@ public class LeadService {
 	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
 	    
 	    if (existingLead != null) {
+	    	
+	    	if(existingLead.getVendorId() != null) {
+	    		
+	    		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
+	    			if(vendorDetails != null) {
+	    				vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - existingLead.getPayToCompany());
+	    				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
+	    				
+	    				leadHelper.updateLeadDetails(existingLead);
+	    			}
+
+	    	}
+			
+					
+	    	
+	    	
+	    	
 
 	        // ✅ Clone the old entity before updating
 //	        LeadDetails oldLead = new LeadDetails();
