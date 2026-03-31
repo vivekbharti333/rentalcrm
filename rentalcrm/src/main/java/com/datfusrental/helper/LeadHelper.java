@@ -269,6 +269,9 @@ public class LeadHelper {
 		
 		leadDetails.setDropPoint(leadRequest.getDropPoint());
 		
+		leadDetails.setActivityLocation(leadRequest.getActivityLocation());
+		leadDetails.setSelfPdType(leadRequest.getSelfPdType());
+		
 		leadDetails.setNextFollowupDate(leadRequest.getNextFollowupDate());
 		leadDetails.setNotes(leadRequest.getNotes());
 
