@@ -274,6 +274,7 @@ public class LeadService {
 
 		String vendorName = vendorDetails.getFirstName() + " " + vendorDetails.getLastName();
 
+		leadDetails.setVendorId(leadRequest.getVendorId());
 		leadDetails.setStatus("ASSIGNED");
 		leadDetails.setVendorName(vendorName);
 		leadDetails.setChangeStatusDate(new Date());
@@ -459,16 +460,22 @@ public class LeadService {
 	    System.out.println(leadRequest.getId() + " id");
 	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
 	    
+	    System.out.println("existingLead : "+existingLead);
+	    
 	    if (existingLead != null) {
-	    	
+	    	System.out.println("Enter 1");
 	    	if(existingLead.getVendorId() != null && existingLead.getStatus().equalsIgnoreCase("ASSIGNED")) {
-	    		
+	    		System.out.println("Enter 2");
 	    		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
 	    			if(vendorDetails != null) {
+	    				
+	    				System.out.println("Enter 3");
+	    				
 	    				vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - existingLead.getPayToCompany());
 	    				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
 	    				
-	    				leadHelper.updateLeadDetails(existingLead);
+	    				System.out.println("Enter 4");
+	    				vendorHelper.UpdateVendorDetails(vendorDetails);
 	    			}
 
 	    	}
