@@ -97,6 +97,24 @@ public class LeadService {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	public boolean isPickupDateLessThanToday(Date pickupDateTime) {
+
+	    if (pickupDateTime == null) {
+	        return false; // or throw exception based on your logic
+	    }
+
+	    // Convert Date → LocalDate (Asia/Kolkata)
+	    LocalDate pickupDate = pickupDateTime.toInstant()
+	            .atZone(ZoneId.of("Asia/Kolkata"))
+	            .toLocalDate();
+
+	    // Today's date
+	    LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+
+	    // Compare only date
+	    return pickupDate.isBefore(today);
+	}
 
 //	@Transactional
 //	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
@@ -255,14 +273,24 @@ public class LeadService {
 
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
-
+		
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
 		if (leadDetails == null) {
 			leadRequest.setRespCode(Constant.NOT_EXISTS);
 			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 			return leadRequest;
-		}
+		} 
+		
+		
+		 boolean isPickupDatePassed = this.isPickupDateLessThanToday(leadDetails.getPickupDateTime());
+
+	        if (isPickupDatePassed) {
+	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	            leadRequest.setRespMesg("Can not Update. PickupDate Passed");
+	            return leadRequest;
+	        }
+	    
 
 		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadRequest.getVendorId());
 
@@ -457,24 +485,29 @@ public class LeadService {
 	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
 	    leadHelper.validateLeadRequest(leadRequest);
 
-	    System.out.println(leadRequest.getId() + " id");
 	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
-	    
-	    System.out.println("existingLead : "+existingLead);
-	    
+
 	    if (existingLead != null) {
-	    	System.out.println("Enter 1");
+
+	        boolean isPickupDatePassed = this.isPickupDateLessThanToday(existingLead.getPickupDateTime());
+
+	        System.out.println(isPickupDatePassed);
+
+	        if (isPickupDatePassed) {
+	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	            leadRequest.setRespMesg("Can not Update. PickupDate Passed");
+	            return leadRequest;
+	        }
+	    
+
 	    	if(existingLead.getVendorId() != null && existingLead.getStatus().equalsIgnoreCase("ASSIGNED")) {
-	    		System.out.println("Enter 2");
+
 	    		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
 	    			if(vendorDetails != null) {
-	    				
-	    				System.out.println("Enter 3");
-	    				
+
 	    				vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - existingLead.getPayToCompany());
 	    				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
-	    				
-	    				System.out.println("Enter 4");
+	
 	    				vendorHelper.UpdateVendorDetails(vendorDetails);
 	    			}
 
