@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
+import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.GenricResponse;
@@ -47,6 +49,17 @@ public class MobileController {
 		}
 	}
 	
+	@RequestMapping(path = "getMobileActivityCategoryType", method = RequestMethod.POST)
+	public Response<CategoryType> getMobileActivityCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject) {
+		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
+		try {
+			List<CategoryType> categoryTypeList = mobileService.getMobileActivityCategoryType(itemRequestObject);
+			return response.createListResponse(categoryTypeList, 200, String.valueOf(categoryTypeList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
 	
 	@RequestMapping(path = "getLeadListByCategoryTypeName", method = RequestMethod.POST)
 	public Response<LeadDetails> getLeadListByCategoryTypeName(@RequestBody Request<LeadRequestObject> leadRequestObject) {

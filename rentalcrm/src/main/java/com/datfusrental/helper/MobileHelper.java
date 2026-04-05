@@ -1,5 +1,7 @@
 package com.datfusrental.helper;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.TemporalType;
@@ -13,9 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.datfusrental.constant.Constant;
+import com.datfusrental.dao.CategoryTypeDao;
 import com.datfusrental.dao.LeadDetailsDao;
+import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.enums.RequestFor;
+import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.LeadRequestObject;
 
 @Component
@@ -23,6 +30,9 @@ public class MobileHelper {
 
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
+	
+	@Autowired
+	private CategoryTypeDao categoryTypeDao;
 	
 
 	public void validateLeadRequest(LeadRequestObject leadRequestObject) throws BizException {
@@ -61,41 +71,52 @@ public class MobileHelper {
 	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<CategoryType> getMobileActivityCategoryType(ItemRequestObject itemRequest) {
+	    List<CategoryType> results = new ArrayList<>();
+
+	    // Store in variable
+	    List<String> categoryNames = Arrays.asList("Cruises", "Watersports", "Adventure", "Yacht", "Sightseeing");
+
+	    results = categoryTypeDao.getEntityManager().createQuery(
+	            "SELECT SC FROM CategoryType SC WHERE SC.superadminId = :superadminId AND SC.categoryTypeName IN (:categoryNames) ORDER BY SC.id DESC")
+	            .setParameter("superadminId", itemRequest.getSuperadminId())
+	            .setParameter("categoryNames", categoryNames)
+	            .getResultList();  
+	    return results;
+	}
 
 	
 	public List<LeadDetails> getLeadListByCategoryTypeName(LeadRequestObject leadRequest) {
-
-	    List<String> includeCategoryTypeName;
-
-	    if (leadRequest.getCategoryTypeName().equalsIgnoreCase("VEHICLES")) {
-	        includeCategoryTypeName = List.of("car", "Bike");
-	    } else {
-	        includeCategoryTypeName = List.of("Cruise", "Watersports", "Adventure", "Yacht", "Sightseeing");
-	    }
 	    
-	    System.out.println(leadDetailsDao.getEntityManager()
-	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
-	            "AND LD.categoryTypeName IN (:categoryTypeName) " +
-	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
-	            "ORDER BY LD.id DESC", LeadDetails.class)
-	        .setParameter("superadminId", leadRequest.getSuperadminId())
-	        .setParameter("categoryTypeName", includeCategoryTypeName)
-	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-	        .getResultList());
+		if("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
+			return leadDetailsDao.getEntityManager()
+			        .createQuery(
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
+			            "AND LD.categoryTypeName IN (:categoryTypeName) " +
+			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
+			            "ORDER BY LD.id DESC", LeadDetails.class)
+			        .setParameter("superadminId", leadRequest.getSuperadminId())
+			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
+			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+			        .getResultList();
+			} else {
+				return leadDetailsDao.getEntityManager()
+				        .createQuery(
+				            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
+				            "AND LD.categoryTypeName IN (:categoryTypeName) " +
+				            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
+				            "ORDER BY LD.id DESC", LeadDetails.class)
+				        .setParameter("superadminId", leadRequest.getSuperadminId())
+				        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
+				        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+				        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+				        .getResultList();
+				}
+			}
+		
 	    
-	    return leadDetailsDao.getEntityManager()
-	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
-	            "AND LD.categoryTypeName IN (:categoryTypeName) " +
-	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
-	            "ORDER BY LD.id DESC", LeadDetails.class)
-	        .setParameter("superadminId", leadRequest.getSuperadminId())
-	        .setParameter("categoryTypeName", includeCategoryTypeName)
-	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-	        .getResultList();
-	}
 	
 }
