@@ -2,13 +2,10 @@ package com.datfusrental.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,14 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.entities.LeadDetailsHistory;
-import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.GenricResponse;
 import com.datfusrental.object.response.Response;
-import com.datfusrental.services.LeadService;
 import com.datfusrental.services.MobileService;
 
 @CrossOrigin(origins = "*")

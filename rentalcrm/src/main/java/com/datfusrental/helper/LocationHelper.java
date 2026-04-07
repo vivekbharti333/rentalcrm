@@ -12,20 +12,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.datfusrental.constant.Constant;
-import com.datfusrental.dao.CategoryDetailsDao;
 import com.datfusrental.dao.LocationDetailsDao;
-import com.datfusrental.dao.SuperCategoryDetailsDao;
-import com.datfusrental.dao.SubCategoryDetailsDao;
-import com.datfusrental.entities.CategoryDetails;
-import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LocationDetails;
-import com.datfusrental.entities.SuperCategoryDetails;
-import com.datfusrental.entities.SubCategoryDetails;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
-import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.LocationRequestObject;
 
 @Component

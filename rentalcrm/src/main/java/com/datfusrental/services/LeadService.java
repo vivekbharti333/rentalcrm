@@ -20,9 +20,11 @@ import com.datfusrental.dao.LocationDetailsDao;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.entities.LocationDetails;
+import com.datfusrental.entities.TransactionDetails;
 import com.datfusrental.entities.VendorDetails;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.Status;
+import com.datfusrental.enums.TransactionType;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AssignedLeadHelper;
 import com.datfusrental.helper.LeadByPickAndDropHelper;
@@ -30,6 +32,7 @@ import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.helper.LocationHelper;
+import com.datfusrental.helper.TransactionHelper;
 import com.datfusrental.helper.VendorHelper;
 import com.datfusrental.helper.WebsiteLeadHelper;
 import com.datfusrental.helper.WonLeadHelper;
@@ -91,6 +94,9 @@ public class LeadService {
 	
 	@Autowired
 	private AssignedLeadHelper assignedLeadHelper;
+	
+	@Autowired
+	private TransactionHelper transactionHelper;
 	
 	@Autowired
 	private CashfreePaymentGateways cashfreePaymentGateways;
@@ -175,6 +181,16 @@ public class LeadService {
 					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadDetails.getPayToVendor());
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
+					
+					//save transaction details
+					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
+					leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
+					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+					leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
+					
+					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+					transactionHelper.saveTransactionDetails(transactionDetails);
+					
 
 				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
 						&& leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
@@ -183,6 +199,15 @@ public class LeadService {
 					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
+					
+					//save transaction details
+					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
+					leadRequest.setCompanyTransactionType(TransactionType.CREDIT.name());
+					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+					leadRequest.setVendorTransactionType(TransactionType.CREDIT.name());
+					
+					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+					transactionHelper.saveTransactionDetails(transactionDetails);
 				}
 			} else {
 				// vendor id not found

@@ -3,8 +3,6 @@ package com.datfusrental.object.request;
 import java.time.LocalTime;
 import java.util.Date;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
