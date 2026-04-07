@@ -534,6 +534,16 @@ public class LeadService {
 	    				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
 	
 	    				vendorHelper.UpdateVendorDetails(vendorDetails);
+	    				
+	    				
+	    				//save transaction details
+						leadRequest.setCompanyAmount(existingLead.getPayToCompany());
+						leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
+						leadRequest.setVendorAmount(existingLead.getPayToVendor());
+						leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
+						
+						TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+						transactionHelper.saveTransactionDetails(transactionDetails);
 	    			}
 
 	    	}

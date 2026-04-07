@@ -99,9 +99,9 @@ public class LeadRequestObject {
 	private String customerCompanyAddress;
 	private String customerCompanyGST;
 	private Boolean needGstInvoice;
-	private long gstAmount;
-	private long bookingAmountWithGst;
-	private long balanceAmountWithGst;
+	private Long gstAmount;
+	private Long bookingAmountWithGst;
+	private Long balanceAmountWithGst;
 	
 //	private Date followupDate;
 

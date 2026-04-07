@@ -1,6 +1,7 @@
 package com.datfusrental.helper;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.TransactionDetailsDao;
+import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.TransactionDetails;
+import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LeadRequestObject;
 
@@ -65,6 +68,25 @@ public class TransactionHelper {
 	public TransactionDetails saveTransactionDetails(TransactionDetails transactionDetails) {
 		transactionDetailsDao.persist(transactionDetails);
 		return transactionDetails;
+	}
+
+
+	
+	
+	public List<TransactionDetails> getTransactionDetailsByVendorId(LeadRequestObject leadRequest) {
+	   
+	        return transactionDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT TD FROM TransactionDetails TD WHERE LD.superadminId = :superadminId AND vendorId =:vendorId ORDER BY LD.id DESC",
+	                TransactionDetails.class
+	            )
+	            .setParameter("superadminId", leadRequest.getSuperadminId())
+	            .setParameter("vendorId", leadRequest.getVendorId())
+	            .setFirstResult(Constant.FIRST_RESULT)
+	            .setMaxResults(Constant.MAX_RESULT)
+	            .getResultList();
+
+	    
 	}
 	
 }

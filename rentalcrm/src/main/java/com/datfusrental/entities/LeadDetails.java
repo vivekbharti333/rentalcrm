@@ -205,10 +205,10 @@ public class LeadDetails {
 	private long gstAmount;
 	
 	@Column(name = "booking_amount_with_gst")
-	private long bookingAmountWithGst;
+	private Long bookingAmountWithGst;
 	
 	@Column(name = "balance_amount_with_gst")
-	private long balanceAmountWithGst;
+	private Long balanceAmountWithGst;
 	
 	@Lob
 	@Column(name = "notes")
