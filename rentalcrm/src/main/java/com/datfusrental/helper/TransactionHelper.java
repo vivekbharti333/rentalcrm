@@ -70,8 +70,6 @@ public class TransactionHelper {
 		return transactionDetails;
 	}
 
-
-	
 	
 	public List<TransactionDetails> getTransactionDetailsByVendorId(LeadRequestObject leadRequest) {
 	   
