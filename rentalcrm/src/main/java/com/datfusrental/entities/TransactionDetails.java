@@ -40,22 +40,22 @@ public class TransactionDetails {
 	private String vendorName;
 	
 	@Column(name = "company_amount")
-	private long companyAmount;
+	private Long companyAmount;
 	
 	@Column(name = "company_trasaction_type")
 	private String companyTransactionType;
 	
 	@Column(name = "vendor_amount")
-	private long vendorAmount;
+	private Long vendorAmount;
 	
 	@Column(name = "vendor_transaction_type")
 	private String vendorTransactionType;
 	
 	@Column(name = "net_amount_paid")
-	private long netAmountPaid;
+	private Long netAmountPaid;
 	
 	@Column(name ="created_at")
 	private Date createdAt;
-	
+
 	
 }

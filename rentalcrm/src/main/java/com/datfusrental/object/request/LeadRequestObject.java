@@ -123,12 +123,11 @@ public class LeadRequestObject {
 	private String pgResponseBody;
 	
 //	Transaction Details
-
-	private long companyAmount;
+	private Long companyAmount;
 	private String companyTransactionType;
-	private long vendorAmount;
+	private Long vendorAmount;
 	private String vendorTransactionType;
-	private long netAmountPaid;
+	private Long netAmountPaid;
 	
 	private int respCode;
 	private String respMesg;

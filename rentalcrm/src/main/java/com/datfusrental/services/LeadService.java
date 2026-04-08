@@ -192,8 +192,7 @@ public class LeadService {
 					transactionHelper.saveTransactionDetails(transactionDetails);
 					
 
-				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
-						&& leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
+				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED") && leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
 
 					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadDetails.getPayToCompany());
 					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());

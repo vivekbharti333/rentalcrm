@@ -49,11 +49,11 @@ public class TransactionHelper {
 
 	    // Company Amount
 	    transactionDetails.setCompanyAmount(leadRequest.getCompanyAmount());
-//	    transactionDetails.setCompanyTrasanctionType(leadRequest.gsetCompanyTrasanctionType());
+	    transactionDetails.setCompanyTransactionType(leadRequest.getCompanyTransactionType());
 
 	    // Vendor Amount
 	    transactionDetails.setVendorAmount(leadRequest.getVendorAmount());
-//	    transactionDetails.setVendorAmountType(leadRequest.getVendorAmountType());s
+	    transactionDetails.setVendorTransactionType(leadRequest.getVendorTransactionType());
 
 	    // Net Paid Amount
 	    transactionDetails.setNetAmountPaid(leadRequest.getNetAmountPaid());
