@@ -75,6 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.setAllowedOriginPatterns(List.of(
             "http://localhost:*",
             "https://myrranrentals.work",
+            "https://myraanrentals.com",
             "https://romeyourway.com",
             "https://www.romeyourway.com",
             "https://nautiamigo.com",
