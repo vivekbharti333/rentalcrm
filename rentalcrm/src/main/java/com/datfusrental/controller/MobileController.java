@@ -68,6 +68,19 @@ public class MobileController {
 	}
 	
 	
+	@RequestMapping(path = "getUpdatedLeadList", method = RequestMethod.POST)
+	public Response<LeadDetails> getUpdatedLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> bookingList = mobileService.getUpdatedLeadList(leadRequestObject);
+			return response.createListResponse(bookingList, 200, String.valueOf(bookingList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
+	
 	
 	
 }

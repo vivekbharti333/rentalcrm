@@ -116,7 +116,21 @@ public class MobileHelper {
 				        .getResultList();
 				}
 			}
+
+
+	public List<LeadDetails> getUpdatedLeadList(LeadRequestObject leadRequest) {
+
+	    return leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                    "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
+	                    "AND LD.vendorName IS NOT NULL AND TRIM(LD.vendorName) <> '' AND LD.status = :status ORDER BY LD.id DESC",
+	                    LeadDetails.class)
+	            .setParameter("superadminId", leadRequest.getSuperadminId())
+	            .setParameter("status", "BOOKED")
+	            .getResultList();
+	}
+	
 		
-	    
+ 
 	
 }

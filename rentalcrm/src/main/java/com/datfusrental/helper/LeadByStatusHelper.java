@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.enums.RequestFor;
-import com.datfusrental.enums.RoleType;
 import com.datfusrental.object.request.LeadRequestObject;
 
 @Component

@@ -150,6 +150,13 @@ public class MobileService {
 		return mobileHelper.getLeadListByCategoryTypeName(leadRequest);
 	}
 
+	public List<LeadDetails> getUpdatedLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		
+		
+		return mobileHelper.getUpdatedLeadList(leadRequest);
+	}
+
 
 
 
