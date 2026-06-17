@@ -1,12 +1,7 @@
 package com.datfusrental.helper;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,13 +14,9 @@ import org.springframework.stereotype.Component;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.dao.VendorDetailsDao;
-import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.User;
 import com.datfusrental.entities.VendorDetails;
-import com.datfusrental.enums.RoleType;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
-import com.datfusrental.object.request.DashboardRequestObject;
 import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.UserRequestObject;
 

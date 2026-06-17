@@ -2,7 +2,6 @@ package com.datfusrental.controller;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +22,6 @@ import com.datfusrental.services.MobileService;
 @CrossOrigin(origins = "*")
 @RestController
 public class MobileController {
-
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
 	private MobileService mobileService;

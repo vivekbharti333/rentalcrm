@@ -1,30 +1,17 @@
 package com.datfusrental.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.log4j.Logger;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.datfusrental.constant.Constant;
-import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.entities.LeadDetailsHistory;
-import com.datfusrental.entities.User;
 import com.datfusrental.entities.VendorDetails;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
-import com.datfusrental.helper.AddressHelper;
-import com.datfusrental.helper.UserHelper;
 import com.datfusrental.helper.VendorHelper;
-import com.datfusrental.jwt.JwtTokenUtil;
-import com.datfusrental.object.request.AddressRequestObject;
-import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.request.UserRequestObject;
 
@@ -32,8 +19,6 @@ import com.datfusrental.object.request.UserRequestObject;
 @Service
 public class VendorService {
 	
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
-
 	@Autowired
 	private VendorHelper vendorHelper;
 	

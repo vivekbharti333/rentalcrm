@@ -19,8 +19,6 @@ import com.datfusrental.dao.CategoryTypeDao;
 import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.enums.RequestFor;
-import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.LeadRequestObject;
@@ -40,7 +38,6 @@ public class MobileHelper {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
 		}
 	}
-	
 
 	@Transactional
 	public LeadDetails getLeadDetailsById(Long id) {
@@ -58,13 +55,11 @@ public class MobileHelper {
 	public List<LeadDetails> getMobileInstantList(LeadRequestObject leadRequest) {
 		 List<String> includeStatuses = List.of("WON", "ASSIGNED");
 
-	    return leadDetailsDao.getEntityManager()
-	        .createQuery(
+	    return leadDetailsDao.getEntityManager().createQuery(
 	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) " +
 	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
 	            "ORDER BY LD.id DESC",
-	            LeadDetails.class
-	        )
+	            LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("statuses", includeStatuses)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
@@ -91,37 +86,30 @@ public class MobileHelper {
 	public List<LeadDetails> getLeadListByCategoryTypeName(LeadRequestObject leadRequest) {
 	    
 		if("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
-			return leadDetailsDao.getEntityManager()
-			        .createQuery(
-			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
-			            "AND LD.categoryTypeName IN (:categoryTypeName) " +
-			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
-			            "ORDER BY LD.id DESC", LeadDetails.class)
+			return leadDetailsDao.getEntityManager().createQuery(
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.categoryTypeName IN (:categoryTypeName) " +
+			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
 			        .setParameter("superadminId", leadRequest.getSuperadminId())
 			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
 			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 			        .getResultList();
-			} else {
-				return leadDetailsDao.getEntityManager()
-				        .createQuery(
-				            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
-				            "AND LD.categoryTypeName IN (:categoryTypeName) " +
-				            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
-				            "ORDER BY LD.id DESC", LeadDetails.class)
-				        .setParameter("superadminId", leadRequest.getSuperadminId())
-				        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
-				        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-				        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-				        .getResultList();
-				}
+		} else {
+			return leadDetailsDao.getEntityManager().createQuery(
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.categoryTypeName IN (:categoryTypeName) " +
+			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+			        .setParameter("superadminId", leadRequest.getSuperadminId())
+			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
+			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+			        .getResultList();
 			}
+	}
 
 
 	public List<LeadDetails> getUpdatedLeadList(LeadRequestObject leadRequest) {
 
-	    return leadDetailsDao.getEntityManager()
-	            .createQuery(
+	    return leadDetailsDao.getEntityManager().createQuery(
 	                    "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
 	                    "AND LD.vendorName IS NOT NULL AND TRIM(LD.vendorName) <> '' AND LD.status = :status ORDER BY LD.id DESC",
 	                    LeadDetails.class)
