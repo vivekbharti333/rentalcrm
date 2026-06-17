@@ -8,12 +8,8 @@ public class Constant {
 	 public static final String IMAGE = "/Images";
 	 public static final String CATEGORY_IMAGES = "/CategoryImages";
 	 public static final String ITEAM_IMAGES = "/IteamImages";
-	 
 	 public static final String defaultPath = "/Default";
-	 
-//	 public static final String receipt = "/Receipt";
 
-	 
 	/* List variable */
 	 public static final int FIRST_RESULT = 0;
 	 public static final int MAX_RESULT = 500;
@@ -56,13 +52,11 @@ public class Constant {
 	 public static final String REMOVED_SUCCESS = "Removed Successfully";
 	 public static final String DATA_NOT_FOUND ="Data Not Available";
 	 
-	 
 	 //Status
 	 public static final String FOLLOW_UP ="FOLLOWUP";
 	 public static final String ENQUIRY ="ENQUIRY";
 	 public static final String CONFIRMED ="CONFIRMED";
 	 public static final String ASSIGNED ="ASSIGNED";
-	 
 	 
 	 //Category Name
 	 public static final String VEHICLE ="VEHICLE";
