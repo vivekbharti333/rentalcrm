@@ -76,14 +76,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "http://localhost:*",
             "https://myrranrentals.work",
             "https://myraanrentals.com",
-            "https://romeyourway.com",
-            "https://www.romeyourway.com",
             "https://nautiamigo.com",
             "https://www.nautiamigo.com",
             "https://www.bookings.nautiamigo.com",
             "https://*.nautiamigo.com",
-            "https://www.bookings.nautiamigo.com"
-            
+            "https://www.bookings.nautiamigo.com",
+            "https://www.romeyourway.com",
+            "https://romeyourway.com",
+            "https://www.romeyourway.in",
+            "https://romeyourway.in" 
         ));
 
         config.setAllowedMethods(List.of(

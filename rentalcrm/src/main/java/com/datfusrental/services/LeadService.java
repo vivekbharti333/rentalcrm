@@ -785,9 +785,6 @@ public class LeadService {
 //	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
 	    }
 
-	    System.out.println("First Date : " + leadRequest.getFirstDate());
-	    System.out.println("Last Date  : " + leadRequest.getLastDate());
-
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupLeadList(leadRequest);
 		return leadList;
 	}

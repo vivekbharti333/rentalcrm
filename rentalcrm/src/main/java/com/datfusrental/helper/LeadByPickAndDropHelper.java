@@ -72,7 +72,9 @@ public class LeadByPickAndDropHelper {
 
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getDropLeadList(LeadRequestObject leadRequest) {
+		
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")

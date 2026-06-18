@@ -53,13 +53,11 @@ public class MobileHelper {
 
 
 	public List<LeadDetails> getMobileInstantList(LeadRequestObject leadRequest) {
-		 List<String> includeStatuses = List.of("WON", "ASSIGNED");
+		 List<String> includeStatuses = List.of("WON");
 
 	    return leadDetailsDao.getEntityManager().createQuery(
 	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) " +
-	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate " +
-	            "ORDER BY LD.id DESC",
-	            LeadDetails.class)
+	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("statuses", includeStatuses)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
@@ -84,21 +82,25 @@ public class MobileHelper {
 
 	
 	public List<LeadDetails> getLeadListByCategoryTypeName(LeadRequestObject leadRequest) {
-	    
+		
+		List<String> includeStatuses = List.of("WON");
+		
 		if("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
 			return leadDetailsDao.getEntityManager().createQuery(
-			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.categoryTypeName IN (:categoryTypeName) " +
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) " +
 			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
 			        .setParameter("superadminId", leadRequest.getSuperadminId())
 			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
+			        .setParameter("statuses", includeStatuses)
 			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 			        .getResultList();
 		} else {
 			return leadDetailsDao.getEntityManager().createQuery(
-			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.categoryTypeName IN (:categoryTypeName) " +
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) " +
 			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
 			        .setParameter("superadminId", leadRequest.getSuperadminId())
+			        .setParameter("statuses", includeStatuses)
 			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
 			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
