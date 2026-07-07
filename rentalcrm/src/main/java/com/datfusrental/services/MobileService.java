@@ -126,7 +126,11 @@ public class MobileService {
 	}
 
 
-
+	public List<LeadDetails> getMobileAllLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		List<LeadDetails> leadList = mobileHelper.getMobileAllLeadList(leadRequest);
+		return leadList;
+	}
 
 
 

@@ -2,6 +2,8 @@ package com.datfusrental.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.TemporalType;
@@ -19,6 +21,7 @@ import com.datfusrental.dao.CategoryTypeDao;
 import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.CategoryType;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.enums.RequestFor;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.ItemRequestObject;
 import com.datfusrental.object.request.LeadRequestObject;
@@ -28,15 +31,29 @@ public class MobileHelper {
 
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
-	
+
 	@Autowired
 	private CategoryTypeDao categoryTypeDao;
-	
 
 	public void validateLeadRequest(LeadRequestObject leadRequestObject) throws BizException {
 		if (leadRequestObject == null) {
 			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
 		}
+	}
+
+	private Date plusOneDay(Date date) {
+		if (date == null)
+			return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		return cal.getTime();
+	}
+
+	private Date getOneMonthBackDate() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, -1);
+		return calendar.getTime();
 	}
 
 	@Transactional
@@ -51,76 +68,109 @@ public class MobileHelper {
 		return leadDetails;
 	}
 
-
 	public List<LeadDetails> getMobileInstantList(LeadRequestObject leadRequest) {
-		 List<String> includeStatuses = List.of("WON");
+		List<String> includeStatuses = List.of("WON");
 
-	    return leadDetailsDao.getEntityManager().createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) " +
-	            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
-	        .setParameter("superadminId", leadRequest.getSuperadminId())
-	        .setParameter("statuses", includeStatuses)
-	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-	        .getResultList();
+		return leadDetailsDao.getEntityManager().createQuery(
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) "
+						+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+				LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
+				.setParameter("statuses", includeStatuses)
+				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<CategoryType> getMobileActivityCategoryType(ItemRequestObject itemRequest) {
-	    List<CategoryType> results = new ArrayList<>();
+		List<CategoryType> results = new ArrayList<>();
 
-	    // Store in variable
-	    List<String> categoryNames = Arrays.asList("Cruises", "Watersports", "Adventure", "Yacht", "Sightseeing");
+		// Store in variable
+		List<String> categoryNames = Arrays.asList("Cruises", "Watersports", "Adventure", "Yacht", "Sightseeing");
 
-	    results = categoryTypeDao.getEntityManager().createQuery(
-	            "SELECT SC FROM CategoryType SC WHERE SC.superadminId = :superadminId AND SC.categoryTypeName IN (:categoryNames) ORDER BY SC.id DESC")
-	            .setParameter("superadminId", itemRequest.getSuperadminId())
-	            .setParameter("categoryNames", categoryNames)
-	            .getResultList();  
-	    return results;
+		results = categoryTypeDao.getEntityManager().createQuery(
+				"SELECT SC FROM CategoryType SC WHERE SC.superadminId = :superadminId AND SC.categoryTypeName IN (:categoryNames) ORDER BY SC.id DESC")
+				.setParameter("superadminId", itemRequest.getSuperadminId())
+				.setParameter("categoryNames", categoryNames).getResultList();
+		return results;
 	}
 
-	
 	public List<LeadDetails> getLeadListByCategoryTypeName(LeadRequestObject leadRequest) {
-		
+
 		List<String> includeStatuses = List.of("WON");
-		
-		if("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
+
+		if ("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
 			return leadDetailsDao.getEntityManager().createQuery(
-			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) " +
-			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
-			        .setParameter("superadminId", leadRequest.getSuperadminId())
-			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
-			        .setParameter("statuses", includeStatuses)
-			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-			        .getResultList();
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
+							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
+					.setParameter("statuses", includeStatuses)
+					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
 		} else {
 			return leadDetailsDao.getEntityManager().createQuery(
-			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) " +
-			            "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC", LeadDetails.class)
-			        .setParameter("superadminId", leadRequest.getSuperadminId())
-			        .setParameter("statuses", includeStatuses)
-			        .setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
-			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-			        .getResultList();
-			}
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
+							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("statuses", includeStatuses)
+					.setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
+					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
+		}
 	}
-
 
 	public List<LeadDetails> getUpdatedLeadList(LeadRequestObject leadRequest) {
 
-	    return leadDetailsDao.getEntityManager().createQuery(
-	                    "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId " +
-	                    "AND LD.vendorName IS NOT NULL AND TRIM(LD.vendorName) <> '' AND LD.status = :status ORDER BY LD.id DESC",
-	                    LeadDetails.class)
-	            .setParameter("superadminId", leadRequest.getSuperadminId())
-	            .setParameter("status", "BOOKED")
-	            .getResultList();
+		return leadDetailsDao.getEntityManager()
+				.createQuery("SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId "
+						+ "AND LD.vendorName IS NOT NULL AND TRIM(LD.vendorName) <> '' AND LD.status = :status ORDER BY LD.id DESC",
+						LeadDetails.class)
+				.setParameter("superadminId", leadRequest.getSuperadminId()).setParameter("status", "BOOKED")
+				.getResultList();
 	}
-	
-		
- 
-	
+
+	public List<LeadDetails> getMobileAllLeadList(LeadRequestObject leadRequest) {
+
+		List<String> includeStatus = List.of("WON", "ASSIGNED");
+		String sqlQuery = "";
+
+		if (RequestFor.BY_CREATED_DATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())
+				|| RequestFor.BY_PICKUP_DATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
+
+			if (RequestFor.BY_CREATED_DATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
+				sqlQuery = "SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
+						+ "AND LD.status IN (:statuses) " + "AND LD.createdAt >= :firstDate "
+						+ "AND LD.createdAt < :lastDate " + "ORDER BY LD.id DESC";
+			}
+
+			if (RequestFor.BY_PICKUP_DATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
+				sqlQuery = "SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
+						+ "AND LD.status IN (:statuses) " + "AND LD.pickupDateTime >= :firstDate "
+						+ "AND LD.pickupDateTime < :lastDate " + "ORDER BY LD.id DESC";
+			}
+
+			return leadDetailsDao.getEntityManager().createQuery(sqlQuery, LeadDetails.class)
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("firstDate", leadRequest.getFirstDate())
+					.setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()))
+					.setParameter("statuses", includeStatus).setFirstResult(Constant.FIRST_RESULT)
+					.setMaxResults(Constant.MAX_RESULT).getResultList();
+
+		} else {
+
+			Date oneMonthBackDate = getOneMonthBackDate();
+
+			return leadDetailsDao.getEntityManager()
+					.createQuery("SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
+							+ "AND LD.status IN (:statuses) " + "AND LD.createdAt >= :firstDate "
+							+ "ORDER BY LD.id DESC", LeadDetails.class)
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("statuses", includeStatus)
+					.setParameter("firstDate", oneMonthBackDate)
+					.setFirstResult(Constant.FIRST_RESULT)
+					.setMaxResults(Constant.MAX_RESULT)
+					.getResultList();
+		}
+	}
+
 }
