@@ -62,6 +62,10 @@ public class Constant {
 	 public static final String VEHICLE ="VEHICLE";
 	 public static final String CAR ="CAR";
 	 public static final String BIKE ="BIKE";
+	 
+	 public static final String WHATS_APP_BASE_URL = "https://graph.facebook.com/";
+	 
+	 public static final String ACCESS_TOKEN = "EAAxyMF1ZCivgBR5ozE5vkaQFolkC0DY7jVJ54ZByRp1QEdx2laP18xiZAxS3fMkMdk2ArxUYn55xu71JMWvVPtPz9xVW84pHNLvHi6scZBZCn6WF5qQZAvUV2cFcFWyAFRy2Cvq61vPwcJqGDdCX3wv3RxJ2EHVXwxXEtGNahmtbo6FdQ0jYzoDHt2XF30103xJgZDZD";
 }
 
 

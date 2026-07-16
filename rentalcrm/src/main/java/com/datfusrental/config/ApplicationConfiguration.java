@@ -14,7 +14,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 
 @Configuration
-@ComponentScan(basePackages="com.datfusrental.*")
+//@ComponentScan(basePackages="com.datfusrental.*")
+@ComponentScan(basePackages = {
+	    "com.datfusrental",
+	    "com.whatsapp"
+	})
 @EnableWebMvc
 public class ApplicationConfiguration implements WebMvcConfigurer {
 
