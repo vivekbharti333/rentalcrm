@@ -185,7 +185,7 @@ public class SendWhatsAppTextMessageHelper {
 		MediaType mediaType = MediaType.parse("application/json");
 		RequestBody body = RequestBody.create(jsonPayload, mediaType);
 
-		Request request = new Request.Builder().url("https://graph.facebook.com/v24.0/1249368524920051/messages")
+		Request request = new Request.Builder().url("https://graph.facebook.com/"+Constant.VERSION+"/"+Constant.PHONE_NUMBER_ID+"/messages")
 				.post(body).addHeader("Content-Type", "application/json")
 				.addHeader("Authorization", "Bearer " + Constant.ACCESS_TOKEN).build();
 
