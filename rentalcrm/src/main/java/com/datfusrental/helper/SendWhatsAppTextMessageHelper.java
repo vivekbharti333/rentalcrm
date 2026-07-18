@@ -84,6 +84,8 @@ public class SendWhatsAppTextMessageHelper {
 		return new ObjectMapper().writeValueAsString(root);
 	}
 	
+	/////////////////////////////////////////
+	
 	public String getTextTemplateParameterButton(WhatsAppMessageRequestObject whatsAppMessageRequest) throws Exception {
 
 	    Map<String, Object> root = new HashMap<>();
