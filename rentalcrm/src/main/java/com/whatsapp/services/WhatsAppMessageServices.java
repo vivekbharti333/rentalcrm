@@ -9,16 +9,17 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.WhatsAppMessage;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.SendWhatsAppTextMessageHelper;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.WhatsAppMessageResponse;
 import com.datfusrental.whatsapp.request.WhatsAppMessageRequestObject;
-import com.whatsapp.helper.SendTextMessageHelper;
 import com.whatsapp.helper.TemplateMapperHelper;
 import com.whatsapp.helper.WhatsAppMessageHelper;
 import com.whatsapp.helper.WhatsAppWebhookMessageHelper;
+import com.whatsapp.parameter.BookingConformationVariable;
 
 
 @Service
@@ -35,6 +36,10 @@ public class WhatsAppMessageServices {
 	
 	@Autowired
 	private WhatsAppWebhookMessageHelper whatsAppWebhookMessageHelper;
+	
+	@Autowired
+	private BookingConformationVariable bookingConformationVariable;
+
 
 	public WhatsAppMessageResponse sendTextTemplateMessage(Request<WhatsAppMessageRequestObject> whatsAppMessageRequestObject)
 			throws BizException, Exception {
@@ -42,10 +47,16 @@ public class WhatsAppMessageServices {
 		whatsAppMessageHelper.validateWhatsAppMessageRequest(whatsAppRequest);
 		
 //		String templateParameter = sendTextMessageHelper.getTextTemplateParameter(whatsAppRequest);
-		String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(whatsAppRequest);
-		WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
+		
+		LeadDetails leadDetails = new LeadDetails();
+		
+//		whatsAppRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(whatsAppRequest, leadDetails);
+		
+//		String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(whatsAppRequest);
+//		WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
 
-		return sendMessageResponse;
+//		return sendMessageResponse;
+		return null;
 	}
 	
 	

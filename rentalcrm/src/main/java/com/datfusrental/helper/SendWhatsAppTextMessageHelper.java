@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.WhatsAppMessage;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.response.WhatsAppMessageResponse;
 import com.datfusrental.whatsapp.request.TemplateButtonVariableRequest;
 import com.datfusrental.whatsapp.request.TemplateRequestObject;
@@ -24,7 +25,7 @@ import okhttp3.RequestBody;
 
 @Component
 public class SendWhatsAppTextMessageHelper {
-
+	
 
 	public void validateTemplateRequest(TemplateRequestObject templateRequestObject) throws BizException {
 		if (templateRequestObject == null) {
@@ -86,19 +87,19 @@ public class SendWhatsAppTextMessageHelper {
 	
 	/////////////////////////////////////////
 	
-	public String getTextTemplateParameterButton(WhatsAppMessageRequestObject whatsAppMessageRequest) throws Exception {
+	public String getTextTemplateParameterButton(LeadRequestObject leadRequest) throws Exception {
 
 	    Map<String, Object> root = new HashMap<>();
 	    root.put("messaging_product", "whatsapp");
-	    root.put("to", whatsAppMessageRequest.getMessageTo());
+	    root.put("to", leadRequest.getCountryDialCode()+leadRequest.getCustomerMobile());
 	    root.put("type", "template");
 
 	    // Template
 	    Map<String, Object> template = new HashMap<>();
-	    template.put("name", whatsAppMessageRequest.getTemplateName());
+	    template.put("name", leadRequest.getTemplateName());
 
 	    Map<String, String> language = new HashMap<>();
-	    language.put("code", whatsAppMessageRequest.getLanguage());
+	    language.put("code", "en");
 	    template.put("language", language);
 
 	    List<Map<String, Object>> components = new ArrayList<>();
@@ -106,12 +107,12 @@ public class SendWhatsAppTextMessageHelper {
 	    // =========================
 	    // BODY PARAMETERS
 	    // =========================
-	    if (whatsAppMessageRequest.getMsgBodyVariable() != null
-	            && !whatsAppMessageRequest.getMsgBodyVariable().isEmpty()) {
+	    if (leadRequest.getMsgBodyVariable() != null
+	            && !leadRequest.getMsgBodyVariable().isEmpty()) {
 
 	        List<Map<String, Object>> bodyParameters = new ArrayList<>();
 
-	        whatsAppMessageRequest.getMsgBodyVariable().forEach(var -> {
+	        leadRequest.getMsgBodyVariable().forEach(var -> {
 	            Map<String, Object> param = new HashMap<>();
 	            param.put("type", "text");
 	            param.put("text", var.getBodyVariable());
@@ -129,13 +130,13 @@ public class SendWhatsAppTextMessageHelper {
 	 // =========================
 	 // BUTTON PARAMETERS
 	 // =========================
-	 if (whatsAppMessageRequest.getButtonVariable() != null
-	         && !whatsAppMessageRequest.getButtonVariable().isEmpty()) {
+	 if (leadRequest.getButtonVariable() != null
+	         && !leadRequest.getButtonVariable().isEmpty()) {
 
-	     for (int i = 0; i < whatsAppMessageRequest.getButtonVariable().size(); i++) {
+	     for (int i = 0; i < leadRequest.getButtonVariable().size(); i++) {
 
 	         TemplateButtonVariableRequest btn =
-	                 whatsAppMessageRequest.getButtonVariable().get(i);
+	        		 leadRequest.getButtonVariable().get(i);
 
 	         Map<String, Object> buttonComponent = new HashMap<>();
 	         buttonComponent.put("type", "button");

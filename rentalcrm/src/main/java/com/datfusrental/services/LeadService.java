@@ -32,16 +32,20 @@ import com.datfusrental.helper.LeadByStatusHelper;
 import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.helper.LocationHelper;
+import com.datfusrental.helper.SendWhatsAppTextMessageHelper;
 import com.datfusrental.helper.TransactionHelper;
 import com.datfusrental.helper.VendorHelper;
 import com.datfusrental.helper.WebsiteLeadHelper;
 import com.datfusrental.helper.WonLeadHelper;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
+import com.datfusrental.object.response.WhatsAppMessageResponse;
 import com.datfusrental.paymentgateways.CashfreePaymentGateways;
 import com.datfusrental.util.EntityDiffUtil;
+import com.datfusrental.whatsapp.request.WhatsAppMessageRequestObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whatsapp.parameter.BookingConformationVariable;
 
 
 @Service
@@ -103,6 +107,12 @@ public class LeadService {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private SendWhatsAppTextMessageHelper sendTextMessageHelper;
+	
+	@Autowired
+	private BookingConformationVariable bookingConformationVariable;
 	
 	public boolean isPickupDateLessThanToday(Date pickupDateTime) {
 
@@ -169,6 +179,21 @@ public class LeadService {
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
 		if (leadDetails != null) {
+			
+			
+			//Send whats app message
+			if(leadRequest.getStatus().equalsIgnoreCase("WON")) {
+			if (leadDetails.getCategoryTypeName().equalsIgnoreCase("Car") || leadDetails.getCategoryTypeName().equalsIgnoreCase("Bike")) {
+
+				
+			}else {
+				leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);			
+				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
+				
+				System.out.println("Whats App Response : "+sendMessageResponse);
+			}
+			}
 			
 			VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
 
@@ -407,6 +432,19 @@ public class LeadService {
 					locationDetailsDao.persist(locationDetails);
 				}
 			}
+
+			//Send whats app message
+			if (leadRequest.getCategoryTypeName().equalsIgnoreCase("Car") || leadRequest.getCategoryTypeName().equalsIgnoreCase("Bike")) {
+
+				
+			}else {
+				leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);			
+				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
+				
+				System.out.println("Whats App Response : "+sendMessageResponse);
+			}
+			
 
 
 			//Payment Gateways

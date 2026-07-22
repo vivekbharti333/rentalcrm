@@ -1,9 +1,12 @@
 package com.datfusrental.object.request;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 
+import com.datfusrental.whatsapp.request.TemplateBodyVariableRequest;
+import com.datfusrental.whatsapp.request.TemplateButtonVariableRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
@@ -128,6 +131,23 @@ public class LeadRequestObject {
 	private Long vendorAmount;
 	private String vendorTransactionType;
 	private Long netAmountPaid;
+	
+	// For Whats App
+	private String templateName;
+	private String requestFor;
+	private String templateId;
+	private String parameterFormat;
+	private String headerFormat;
+	private String headerText;
+	private String msgBodyText;
+	private List<TemplateBodyVariableRequest> msgBodyVariable;
+	private List<TemplateButtonVariableRequest> buttonVariable;
+	private String footerText;
+	private String language;
+	private String sub_category;
+	
+	private String messageFrom;
+	private String messageTo; 
 	
 	private int respCode;
 	private String respMesg;
