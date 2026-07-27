@@ -3,8 +3,6 @@ package com.datfusrental.object.request;
 import java.util.Date;
 import java.util.List;
 
-import com.datfusrental.entities.DeliveryBoyDetails;
-
 import lombok.Data;
 
 @Data
@@ -93,7 +91,8 @@ public class UserRequestObject {
 	private String alternateMobileNumber;
 	private Long vendorId;
 	private String vendorPseudoName;
-	private List<DeliveryBoyDetails> deliveryBoyDetails;
+//	private List<DeliveryBoyDetails> deliveryBoyDetails;
+	private String deliveryBoyDetails;
 	
 	private String requestedFor;
 	private String searchParam;

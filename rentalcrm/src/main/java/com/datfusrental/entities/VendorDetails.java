@@ -63,6 +63,10 @@ public class VendorDetails {
 	@Column(name = "product_name")
 	private String productName;
 	
+	@Lob
+	@Column(name = "delivery_boy_details")
+	private String deliveryBoyDetails;
+	
 	@Column(name = "status")
 	private String status;
 	
