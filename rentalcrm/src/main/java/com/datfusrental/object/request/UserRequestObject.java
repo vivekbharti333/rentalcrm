@@ -3,7 +3,7 @@ package com.datfusrental.object.request;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
+import com.datfusrental.entities.DeliveryBoyDetails;
 
 import lombok.Data;
 
@@ -86,6 +86,14 @@ public class UserRequestObject {
     private String coordinatorNumber;
     private String customerService;
     private String googlePin;
+    
+    //Delivery Boy details
+	private String deliveryBoyName;
+	private String mobileNumber;
+	private String alternateMobileNumber;
+	private Long vendorId;
+	private String vendorPseudoName;
+	private List<DeliveryBoyDetails> deliveryBoyDetails;
 	
 	private String requestedFor;
 	private String searchParam;

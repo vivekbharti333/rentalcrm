@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.datfusrental.constant.Constant;
+import com.datfusrental.entities.DeliveryBoyDetails;
 import com.datfusrental.entities.VendorDetails;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
@@ -59,6 +60,21 @@ public class VendorService {
 
 			VendorDetails vendorDetails = vendorHelper.getVendorDetailsByReqObj(userRequest);
 			vendorDetails = vendorHelper.saveVendorDetails(vendorDetails);
+			
+			if (userRequest.getDeliveryBoyDetails() != null) {
+			    for (DeliveryBoyDetails deliveryBoyDetails : userRequest.getDeliveryBoyDetails()) {
+
+			        DeliveryBoyDetails deliveryBoy = new DeliveryBoyDetails();
+
+			        deliveryBoy.setVendorId(vendorDetails.getId()); 
+			        deliveryBoy.setVendorPseudoName(vendorDetails.getPseudoName());
+			        deliveryBoy.setDeliveryBoyName(deliveryBoyDetails.getDeliveryBoyName());
+			        deliveryBoy.setMobileNumber(deliveryBoyDetails.getMobileNumber());
+			        deliveryBoy.setAlternateMobileNumber(deliveryBoyDetails.getAlternateMobileNumber());
+
+			        vendorHelper.saveDeliveryBoyDetails(deliveryBoy); // Save the new object
+			    }
+			}
 			
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.REGISTERED_SUCCESS);

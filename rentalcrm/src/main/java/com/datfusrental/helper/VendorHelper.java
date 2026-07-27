@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.datfusrental.constant.Constant;
+import com.datfusrental.dao.DeliveryBoyDetailsDao;
 import com.datfusrental.dao.VendorDetailsDao;
+import com.datfusrental.entities.DeliveryBoyDetails;
 import com.datfusrental.entities.VendorDetails;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
@@ -25,6 +27,9 @@ public class VendorHelper {
 
 	@Autowired
 	private VendorDetailsDao vendorDetailsDao;
+	
+	@Autowired
+	private DeliveryBoyDetailsDao deliveryBoyDetailsDao;
 
 	public void validateLoginRequest(LoginRequestObject loginRequest) throws BizException {
 		if (loginRequest == null) {
@@ -161,6 +166,25 @@ public class VendorHelper {
 	public VendorDetails UpdateVendorDetails(VendorDetails vendorDetails) {
 		vendorDetailsDao.update(vendorDetails);
 		return vendorDetails;
+	}
+	
+	public DeliveryBoyDetails getDeliveryBoyDetailsByReqObj(UserRequestObject userRequest) {
+
+		DeliveryBoyDetails deliveryBoyDetails = new DeliveryBoyDetails();
+
+		deliveryBoyDetails.setDeliveryBoyName(userRequest.getDeliveryBoyName());
+		deliveryBoyDetails.setMobileNumber(userRequest.getMobileNumber());
+		deliveryBoyDetails.setAlternateMobileNumber(userRequest.getAlternateMobileNumber());
+		deliveryBoyDetails.setVendorId(userRequest.getVendorId());
+		deliveryBoyDetails.setVendorPseudoName(userRequest.getVendorPseudoName());
+
+		return deliveryBoyDetails;
+	}
+	
+	@Transactional
+	public DeliveryBoyDetails saveDeliveryBoyDetails(DeliveryBoyDetails deliveryBoyDetails) {
+		deliveryBoyDetailsDao.persist(deliveryBoyDetails);
+		return deliveryBoyDetails;
 	}
 
 	@SuppressWarnings("unchecked")
