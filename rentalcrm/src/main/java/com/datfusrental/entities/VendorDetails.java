@@ -47,14 +47,14 @@ public class VendorDetails {
 	@Column(name = "whatsapp_link")
 	private String whatsappLink;
 	
-	@Column(name = "coordinator_name")
-	private String coordinatorName;
-	
-	@Column(name = "coordinator_number")
-    private String coordinatorNumber;
-	
-	@Column(name = "customer_service")
-    private String customerService;
+//	@Column(name = "coordinator_name")
+//	private String coordinatorName;
+//	
+//	@Column(name = "coordinator_number")
+//    private String coordinatorNumber;
+//	
+//	@Column(name = "customer_service")
+//    private String customerService;
 	
 	@Column(name = "google_pin")
     private String googlePin;

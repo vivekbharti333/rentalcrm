@@ -91,9 +91,9 @@ public class VendorHelper {
 		user.setAadharCard(userRequest.getAadharCard());
 		user.setGst(userRequest.getGst());
 		
-		user.setCoordinatorName(userRequest.getCoordinatorName());
-		user.setCoordinatorNumber(userRequest.getCoordinatorNumber());
-		user.setCustomerService(userRequest.getCustomerService());
+//		user.setCoordinatorName(userRequest.getCoordinatorName());
+//		user.setCoordinatorNumber(userRequest.getCoordinatorNumber());
+//		user.setCustomerService(userRequest.getCustomerService());
 		user.setGooglePin(userRequest.getGooglePin());
 
 		user.setVendorWebsiteLink(userRequest.getVendorWebsiteLink());
@@ -143,9 +143,9 @@ public class VendorHelper {
 		user.setGst(userRequest.getGst());
 		
 		user.setDeliveryBoyDetails(userRequest.getDeliveryBoyDetails());
-		user.setCoordinatorName(userRequest.getCoordinatorName());
-		user.setCoordinatorNumber(userRequest.getCoordinatorNumber());
-		user.setCustomerService(userRequest.getCustomerService());
+//		user.setCoordinatorName(userRequest.getCoordinatorName());
+//		user.setCoordinatorNumber(userRequest.getCoordinatorNumber());
+//		user.setCustomerService(userRequest.getCustomerService());
 		user.setGooglePin(userRequest.getGooglePin());;
 
 		user.setVendorWebsiteLink(userRequest.getVendorWebsiteLink());
