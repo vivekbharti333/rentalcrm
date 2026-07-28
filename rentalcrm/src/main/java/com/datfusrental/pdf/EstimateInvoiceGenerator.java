@@ -98,6 +98,12 @@ public class EstimateInvoiceGenerator {
 			taxableAmount = 0;
 		}
 
+		long advancePaid = amountForInvoice(needGstInvoice, leadDetails.getBookingAmountWithGst(),
+				leadDetails.getBookingAmount());
+
+		long balanceDue = amountForInvoice(needGstInvoice, leadDetails.getBalanceAmountWithGst(),
+				leadDetails.getBalanceAmount());
+
 		String description = firstNotBlank(leadDetails.getPseudoName(), leadDetails.getSubCategory(),
 				leadDetails.getCategory(), leadDetails.getCategoryTypeName());
 
@@ -111,25 +117,24 @@ public class EstimateInvoiceGenerator {
 
 		String duration = leadDetails.getTotalDays() + " day(s)";
 
-		String companyName = firstNotBlank(leadDetails.getCompanyName(), "MYRAAN RENTALS AND ADVENTURES PVT. LTD.");
-
+		String companyName = firstNotBlank(leadDetails.getCompanyName(), "ROME YOUR WAY LLP");
 		html = replaceValue(html, "{{printedDateTime}}", formatDateTime(new Date()));
 
 		html = replaceValue(html, "{{companyName}}", companyName);
 
-		html = replaceValue(html, "{{companyId}}", "U52291GA2024OPC016682");
+		html = replaceValue(html, "{{companyId}}", "ACV-7256");
 
 		html = replaceValue(html, "{{companyAddress}}", "Unit No. 71/195/A, Sattari, Ward No. 7, "
 				+ "Hathwada, Near Marathi School, " + "Valpoi, North Goa, Goa - 403506");
 
-		html = replaceValue(html, "{{companyTaxId}}", "AASCM2597H");
+		html = replaceValue(html, "{{companyTaxId}}", "ABNFR3071N");
 
-		html = replaceValue(html, "{{companyPhone}}", "+91 88283 75421");
+		html = replaceValue(html, "{{companyPhone}}", "+91 77159 57719");
 
-		html = replaceValue(html, "{{companyEmail}}", "sales@myraanrentals.com");
+		html = replaceValue(html, "{{companyEmail}}", "sales@romeyourway.com");
 
-		html = replaceValue(html, "{{companyGstin}}", "30AASCM2597H1Z5");
-
+		html = replaceValue(html, "{{companyGstin}}", "30ABNFR3071N1ZX");
+		
 		html = replaceValue(html, "{{estimateNumber}}", leadDetails.getBookingId());
 
 		html = replaceValue(html, "{{estimateDate}}", formatDate(leadDetails.getCreatedAt()));
@@ -138,7 +143,8 @@ public class EstimateInvoiceGenerator {
 
 		html = replaceValue(html, "{{dueDate}}", formatDate(leadDetails.getPickupDateTime()));
 
-		html = replaceValue(html, "{{placeOfSupply}}", leadDetails.getActivityLocation());
+		html = replaceValue(html, "{{placeOfSupply}}",
+				firstNotBlank(leadDetails.getActivityLocation(), pickupLocation));
 
 		html = replaceValue(html, "{{status}}", firstNotBlank(leadDetails.getStatus(), "Pending"));
 
@@ -198,9 +204,9 @@ public class EstimateInvoiceGenerator {
 
 		html = replaceValue(html, "{{totalAmount}}", formatAmount(leadDetails.getTotalAmount()));
 
-		html = replaceValue(html, "{{advancePaid}}", formatAmount(leadDetails.getBookingAmount()));
+		html = replaceValue(html, "{{advancePaid}}", formatAmount(advancePaid));
 
-		html = replaceValue(html, "{{balanceDue}}", formatAmount(leadDetails.getBalanceAmount()));
+		html = replaceValue(html, "{{balanceDue}}", formatAmount(balanceDue));
 
 		html = replaceValue(html, "{{securityAmount}}", formatAmount(leadDetails.getSecurityAmount()));
 
@@ -226,6 +232,15 @@ public class EstimateInvoiceGenerator {
 		html = replaceValue(html, "{{swiftCode}}", "IDFBINBBMUM");
 
 		return html;
+	}
+
+	private long amountForInvoice(boolean needGstInvoice, Long gstAmount, long standardAmount) {
+
+		if (needGstInvoice && gstAmount != null) {
+			return gstAmount;
+		}
+
+		return standardAmount;
 	}
 
 	private void validateNoUnresolvedPlaceholders(String html, String templatePath) {

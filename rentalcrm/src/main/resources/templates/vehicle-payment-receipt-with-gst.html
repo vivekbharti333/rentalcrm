@@ -227,8 +227,8 @@ html, body {
 		<table class="page-meta-table">
 			<tbody>
 				<tr>
-					<td class="page-meta-left">7/23/26, 9:20 PM</td>
-					<td class="page-meta-right">Arshad_M_26072026</td>
+					<td class="page-meta-left">{{printedDateTime}}</td>
+					<td class="page-meta-right">{{receiptFileName}}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -286,15 +286,16 @@ html, body {
 					<tbody>
 						<tr>
 							<td class="billing-cell"><span class="billing-label">Customer
-									Name</span> Arshad M</td>
+									Name</span> {{customerName}}</td>
 							<td class="billing-cell"><span class="billing-label">Phone</span>
-								+91 7845273233</td>
+								{{customerPhone}}</td>
 						</tr>
 						<tr>
 							<td class="billing-cell"><span class="billing-label">Company
-									Name &amp; GSTIN</span></td>
+									Name &amp; GSTIN</span> {{customerCompanyName}}<br />
+								{{customerCompanyGST}}</td>
 							<td class="billing-cell"><span class="billing-label">Address</span>
-							</td>
+								{{customerAddress}}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -372,7 +373,7 @@ html, body {
 				</table>
 				<p class="pickup-total">
 					<strong>Total amount to be paid at pickup (including
-						balance &amp; deposit):</strong> &#8377;88000
+						balance &amp; deposit):</strong> &#8377;{{pickupAmount}}
 				</p>
 			</div>
 
@@ -380,7 +381,7 @@ html, body {
 				<div class="section-title">Terms &amp; Conditions</div>
 				<ul class="terms">
 					<li>&#8226; Balance Due mentioned is excluding refundable
-						deposit: &#8377;20000</li>
+						deposit: &#8377;{{securityAmount}}</li>
 					<li>&#8226; Standard Rental Timings: 09:00 AM - 09:00 AM</li>
 					<li>&#8226; Valid driving license &amp; one original ID
 						required for renting</li>
@@ -398,8 +399,7 @@ html, body {
 		<div class="footer">
 			<p>This is a computer generated invoice and does not require a
 				signature.</p>
-			<p>Thank you for choosing MYRAAN RENTALS AND ADVENTURES GOA PVT.
-				LTD.</p>
+			<p>Thank you for choosing {{companyName}}.</p>
 		</div>
 	</div>
 </body>

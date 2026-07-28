@@ -131,7 +131,13 @@ public class PaymentReceiptGenerator {
 			taxableAmount = 0;
 		}
 
-		long pickupAmount = leadDetails.getBalanceAmount() + leadDetails.getSecurityAmount();
+		long advancePaid = amountForInvoice(needGstInvoice, leadDetails.getBookingAmountWithGst(),
+				leadDetails.getBookingAmount());
+
+		long balanceDue = amountForInvoice(needGstInvoice, leadDetails.getBalanceAmountWithGst(),
+				leadDetails.getBalanceAmount());
+
+		long pickupAmount = balanceDue + leadDetails.getSecurityAmount();
 
 		String description = firstNotBlank(leadDetails.getPseudoName(), leadDetails.getSubCategory(),
 				leadDetails.getCategory(), leadDetails.getCategoryTypeName());
@@ -155,20 +161,20 @@ public class PaymentReceiptGenerator {
 		/*
 		 * Company information. Change these values to your actual company details.
 		 */
-		String companyName = firstNotBlank(leadDetails.getCompanyName(), "MYRAAN RENTALS AND ADVENTURES PVT. LTD.");
+		String companyName = firstNotBlank(leadDetails.getCompanyName(), "ROME YOUR WAY LLP");
 
-		String companyId = "U52291GA2024OPC016682";
+		String companyId = "ACV-7256";
 
 		String companyAddress = "Unit No. 71/195/A, Sattari, Ward No. 7, " + "Hathwada, Near Marathi School, "
 				+ "Valpoi, North Goa, Goa - 403506";
 
-		String companyTaxId = "AASCM2597H";
+		String companyTaxId = "ABNFR3071N";
 
-		String companyPhone = "+91 88283 75421";
+		String companyPhone = "+91 77159 57719";
 
-		String companyEmail = "sales@myraanrentals.com";
+		String companyEmail = "sales@romeyourway.com";
 
-		String companyGstin = "30AASCM2597H1Z5";
+		String companyGstin = "30ABNFR3071N1ZX";
 
 		/*
 		 * Page information.
@@ -209,7 +215,8 @@ public class PaymentReceiptGenerator {
 
 		html = replaceValue(html, "{{dueDate}}", formatDate(leadDetails.getPickupDateTime()));
 
-		html = replaceValue(html, "{{placeOfSupply}}", leadDetails.getActivityLocation());
+		html = replaceValue(html, "{{placeOfSupply}}",
+				firstNotBlank(leadDetails.getActivityLocation(), pickupLocation));
 
 		html = replaceValue(html, "{{status}}", leadDetails.getStatus());
 
@@ -231,9 +238,13 @@ public class PaymentReceiptGenerator {
 		 */
 		html = replaceValue(html, "{{pickupDateTime}}", formatDateTime(leadDetails.getPickupDateTime()));
 
+		html = replaceValue(html, "{{pickupDate}}", formatDateTime(leadDetails.getPickupDateTime()));
+
 		html = replaceValue(html, "{{pickupLocation}}", pickupLocation);
 
 		html = replaceValue(html, "{{dropDateTime}}", formatDateTime(leadDetails.getDropDateTime()));
+
+		html = replaceValue(html, "{{dropDate}}", formatDateTime(leadDetails.getDropDateTime()));
 
 		html = replaceValue(html, "{{dropLocation}}", dropLocation);
 
@@ -248,6 +259,8 @@ public class PaymentReceiptGenerator {
 		 * Description and quantities.
 		 */
 		html = replaceValue(html, "{{description}}", description);
+
+		html = replaceValue(html, "{{vehicleName}}", description);
 
 		html = replaceValue(html, "{{quantity}}", leadDetails.getQuantity());
 
@@ -288,15 +301,24 @@ public class PaymentReceiptGenerator {
 		 */
 		html = replaceValue(html, "{{totalAmount}}", formatAmount(leadDetails.getTotalAmount()));
 
-		html = replaceValue(html, "{{advancePaid}}", formatAmount(leadDetails.getBookingAmount()));
+		html = replaceValue(html, "{{advancePaid}}", formatAmount(advancePaid));
 
-		html = replaceValue(html, "{{balanceDue}}", formatAmount(leadDetails.getBalanceAmount()));
+		html = replaceValue(html, "{{balanceDue}}", formatAmount(balanceDue));
 
 		html = replaceValue(html, "{{securityAmount}}", formatAmount(leadDetails.getSecurityAmount()));
 
 		html = replaceValue(html, "{{pickupAmount}}", formatAmount(pickupAmount));
 
 		return html;
+	}
+
+	private long amountForInvoice(boolean needGstInvoice, Long gstAmount, long standardAmount) {
+
+		if (needGstInvoice && gstAmount != null) {
+			return gstAmount;
+		}
+
+		return standardAmount;
 	}
 
 	private String replaceValue(String html, String placeholder, Object value) {
