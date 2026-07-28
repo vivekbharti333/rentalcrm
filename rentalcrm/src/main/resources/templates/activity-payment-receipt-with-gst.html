@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Activity Payment Receipt With GST</title>
+  <style type="text/css">
+    @page { size: Letter; margin: 0; }
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      color: #182233;
+      font-family: sans-serif;
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .page-meta {
+      width: 552pt;
+      margin: 16pt auto 24pt auto;
+      color: #111111;
+      font-size: 10px;
+    }
+
+    .page-meta-table,
+    .header-table,
+    .billing-table,
+    .schedule-table,
+    .charges-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .page-meta-left { width: 50%; text-align: left; }
+    .page-meta-right { width: 50%; text-align: right; }
+
+    .receipt {
+      width: 523pt;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid #e2e6ec;
+      border-radius: 9px;
+      background-color: #ffffff;
+    }
+
+    .header-table {
+      height: 134pt;
+      background-color: #ff5128;
+      color: #ffffff;
+    }
+
+    .header-left {
+      width: 67%;
+      padding: 18px 19px 14px 19px;
+      vertical-align: top;
+    }
+
+    .header-right {
+      width: 33%;
+      padding: 18px 19px 14px 6px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    .company-name {
+      margin: 0 0 9px 0;
+      color: #ffffff;
+      font-size: 19px;
+      font-weight: bold;
+      line-height: 1.15;
+    }
+
+    .company-line {
+      margin: 2px 0;
+      color: #ffffff;
+      font-size: 11px;
+    }
+
+    .summary-line {
+      margin: 0 0 5px 0;
+      color: #ffffff;
+      font-size: 11px;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .badge {
+      margin-left: 6px;
+      padding: 5px 9px;
+      color: #006ea8;
+      background-color: #dceffc;
+      border-radius: 11px;
+    }
+
+    .content { padding: 13px 18px 0 18px; }
+
+    .section {
+      margin: 0 0 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .section-title {
+      margin: 0 0 8px 0;
+      padding: 0 0 5px 0;
+      border-bottom: 1px solid #d8dde5;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .billing-table {
+      border-collapse: separate;
+      border-spacing: 7px 6px;
+      margin: -6px -7px 0 -7px;
+    }
+
+    .billing-cell {
+      width: 50%;
+      height: 50px;
+      padding: 9px 12px;
+      vertical-align: top;
+      background-color: #f7f8fa;
+      border: 1px solid #d9dee6;
+    }
+
+    .billing-label {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+      width: 33.33%;
+      padding: 7px 6px;
+      border: 1px solid #d8dde5;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .schedule-table th {
+      background-color: #eef2f6;
+      font-weight: bold;
+    }
+
+    .charges-table { font-size: 8px; }
+
+    .charges-table th,
+    .charges-table td {
+      width: 10%;
+      padding: 6px 3px;
+      border: 1px solid #d8dde5;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    .charges-table th {
+      background-color: #eef2f6;
+      font-weight: bold;
+      line-height: 1.25;
+    }
+
+    .terms {
+      margin: 7px 0 0 0;
+      padding: 0;
+      list-style-type: none;
+      font-size: 10px;
+    }
+
+    .terms li { margin: 2px 0; }
+    .terms a { color: #0000ee; text-decoration: underline; }
+    .warning { font-weight: bold; }
+
+    .footer {
+      padding: 13px 15px 15px 15px;
+      border-top: 1px solid #d8dde5;
+      text-align: center;
+      color: #141414;
+      font-size: 10px;
+    }
+
+    .footer p { margin: 2px 0; }
+  </style>
+</head>
+<body>
+  <div class="page-meta">
+    <table class="page-meta-table">
+      <tbody>
+        <tr>
+          <td class="page-meta-left">{{printedDateTime}}</td>
+          <td class="page-meta-right">{{receiptFileName}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="receipt">
+    <table class="header-table">
+      <tbody>
+        <tr>
+          <td class="header-left">
+            <div class="company-name">{{companyName}}</div>
+            <p class="company-line">Company ID : {{companyId}}</p>
+            <p class="company-line">Address : {{companyAddress}}</p>
+            <p class="company-line">TAX ID : {{companyTaxId}}</p>
+            <p class="company-line">Phone : {{companyPhone}} | Email : {{companyEmail}}</p>
+            <p class="company-line">GSTIN : {{companyGstin}}</p>
+          </td>
+          <td class="header-right">
+            <p class="summary-line"><strong>Invoice No:</strong> {{invoiceNumber}}</p>
+            <p class="summary-line"><strong>Invoice Date:</strong> {{invoiceDate}}</p>
+            <p class="summary-line"><strong>Payment Terms:</strong> {{paymentTerms}}</p>
+            <p class="summary-line"><strong>Due Date:</strong> {{dueDate}}</p>
+            <p class="summary-line"><strong>Place of Supply:</strong> {{placeOfSupply}}</p>
+            <p class="status-line"><strong>Status:</strong> {{status}} <span class="badge">Advance Received</span></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="content">
+      <div class="section">
+        <div class="section-title">Billing Information</div>
+        <table class="billing-table">
+          <tbody>
+            <tr>
+              <td class="billing-cell">
+                <span class="billing-label">Customer Name</span>
+                {{customerName}}
+              </td>
+              <td class="billing-cell">
+                <span class="billing-label">Phone</span>
+                {{customerPhone}}
+              </td>
+            </tr>
+            <tr>
+              <td class="billing-cell">
+                <span class="billing-label">Company Name &amp; GSTIN</span>
+                {{customerCompanyName}}<br />
+                {{customerCompanyGST}}
+              </td>
+              <td class="billing-cell">
+                <span class="billing-label">Address</span>
+                {{customerAddress}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Schedule Details</div>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Activity Date &amp; Time</th>
+              <th>Boarding Location</th>
+              <th>Total Pax</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{activityDateTime}}</td>
+              <td>{{boardingLocation}}</td>
+              <td>Adult: {{adultQuantity}} | Kid: {{kidQuantity}} | Infant: {{infantQuantity}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Charges Breakdown</div>
+        <table class="charges-table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Adults</th>
+              <th>Kids</th>
+              <th>Discount</th>
+              <th>Taxable Amount</th>
+              <th>CGST</th>
+              <th>SGST</th>
+              <th>Total</th>
+              <th>Advance Paid</th>
+              <th>Balance Due</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{description}}</td>
+              <td>{{adultQuantity}} X {{adultRate}}</td>
+              <td>{{kidQuantity}} X {{kidRate}}</td>
+              <td>Rs. {{discount}}</td>
+              <td>Rs. {{taxableAmount}}</td>
+              <td>Rs. {{cgst}}</td>
+              <td>Rs. {{sgst}}</td>
+              <td>Rs. {{totalAmount}}</td>
+              <td>Rs. {{advancePaid}}</td>
+              <td>Rs. {{balanceDue}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Terms &amp; Conditions</div>
+        <ul class="terms">
+          <li>&#8226; Standard Rental Timings: 09:00 AM - 09:00 AM</li>
+          <li>&#8226; Valid driving license &amp; one original ID required for renting</li>
+          <li>&#8226; Vehicle cannot be used for interstate travel</li>
+          <li>&#8226; Fuel Policy: Reserved To Reserved</li>
+          <li>&#8226; Total amount is exclusive of any toll &amp; parking charges</li>
+          <li class="warning">&#8226; &#8252; PLEASE CARRY CASH FOR BALANCE PAYMENT - NO UPI / NO CARD</li>
+          <li>&#8226; Check additional T&amp;Cs here <a href="#">terms-and-condition</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>This is a computer generated invoice and does not require a signature.</p>
+      <p>Thank you for choosing {{companyName}}.</p>
+    </div>
+  </div>
+</body>
+</html>

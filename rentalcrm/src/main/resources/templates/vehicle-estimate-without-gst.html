@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vehicle Estimate Without GST</title>
+  <style type="text/css">
+    @page { size: Letter; margin: 0; }
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      color: #182233;
+      font-family: sans-serif;
+      font-size: 9px;
+      line-height: 1.3;
+    }
+
+    .page-meta {
+      width: 552pt;
+      margin: 16pt auto 22pt auto;
+      color: #111111;
+      font-size: 10px;
+    }
+
+    .page-meta-table,
+    .header-table,
+    .billing-table,
+    .schedule-table,
+    .charges-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .page-meta-left { width: 50%; text-align: left; }
+    .page-meta-right { width: 50%; text-align: right; }
+
+    .estimate {
+      width: 523pt;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid #e2e6ec;
+      border-radius: 9px;
+      background-color: #ffffff;
+    }
+
+    .header-table {
+      background-color: #101827;
+      color: #ffffff;
+    }
+
+    .header-left {
+      width: 67%;
+      padding: 14px 19px 12px 19px;
+      vertical-align: top;
+    }
+
+    .header-right {
+      width: 33%;
+      padding: 14px 19px 12px 6px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    .company-name {
+      margin: 0 0 7px 0;
+      color: #ffffff;
+      font-size: 19px;
+      font-weight: bold;
+      line-height: 1.15;
+    }
+
+    .company-line {
+      margin: 2px 0;
+      color: #d9e2f3;
+      font-size: 10px;
+    }
+
+    .summary-line {
+      margin: 0 0 4px 0;
+      color: #ffffff;
+      font-size: 10px;
+    }
+
+    .status-line {
+      margin-top: 7px;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .badge {
+      margin-left: 5px;
+      padding: 4px 9px;
+      color: #006ea8;
+      background-color: #dceffc;
+      border-radius: 11px;
+    }
+
+    .content { padding: 10px 18px 0 18px; }
+
+    .section {
+      margin: 0 0 9px 0;
+      page-break-inside: avoid;
+    }
+
+    .section-title {
+      margin: 0 0 6px 0;
+      padding: 0 0 4px 0;
+      border-bottom: 1px solid #d8dde5;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .billing-table {
+      border-collapse: separate;
+      border-spacing: 7px 5px;
+      margin: -5px -7px 0 -7px;
+    }
+
+    .billing-cell {
+      width: 50%;
+      height: 42px;
+      padding: 7px 11px;
+      vertical-align: top;
+      background-color: #f7f8fa;
+      border: 1px solid #d9dee6;
+    }
+
+    .billing-label {
+      display: block;
+      margin-bottom: 1px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+      width: 50%;
+      padding: 6px 7px;
+      border: 1px solid #d8dde5;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .schedule-table th,
+    .charges-table th {
+      background-color: #eef2f6;
+      font-weight: bold;
+    }
+
+    .charges-table { font-size: 8px; }
+
+    .charges-table th,
+    .charges-table td {
+      width: 14.28%;
+      padding: 6px 4px;
+      border: 1px solid #d8dde5;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    .amount-details {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .security {
+      margin: 10px 0 0 0;
+      font-size: 11px;
+    }
+
+    .account-details {
+      margin: 10px 0 0 0;
+      padding: 0;
+      list-style-type: none;
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .terms-link {
+      margin: 9px 0 0 0;
+      font-size: 10px;
+    }
+
+    .terms-link a {
+      color: #0000ee;
+      text-decoration: underline;
+    }
+
+    .footer {
+      padding: 11px 15px 12px 15px;
+      border-top: 1px solid #d8dde5;
+      text-align: center;
+      color: #141414;
+      font-size: 9px;
+    }
+
+    .footer p { margin: 2px 0; }
+  </style>
+</head>
+<body>
+  <div class="page-meta">
+    <table class="page-meta-table">
+      <tbody>
+        <tr>
+          <td class="page-meta-left">{{printedDateTime}}</td>
+          <td class="page-meta-right">Estimate</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="estimate">
+    <table class="header-table">
+      <tbody>
+        <tr>
+          <td class="header-left">
+            <div class="company-name">{{companyName}}</div>
+            <p class="company-line">Company ID : {{companyId}}</p>
+            <p class="company-line">Address : {{companyAddress}}</p>
+            <p class="company-line">TAX ID : {{companyTaxId}}</p>
+            <p class="company-line">Phone : {{companyPhone}} | Email : {{companyEmail}}</p>
+            <p class="company-line">GSTIN : {{companyGstin}}</p>
+          </td>
+          <td class="header-right">
+            <p class="summary-line"><strong>Estimate No:</strong> {{estimateNumber}}</p>
+            <p class="summary-line"><strong>Estimate Date:</strong> {{estimateDate}}</p>
+            <p class="summary-line"><strong>Payment Terms:</strong> {{paymentTerms}}</p>
+            <p class="summary-line"><strong>Due Date:</strong> {{dueDate}}</p>
+            <p class="summary-line"><strong>Place of Supply:</strong> {{placeOfSupply}}</p>
+            <p class="status-line"><strong>Status:</strong> {{status}} <span class="badge">{{paymentStatus}}</span></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="content">
+      <div class="section">
+        <div class="section-title">Billing Information</div>
+        <table class="billing-table">
+          <tbody>
+            <tr>
+              <td class="billing-cell">
+                <span class="billing-label">Customer Name</span>
+                {{customerName}}
+              </td>
+              <td class="billing-cell">
+                <span class="billing-label">Phone</span>
+                {{customerPhone}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Schedule Details</div>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Pickup Scheduled</th>
+              <th>Drop Scheduled</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{pickupDateTime}} | {{pickupLocation}}</td>
+              <td>{{dropDateTime}} | {{dropLocation}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Charges Breakdown</div>
+        <table class="charges-table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Duration</th>
+              <th>Per day rent</th>
+              <th>Pick &amp; drop</th>
+              <th>Discount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{description}}</td>
+              <td>{{quantity}}</td>
+              <td>{{duration}}</td>
+              <td>Rs. {{perDayRent}}</td>
+              <td>Rs. {{pickupDropCharge}}</td>
+              <td>Rs. {{discount}}</td>
+              <td>Rs. {{totalAmount}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Payment Segregation &amp; Account Details</div>
+
+        <p class="amount-details">
+          Total Amount: Rs. {{totalAmount}}<br />
+          <strong>Advance Token: Rs. {{advancePaid}}</strong><br />
+          Balance Amount: Rs. {{balanceDue}}
+        </p>
+
+        <p class="security">
+          Refundable Security Deposit: Rs. {{securityAmount}}
+        </p>
+
+        <ul class="account-details">
+          <li>- UPI ID: {{upiId}}</li>
+          <li>- Payment Link: {{paymentLink}}</li>
+          <li>- Bank Holder: {{bankHolder}}</li>
+          <li>- Account Number: {{accountNumber}}</li>
+          <li>- IFSC Code: {{ifscCode}}</li>
+          <li>- Branch: {{branchName}}</li>
+          <li>- Bank name: {{bankName}}</li>
+          <li>- A/C Type: {{accountType}}</li>
+          <li>- SWIFT Code (*International Money Transfers*): {{swiftCode}}</li>
+        </ul>
+
+        <p class="terms-link">
+          &#8226; Check additional T&amp;Cs here
+          <a href="#">terms-and-condition</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>This is a computer generated estimate and does not require a signature.</p>
+      <p>Thank you for choosing {{companyName}}.</p>
+    </div>
+  </div>
+</body>
+</html>
