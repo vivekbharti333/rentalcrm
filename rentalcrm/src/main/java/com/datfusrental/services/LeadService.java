@@ -466,11 +466,7 @@ public class LeadService {
 			leadRequest.setRespMesg("Booking id already exist. Try again");
 			return leadRequest;
 		}
-//		} else {
-//			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
-//			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
-//			return leadRequest;
-//		}
+
 	}
 	
 	public LeadRequestObject updatePaymentDetails(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
