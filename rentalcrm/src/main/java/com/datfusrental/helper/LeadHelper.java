@@ -5,9 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -24,7 +22,6 @@ import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.entities.User;
 import com.datfusrental.enums.RequestFor;
-import com.datfusrental.enums.RoleType;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.LeadRequestObject;
 

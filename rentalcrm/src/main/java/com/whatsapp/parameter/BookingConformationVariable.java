@@ -98,11 +98,13 @@ public class BookingConformationVariable {
 			    createVariable(leadDetails.getSubCategory()),
 			    createVariable(String.valueOf(this.convertDate(leadDetails.getPickupDateTime())+" | "+this.convertTime(leadDetails.getPickupDateTime()))),
 			    createVariable(String.valueOf(this.convertDate(leadDetails.getDropDateTime())+" | "+this.convertTime(leadDetails.getDropDateTime()))),
+			    createVariable(leadDetails.getPickupHub()),
+			    createVariable(leadDetails.getDropHub()),
 			    createVariable(leadDetails.getCustomerMobile()),
 			    //
 			    createVariable(leadDetails.getCustomeName()),
 			    createVariable(leadDetails.getCountryDialCode()+leadDetails.getCustomeName()),
-			    createVariable(String.valueOf(leadDetails.getAlternateMobile())),
+			    createVariable((leadDetails.getCountryDialCode()+ leadDetails.getAlternateMobile())),
 			    //
 			    createVariable(String.valueOf(leadDetails.getQuantity())),
 			    createVariable(String.valueOf(leadDetails.getKidQuantity())),
