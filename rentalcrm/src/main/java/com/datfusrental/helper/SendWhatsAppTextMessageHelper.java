@@ -177,8 +177,6 @@ public class SendWhatsAppTextMessageHelper {
 
 	    template.put("components", components);
 	    root.put("template", template);
-	    
-//	    System.out.println(" Response  : "+new ObjectMapper().writeValueAsString(root));
 
 	    return new ObjectMapper().writeValueAsString(root);
 	}

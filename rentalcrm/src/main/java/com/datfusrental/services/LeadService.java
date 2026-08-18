@@ -633,6 +633,26 @@ public class LeadService {
 					locationDetailsDao.persist(locationDetails);
 				}
 			}
+			
+			
+			//message send
+			if(leadRequest.getStatus().equalsIgnoreCase("WON")) {
+				if (leadRequest.getCategoryTypeName().equalsIgnoreCase("Car") || leadRequest.getCategoryTypeName().equalsIgnoreCase("Bike")) {
+
+					leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, existingLead);			
+					String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+					WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
+					
+					System.out.println("Whats App Response : "+sendMessageResponse);
+					
+				}else {
+					leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, existingLead);			
+					String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+					WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
+					
+					System.out.println("Whats App Response : "+sendMessageResponse);
+				}
+				}
 
 	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
 	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);

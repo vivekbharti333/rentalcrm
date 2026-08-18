@@ -51,15 +51,18 @@ public class BookingConformationVariable {
 			    createVariable(leadDetails.getSubCategory()),
 			    createVariable(String.valueOf(leadDetails.getQuantity())),
 			    createVariable(String.valueOf(leadDetails.getTotalDays())),
-			    createVariable(String.valueOf(this.convertDate(leadDetails.getPickupDateTime())+" | "+this.convertTime(leadDetails.getPickupDateTime()))),
+			    createVariable(String.valueOf(this.convertDate(leadDetails.getPickupDateTime()))),
+			    createVariable(String.valueOf(this.convertTime(leadDetails.getPickupDateTime()))),
 			    createVariable(leadDetails.getPickupHub()),
 			    createVariable(leadDetails.getPickupPoint()),
 			    createVariable(String.valueOf(this.convertDate(leadDetails.getDropDateTime()))),
+			    createVariable(String.valueOf(this.convertTime(leadDetails.getDropDateTime()))),
 			    createVariable(String.valueOf(leadDetails.getDropHub())),
 			    createVariable(String.valueOf(leadDetails.getDropPoint())),
-			    createVariable(leadDetails.getCountryDialCode()+leadDetails.getCustomerMobile()),
-			    createVariable(String.valueOf(leadDetails.getCustomerMobile())),
-			    createVariable(String.valueOf(leadDetails.getAlternateMobile())),
+			    createVariable(leadDetails.getCustomerMobile()),
+			    createVariable(leadDetails.getCustomeName()),
+			    createVariable(String.valueOf(leadRequest.getCountryDialCode()+leadDetails.getCustomerMobile())),
+			    createVariable(String.valueOf(leadRequest.getCountryDialCode()+leadDetails.getAlternateMobile())),
 			    ///
 			    createVariable(String.valueOf(leadDetails.getTotalAmount())),
 			    createVariable(String.valueOf(leadDetails.getBookingAmount())),
@@ -71,6 +74,7 @@ public class BookingConformationVariable {
 			leadRequest.setMsgBodyVariable(bodyVariables);
 			
 			List<TemplateButtonVariableRequest> buttonVariables = Arrays.asList(
+				    createButtonVariable("url", leadDetails.getBookingId()),
 				    createButtonVariable("url", leadDetails.getBookingId())
 				    );
 
@@ -96,14 +100,14 @@ public class BookingConformationVariable {
 		List<TemplateBodyVariableRequest> bodyVariables = Arrays.asList(
 			    createVariable(leadDetails.getCategory()),
 			    createVariable(leadDetails.getSubCategory()),
-			    createVariable(String.valueOf(this.convertDate(leadDetails.getPickupDateTime())+" | "+this.convertTime(leadDetails.getPickupDateTime()))),
-			    createVariable(String.valueOf(this.convertDate(leadDetails.getDropDateTime())+" | "+this.convertTime(leadDetails.getDropDateTime()))),
+			    createVariable(String.valueOf(this.convertTime(leadDetails.getPickupDateTime()))),
+			    createVariable(String.valueOf(this.convertTime(leadDetails.getDropDateTime()))),
 			    createVariable(leadDetails.getPickupHub()),
 			    createVariable(leadDetails.getDropHub()),
 			    createVariable(leadDetails.getCustomerMobile()),
 			    //
 			    createVariable(leadDetails.getCustomeName()),
-			    createVariable(leadDetails.getCountryDialCode()+leadDetails.getCustomeName()),
+			    createVariable(leadDetails.getCountryDialCode()+leadDetails.getCustomerMobile()),
 			    createVariable((leadDetails.getCountryDialCode()+ leadDetails.getAlternateMobile())),
 			    //
 			    createVariable(String.valueOf(leadDetails.getQuantity())),
