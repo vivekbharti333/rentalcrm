@@ -106,7 +106,8 @@ public class BookingConformationVariable {
 			    //
 			    createVariable(String.valueOf(leadDetails.getTotalAmount())),
 			    createVariable(String.valueOf(leadDetails.getBookingAmount())),
-			    createVariable(String.valueOf(leadDetails.getBalanceAmount()))
+			    createVariable(String.valueOf(leadDetails.getBalanceAmount())),
+			    createVariable(String.valueOf(this.convertDate(leadDetails.getPickupDateTime())))
 
 			);
 
