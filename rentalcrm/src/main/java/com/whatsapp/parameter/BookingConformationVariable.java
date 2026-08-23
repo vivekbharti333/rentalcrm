@@ -79,23 +79,13 @@ public class BookingConformationVariable {
 				    );
 
 			leadRequest.setButtonVariable(buttonVariables);
-			leadRequest.setTemplateName("rental_confirmation");
+			leadRequest.setTemplateName("rental_romeyourway");
 		
 		return leadRequest;
 	}
 	
 
 	public LeadRequestObject setMessageVaribaleForActivityBookingConfirmation(LeadRequestObject leadRequest, LeadDetails leadDetails) {
-//		Date timestamp = leadDetails.getPickupDateTime();
-//
-//		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-//		String date = sdf.format(timestamp);
-//		System.out.println(date);
-//		
-//		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-//		String time = timeFormat.format(timestamp);
-//		System.out.println(time);
-		
 		
 		List<TemplateBodyVariableRequest> bodyVariables = Arrays.asList(
 			    createVariable(leadDetails.getCategory()),
@@ -122,13 +112,15 @@ public class BookingConformationVariable {
 
 			leadRequest.setMsgBodyVariable(bodyVariables);
 			
+			System.out.println("Booking id : "+leadDetails.getBookingId());
+			
 			List<TemplateButtonVariableRequest> buttonVariables = Arrays.asList(
 				    createButtonVariable("url", leadDetails.getBookingId()),
 				    createButtonVariable("url", leadDetails.getBookingId())
 				    );
 
 			leadRequest.setButtonVariable(buttonVariables);
-			leadRequest.setTemplateName("activity_confirmation");
+			leadRequest.setTemplateName("activity_romeyourway");
 		
 		return leadRequest;
 	}

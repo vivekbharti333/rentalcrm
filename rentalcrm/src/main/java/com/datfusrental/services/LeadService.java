@@ -175,6 +175,11 @@ public class LeadService {
 
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
+		
+		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
+			leadRequest.setPickupHub("na");
+			leadRequest.setDropHub("na");
+		}
 
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
@@ -185,7 +190,11 @@ public class LeadService {
 			if(leadRequest.getStatus().equalsIgnoreCase("WON")) {
 			if (leadDetails.getCategoryTypeName().equalsIgnoreCase("Car") || leadDetails.getCategoryTypeName().equalsIgnoreCase("Bike")) {
 
+				leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);			
+				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
 				
+				System.out.println("Whats App Response : "+sendMessageResponse);
 			}else {
 				leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);			
 				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
@@ -374,6 +383,11 @@ public class LeadService {
 	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
+		
+		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
+		leadRequest.setPickupHub("na");
+		leadRequest.setDropHub("na");
+	}
 
 //		Boolean isValid = jwtTokenUtil.validateJwtToken(leadRequest.getLoginId(), leadRequest.getToken());
 //		if (isValid) {
@@ -432,24 +446,26 @@ public class LeadService {
 					locationDetailsDao.persist(locationDetails);
 				}
 			}
-
+			//Payment Gateways
+			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));
+			}
+			
+			
 			//Send whats app message
-			if (leadRequest.getCategoryTypeName().equalsIgnoreCase("Car") || leadRequest.getCategoryTypeName().equalsIgnoreCase("Bike")) {
+			if (leadDetails.getCategoryTypeName().equalsIgnoreCase("Car") || leadDetails.getCategoryTypeName().equalsIgnoreCase("Bike")) {
 
+				leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);			
+				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
 				
+				System.out.println("Whats App Response : "+sendMessageResponse);
 			}else {
 				leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);			
 				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
 				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
 				
 				System.out.println("Whats App Response : "+sendMessageResponse);
-			}
-			
-
-
-			//Payment Gateways
-			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
-				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));
 			}
 
 			// history
@@ -544,9 +560,14 @@ public class LeadService {
 	    leadHelper.validateLeadRequest(leadRequest);
 
 	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
+	    
+		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
+			leadRequest.setPickupHub("na");
+			leadRequest.setDropHub("na");
+		}
 
 	    if (existingLead != null) {
-
+	    	
 	        boolean isPickupDatePassed = this.isPickupDateLessThanToday(existingLead.getPickupDateTime());
 
 	        System.out.println(isPickupDatePassed);
@@ -580,11 +601,6 @@ public class LeadService {
 	    			}
 
 	    	}
-			
-					
-	    	
-	    	
-	    	
 
 	        // ✅ Clone the old entity before updating
 //	        LeadDetails oldLead = new LeadDetails();
@@ -651,6 +667,7 @@ public class LeadService {
 					WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
 					
 					System.out.println("Whats App Response : "+sendMessageResponse);
+					
 				}
 				}
 
