@@ -245,6 +245,18 @@ public class LeadController {
 		}
 	}
 	
+	@RequestMapping(path = "getDropWonLeadList", method = RequestMethod.POST)
+	public Response<LeadDetails> getDropWonLeadList(@RequestBody Request<LeadRequestObject> leadRequestObject) {
+		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
+		try {
+			List<LeadDetails> followupOneList = leadService.getDropWonLeadList(leadRequestObject);
+			return response.createListResponse(followupOneList, 200, String.valueOf(followupOneList.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return response.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		}
+	}
+	
 	@RequestMapping(path = "getLeadByStatus", method = RequestMethod.POST)
 	public Response<LeadDetails> getLeadByStatus(@RequestBody Request<LeadRequestObject> leadRequestObject) {
 		GenricResponse<LeadDetails> response = new GenricResponse<LeadDetails>();
@@ -306,7 +318,20 @@ public class LeadController {
 		}
 	}
 	
-	
+	@RequestMapping(path = "updateConformationStatus", method = RequestMethod.POST)
+	public Response<LeadRequestObject> updateConformationStatus(@RequestBody Request<LeadRequestObject> leadRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<LeadRequestObject> responseObj = new GenricResponse<LeadRequestObject>();
+		try {
+			LeadRequestObject responce = leadService.updateConformationStatus(leadRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 	
 	
 	

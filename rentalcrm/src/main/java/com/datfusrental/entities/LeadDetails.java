@@ -214,6 +214,12 @@ public class LeadDetails {
 	@Column(name = "notes")
 	private String notes;
 	
+	@Column(name = "pickup_confirmed")
+	private String pickupConfirmed;
+	
+	@Column(name = "drop_confirmed")
+	private String dropConfirmed;
+	
 	@Column(name = "created_at")
 	private Date createdAt;
 	

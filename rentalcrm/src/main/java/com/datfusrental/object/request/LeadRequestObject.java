@@ -146,6 +146,9 @@ public class LeadRequestObject {
 	private String language;
 	private String sub_category;
 	
+	private String pickupConfirmed;
+	private String dropConfirmed;
+	
 	private String messageFrom;
 	private String messageTo; 
 	

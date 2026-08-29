@@ -88,6 +88,9 @@ public class LeadHelper {
 
 		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
 		leadDetails.setTotalDays(leadRequest.getTotalDays());
+		
+		leadDetails.setPickupConfirmed("Null");
+		leadDetails.setDropConfirmed("Null");
 
 		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());

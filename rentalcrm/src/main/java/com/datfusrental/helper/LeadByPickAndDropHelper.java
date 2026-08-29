@@ -93,5 +93,24 @@ public class LeadByPickAndDropHelper {
 
 		return results;
 	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
+		
+		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate AND LD.status =:status AND LD.dropConfirmed =:dropConfirmed  ORDER BY LD.dropDateTime DESC")
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("status", "WON")
+					.setParameter("dropConfirmed", "Null")
+					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
+
+		
+		return results;
+	}
 
 }

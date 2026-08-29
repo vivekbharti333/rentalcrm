@@ -923,6 +923,29 @@ public class LeadService {
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropLeadList(leadRequest);
 		return leadList;
 	}
+	
+	
+	public List<LeadDetails> getDropWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
+			leadRequest.setFirstDate(new Date());
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		}
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
+		}
+
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+		}
+
+		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropWonLeadList(leadRequest);
+		return leadList;
+	}
 
 	public List<LeadDetails> getLeadByStatus(Request<LeadRequestObject> leadRequestObject) {
 	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
@@ -1097,6 +1120,33 @@ public class LeadService {
 
 		List<LeadDetails> leadList = leadHelper.getBookingDetailsByBookingId(leadRequest);
 		return leadList;
+	}
+
+	public LeadRequestObject updateConformationStatus(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
+
+			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+			if (leadDetails != null) {
+
+				if(leadRequest.getRequestedFor().equalsIgnoreCase("PICKUP")) {
+					leadDetails.setPickupConfirmed(leadRequest.getPickupConfirmed());
+				} else if(leadRequest.getRequestedFor().equalsIgnoreCase("DROP")) {
+					leadDetails.setDropConfirmed(leadRequest.getDropConfirmed());
+				}
+				
+				leadHelper.updateLeadDetails(leadDetails);
+				
+				leadRequest.setRespCode(Constant.SUCCESS_CODE);
+				leadRequest.setRespMesg("Successfully Confirmed");
+
+				return leadRequest;
+			} else {
+				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				leadRequest.setRespMesg("Not found");
+
+				return leadRequest;
+			}
 	}
 
 

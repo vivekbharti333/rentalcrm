@@ -12,7 +12,7 @@
       padding: 0;
       background-color: #ffffff;
       color: #182233;
-      font-family: sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 9px;
       line-height: 1.28;
     }
@@ -126,6 +126,7 @@
       vertical-align: top;
       background-color: #f7f8fa;
       border: 1px solid #d9dee6;
+      border-radius: 6px;
     }
 
     .billing-label {
@@ -220,7 +221,7 @@
       <tbody>
         <tr>
           <td class="header-left">
-            <div class="company-name">{{companyName}}</div>
+            <div class="company-name">MYRAAN RENTALS AND ADVENTURES PVT.LTD.</div>
             <p class="company-line">Company ID : {{companyId}}</p>
             <p class="company-line">Address : {{companyAddress}}</p>
             <p class="company-line">TAX ID : {{companyTaxId}}</p>
@@ -238,124 +239,123 @@
         </tr>
       </tbody>
     </table>
-
     <div class="content">
-      <div class="section">
-        <div class="section-title">Billing Information</div>
-        <table class="billing-table">
-          <tbody>
-            <tr>
-              <td class="billing-cell">
-                <span class="billing-label">Customer Name</span>
-                {{customerName}}
-              </td>
-              <td class="billing-cell">
-                <span class="billing-label">Phone</span>
-                {{customerPhone}}
-              </td>
-            </tr>
-            <tr>
-              <td class="billing-cell">
-                <span class="billing-label">Company Name &amp; GSTIN</span>
-                {{customerCompanyName}}<br />
-                {{customerCompanyGST}}
-              </td>
-              <td class="billing-cell">
-                <span class="billing-label">Address</span>
-                {{customerAddress}}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Schedule Details</div>
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th>Pickup Scheduled</th>
-              <th>Drop Scheduled</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{pickupDateTime}} | {{pickupLocation}}</td>
-              <td>{{dropDateTime}} | {{dropLocation}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Charges Breakdown</div>
-        <table class="charges-table">
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th>Qty</th>
-              <th>Duration</th>
-              <th>Per day rent</th>
-              <th>Pick &amp; drop</th>
-              <th>Discount</th>
-              <th>Taxable Amount</th>
-              <th>CGST</th>
-              <th>SGST</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{description}}</td>
-              <td>{{quantity}}</td>
-              <td>{{duration}}</td>
-              <td>Rs. {{perDayRent}}</td>
-              <td>Rs. {{pickupDropCharge}}</td>
-              <td>Rs. {{discount}}</td>
-              <td>Rs. {{taxableAmount}}</td>
-              <td>Rs. {{cgst}}</td>
-              <td>Rs. {{sgst}}</td>
-              <td>Rs. {{totalAmount}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Payment Segregation &amp; Account Details</div>
-
-        <p class="amount-details">
-          Total Amount: Rs. {{totalAmount}}<br />
-          <strong>Advance Token: Rs. {{advancePaid}}</strong><br />
-          Balance Amount: Rs. {{balanceDue}}
-        </p>
-
-        <p class="security">
-          Refundable Security Deposit: Rs. {{securityAmount}}
-        </p>
-
-        <ul class="account-details">
-          <li>- UPI ID: {{upiId}}</li>
-          <li>- Payment Link: {{paymentLink}}</li>
-          <li>- Bank Holder: {{bankHolder}}</li>
-          <li>- Account Number: {{accountNumber}}</li>
-          <li>- IFSC Code: {{ifscCode}}</li>
-          <li>- Branch: {{branchName}}</li>
-          <li>- Bank name: {{bankName}}</li>
-          <li>- A/C Type: {{accountType}}</li>
-          <li>- SWIFT Code (*International Money Transfers*): {{swiftCode}}</li>
-        </ul>
-
-        <p class="terms-link">
-          &#8226; Check additional T&amp;Cs here
-          <a href="#">terms-and-condition</a>
-        </p>
-      </div>
+    <div class="section">
+      <div class="section-title">Billing Information</div>
+      <table class="billing-table">
+        <tbody>
+          <tr>
+            <td class="billing-cell">
+              <span class="billing-label">Customer Name</span>
+              {{customerName}}
+            </td>
+            <td class="billing-cell">
+              <span class="billing-label">Phone</span>
+              {{customerPhone}}
+            </td>
+          </tr>
+          <tr>
+            <td class="billing-cell">
+              <span class="billing-label">Company Name &amp; GSTIN</span>
+              {{customerCompanyName}}<br />
+              {{customerCompanyGST}}
+            </td>
+            <td class="billing-cell">
+              <span class="billing-label">Address</span>
+              {{customerAddress}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
+    <div class="section">
+      <div class="section-title">Schedule Details</div>
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th>Pickup Scheduled</th>
+            <th>Drop Scheduled</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{pickupDateTime}} | {{pickupLocation}}</td>
+            <td>{{dropDateTime}} | {{dropLocation}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Charges Breakdown</div>
+      <table class="charges-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Duration</th>
+            <th>Per day rent</th>
+            <th>Pick &amp; drop</th>
+            <th>Discount</th>
+            <th>Taxable Amount</th>
+            <th>CGST</th>
+            <th>SGST</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{description}}</td>
+            <td>{{quantity}}</td>
+            <td>{{duration}}</td>
+            <td>&#8377;{{perDayRent}}</td>
+            <td>&#8377;{{pickupDropCharge}}</td>
+            <td>&#8377;{{discount}}</td>
+            <td>&#8377;{{taxableAmount}}</td>
+            <td>&#8377;{{cgst}}</td>
+            <td>&#8377;{{sgst}}</td>
+            <td>&#8377;{{totalAmount}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Payment Segregation &amp; Account Details</div>
+
+      <p class="amount-details">
+        Total Amount: &#8377;{{totalAmount}}<br />
+        <strong>Advance Token: &#8377;{{advancePaid}}</strong><br />
+        Balance Amount: &#8377;{{balanceDue}}
+      </p>
+
+      <p class="security">
+        Refundable Security Deposit: &#8377;{{securityAmount}}
+      </p>
+
+      <ul class="account-details">
+        <li>-UPI ID: {{upiId}}</li>
+        <li>-Payment Link: {{paymentLink}}</li>
+        <li>-Bank Holder: {{bankHolder}}</li>
+        <li>-Account Number: {{accountNumber}}</li>
+        <li>-IFSC Code: {{ifscCode}}</li>
+        <li>-Branch: {{branchName}}</li>
+        <li>-Bank name: {{bankName}}</li>
+        <li>-A/C Type: {{accountType}}</li>
+        <li>-SWIFT Code(*International Money Transfers*): {{swiftCode}}</li>
+      </ul>
+
+      <p class="terms-link">
+        &#8226; Check additional T&amp;Cs here
+        <a href="#">terms-and-condition</a>
+      </p>
+    </div>
+  </div>
+
     <div class="footer">
-      <p>This is a computer generated estimate and does not require a signature.</p>
-      <p>Thank you for choosing {{companyName}}.</p>
+    <p>This is a computer generated invoice and does not require a signature.</p>
+    <p>Thank you for choosing {{companyName}}.</p>
     </div>
   </div>
 </body>
