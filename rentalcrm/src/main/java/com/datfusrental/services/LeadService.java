@@ -1131,8 +1131,10 @@ public class LeadService {
 
 				if(leadRequest.getRequestedFor().equalsIgnoreCase("PICKUP")) {
 					leadDetails.setPickupConfirmed(leadRequest.getPickupConfirmed());
+					leadDetails.setPickDropConfirmedNotes(leadRequest.getPickDropConfirmedNotes());
 				} else if(leadRequest.getRequestedFor().equalsIgnoreCase("DROP")) {
 					leadDetails.setDropConfirmed(leadRequest.getDropConfirmed());
+					leadDetails.setPickDropConfirmedNotes(leadRequest.getPickDropConfirmedNotes());
 				}
 				
 				leadHelper.updateLeadDetails(leadDetails);

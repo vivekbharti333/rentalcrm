@@ -220,6 +220,10 @@ public class LeadDetails {
 	@Column(name = "drop_confirmed")
 	private String dropConfirmed;
 	
+	@Lob
+	@Column(name = "pick_drop_confirmed_notes")
+	private String pickDropConfirmedNotes;
+	
 	@Column(name = "created_at")
 	private Date createdAt;
 	

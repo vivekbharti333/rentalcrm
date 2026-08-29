@@ -148,6 +148,7 @@ public class LeadRequestObject {
 	
 	private String pickupConfirmed;
 	private String dropConfirmed;
+	private String pickDropConfirmedNotes;
 	
 	private String messageFrom;
 	private String messageTo; 
