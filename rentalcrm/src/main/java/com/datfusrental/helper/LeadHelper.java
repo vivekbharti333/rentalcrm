@@ -89,8 +89,10 @@ public class LeadHelper {
 		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
 		leadDetails.setTotalDays(leadRequest.getTotalDays());
 		
-		leadDetails.setPickupConfirmed("Null");
-		leadDetails.setDropConfirmed("Null");
+		// Confirmation is pending when a lead is registered. The status is set to
+		// CONFIRMED or NOT_CONFIRMED only by updateConformationStatus.
+		leadDetails.setPickupConfirmed(null);
+		leadDetails.setDropConfirmed(null);
 
 		leadDetails.setDropHub(leadRequest.getDropHub());
 		leadDetails.setDropPoint(leadRequest.getDropPoint());

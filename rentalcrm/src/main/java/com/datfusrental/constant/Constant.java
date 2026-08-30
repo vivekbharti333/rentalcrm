@@ -56,6 +56,7 @@ public class Constant {
 	 public static final String FOLLOW_UP ="FOLLOWUP";
 	 public static final String ENQUIRY ="ENQUIRY";
 	 public static final String CONFIRMED ="CONFIRMED";
+	 public static final String NOT_CONFIRMED ="NOT_CONFIRMED";
 	 public static final String ASSIGNED ="ASSIGNED";
 	 
 	 //Category Name

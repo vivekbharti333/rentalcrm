@@ -61,10 +61,11 @@ public class LeadByPickAndDropHelper {
 		List<String> includeStatus = List.of("WON", "ASSIGNED");
 
 		return leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC",
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND (LD.pickupConfirmed IS NULL OR LD.pickupConfirmed <> :confirmed) ORDER BY LD.id DESC",
 				LeadDetails.class)
 				.setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", includeStatus)
+				.setParameter("confirmed", Constant.CONFIRMED)
 				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 				.getResultList();
@@ -96,21 +97,29 @@ public class LeadByPickAndDropHelper {
 	
 	
 	
-	@SuppressWarnings("unchecked")
-	public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
-		
-		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		
-			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate AND LD.status =:status AND LD.dropConfirmed =:dropConfirmed  ORDER BY LD.dropDateTime DESC")
-					.setParameter("superadminId", leadRequest.getSuperadminId())
-					.setParameter("status", "WON")
-					.setParameter("dropConfirmed", "Null")
-					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
-
-		
-		return results;
+	public List<LeadDetails> getDropListForCallConfirm(LeadRequestObject leadRequest) {
+		return leadDetailsDao.getEntityManager().createQuery(
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status = :status AND LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate AND (LD.dropConfirmed IS NULL OR LD.dropConfirmed <> :confirmed) ORDER BY LD.dropDateTime ASC",
+				LeadDetails.class)
+				.setParameter("superadminId", leadRequest.getSuperadminId())
+				.setParameter("status", "WON")
+				.setParameter("confirmed", Constant.CONFIRMED)
+				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+				.getResultList();
 	}
 
+	
+	public List<LeadDetails> getPickupListForCallConfirm(LeadRequestObject leadRequest) {
+		return leadDetailsDao.getEntityManager().createQuery(
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status = :status AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND (LD.pickupConfirmed IS NULL OR LD.pickupConfirmed <> :confirmed) ORDER BY LD.pickupDateTime ASC",
+				LeadDetails.class)
+				.setParameter("superadminId", leadRequest.getSuperadminId())
+				.setParameter("status", "WON")
+				.setParameter("confirmed", Constant.CONFIRMED)
+				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+				.getResultList();
+	}
+	
 }

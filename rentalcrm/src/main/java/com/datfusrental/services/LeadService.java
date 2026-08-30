@@ -113,6 +113,33 @@ public class LeadService {
 	
 	@Autowired
 	private BookingConformationVariable bookingConformationVariable;
+
+	private LeadRequestObject sendBookingConfirmationIfWon(LeadRequestObject leadRequest,
+			LeadDetails leadDetails) throws Exception {
+
+		if (!Status.WON.name().equalsIgnoreCase(leadRequest.getStatus())) {
+			return leadRequest;
+		}
+
+		String categoryTypeName = leadDetails.getCategoryTypeName();
+		boolean isVehicleBooking = "Car".equalsIgnoreCase(categoryTypeName)
+				|| "Bike".equalsIgnoreCase(categoryTypeName);
+
+		if (isVehicleBooking) {
+			leadRequest = bookingConformationVariable
+					.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);
+		} else {
+			leadRequest = bookingConformationVariable
+					.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);
+		}
+
+		String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
+		WhatsAppMessageResponse sendMessageResponse = sendTextMessageHelper
+				.callSendTemplateTextMessage(templateParameter);
+
+		logger.info("Whats App Response : " + sendMessageResponse);
+		return leadRequest;
+	}
 	
 	public boolean isPickupDateLessThanToday(Date pickupDateTime) {
 
@@ -186,24 +213,6 @@ public class LeadService {
 		if (leadDetails != null) {
 			
 			
-			//Send whats app message
-			if(leadRequest.getStatus().equalsIgnoreCase("WON")) {
-			if (leadDetails.getCategoryTypeName().equalsIgnoreCase("Car") || leadDetails.getCategoryTypeName().equalsIgnoreCase("Bike")) {
-
-				leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);			
-				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
-				
-				System.out.println("Whats App Response : "+sendMessageResponse);
-			}else {
-				leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);			
-				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
-				
-				System.out.println("Whats App Response : "+sendMessageResponse);
-			}
-			}
-			
 			VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
 
 			if (vendorDetails != null) {
@@ -251,7 +260,8 @@ public class LeadService {
 			leadDetails.setStatus(leadRequest.getStatus());
 			leadDetails.setChangeStatusDate(new Date());
 
-			leadHelper.updateLeadDetails(leadDetails);
+			leadDetails = leadHelper.updateLeadDetails(leadDetails);
+			leadRequest = sendBookingConfirmationIfWon(leadRequest, leadDetails);
 
 			leadRequest.setRespCode(Constant.SUCCESS_CODE);
 			leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getStatus());
@@ -452,21 +462,7 @@ public class LeadService {
 			}
 			
 			
-			//Send whats app message
-			if (leadDetails.getCategoryTypeName().equalsIgnoreCase("Car") || leadDetails.getCategoryTypeName().equalsIgnoreCase("Bike")) {
-
-				leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);			
-				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
-				
-				System.out.println("Whats App Response : "+sendMessageResponse);
-			}else {
-				leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);			
-				String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-				WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
-				
-				System.out.println("Whats App Response : "+sendMessageResponse);
-			}
+			leadRequest = sendBookingConfirmationIfWon(leadRequest, leadDetails);
 
 			// history
 
@@ -651,25 +647,7 @@ public class LeadService {
 			}
 			
 			
-			//message send
-			if(leadRequest.getStatus().equalsIgnoreCase("WON")) {
-				if (leadRequest.getCategoryTypeName().equalsIgnoreCase("Car") || leadRequest.getCategoryTypeName().equalsIgnoreCase("Bike")) {
-
-					leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, existingLead);			
-					String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-					WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
-					
-					System.out.println("Whats App Response : "+sendMessageResponse);
-					
-				}else {
-					leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, existingLead);			
-					String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-					WhatsAppMessageResponse sendMessageResponse =  sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
-					
-					System.out.println("Whats App Response : "+sendMessageResponse);
-					
-				}
-				}
+			leadRequest = sendBookingConfirmationIfWon(leadRequest, existingLead);
 
 	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
 	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
@@ -925,26 +903,39 @@ public class LeadService {
 	}
 	
 	
-	public List<LeadDetails> getDropWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+	public List<LeadDetails> getDropListForCallConfirm(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
 
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
-			leadRequest.setFirstDate(new Date());
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		switch (StringUtils.trimToEmpty(leadRequest.getRequestedFor()).toUpperCase()) {
+		case "TODAY_DROP":
+			leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
+		case "TOMORROW_DROP":
+			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			break;
+		case "AFTER_TOMORROW_DROP":
+			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			break;
+		case "CUSTOM":
+			if (leadRequest.getFirstDate() == null || leadRequest.getLastDate() == null) {
+				throw new IllegalArgumentException("First date and last date are required for custom search");
+			}
+			LocalDate customFirstDate = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
+			LocalDate customLastDate = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
+			leadRequest.setFirstDate(Date.from(customFirstDate.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(customLastDate.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
+		default:
+			throw new IllegalArgumentException(
+					"requestedFor must be TODAY_DROP, TOMORROW_DROP, AFTER_TOMORROW_DROP or CUSTOM");
 		}
 
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
-		}
-
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
-		}
-
-		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropWonLeadList(leadRequest);
-		return leadList;
+		return leadByPickAndDropHelper.getDropListForCallConfirm(leadRequest);
 	}
 
 	public List<LeadDetails> getLeadByStatus(Request<LeadRequestObject> leadRequestObject) {
@@ -1122,36 +1113,107 @@ public class LeadService {
 		return leadList;
 	}
 
-	public LeadRequestObject updateConformationStatus(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
+	@Transactional
+	public LeadRequestObject updateConformationStatus(Request<LeadRequestObject> leadRequestObject)
+			throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
-			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
-			if (leadDetails != null) {
+		String requestedFor = StringUtils.trimToEmpty(leadRequest.getRequestedFor()).toUpperCase();
+		if (!"PICKUP".equals(requestedFor) && !"DROP".equals(requestedFor)) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "requestedFor must be PICKUP or DROP");
+		}
 
-				if(leadRequest.getRequestedFor().equalsIgnoreCase("PICKUP")) {
-					leadDetails.setPickupConfirmed(leadRequest.getPickupConfirmed());
-					leadDetails.setPickDropConfirmedNotes(leadRequest.getPickDropConfirmedNotes());
-				} else if(leadRequest.getRequestedFor().equalsIgnoreCase("DROP")) {
-					leadDetails.setDropConfirmed(leadRequest.getDropConfirmed());
-					leadDetails.setPickDropConfirmedNotes(leadRequest.getPickDropConfirmedNotes());
-				}
-				
-				leadHelper.updateLeadDetails(leadDetails);
-				
-				leadRequest.setRespCode(Constant.SUCCESS_CODE);
-				leadRequest.setRespMesg("Successfully Confirmed");
+		String requestedStatus = "PICKUP".equals(requestedFor)
+				? StringUtils.trimToEmpty(leadRequest.getPickupConfirmed()).toUpperCase()
+				: StringUtils.trimToEmpty(leadRequest.getDropConfirmed()).toUpperCase();
 
-				return leadRequest;
-			} else {
-				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-				leadRequest.setRespMesg("Not found");
+		if (!Constant.CONFIRMED.equals(requestedStatus)
+				&& !Constant.NOT_CONFIRMED.equals(requestedStatus)) {
+			throw new BizException(Constant.BAD_REQUEST_CODE,
+					"Confirmation status must be CONFIRMED or NOT_CONFIRMED");
+		}
 
-				return leadRequest;
-			}
+		String notes = StringUtils.trimToEmpty(leadRequest.getPickDropConfirmedNotes());
+		if (Constant.NOT_CONFIRMED.equals(requestedStatus) && notes.isEmpty()) {
+			throw new BizException(Constant.BAD_REQUEST_CODE,
+					"Comments or notes are required when status is NOT_CONFIRMED");
+		}
+
+		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+		if (leadDetails == null) {
+			throw new BizException(Constant.NOT_EXISTS, "Lead not found");
+		}
+
+		String existingStatus = "PICKUP".equals(requestedFor)
+				? leadDetails.getPickupConfirmed()
+				: leadDetails.getDropConfirmed();
+		if (Constant.CONFIRMED.equalsIgnoreCase(existingStatus)) {
+			throw new BizException(Constant.ALREADY_EXISTS,
+					requestedFor + " is already confirmed");
+		}
+
+		if ("PICKUP".equals(requestedFor)) {
+			leadDetails.setPickupConfirmed(requestedStatus);
+		} else {
+			leadDetails.setDropConfirmed(requestedStatus);
+		}
+
+		if (Constant.NOT_CONFIRMED.equals(requestedStatus)) {
+			leadDetails.setPickDropConfirmedNotes(notes);
+		}
+
+		leadHelper.updateLeadDetails(leadDetails);
+
+		leadRequest.setRespCode(Constant.SUCCESS_CODE);
+		leadRequest.setRespMesg(Constant.CONFIRMED.equals(requestedStatus)
+				? requestedFor + " confirmed successfully"
+				: requestedFor + " marked as not confirmed");
+		return leadRequest;
 	}
 
 
+	public List<LeadDetails> getPickupListForCallConfirm(Request<LeadRequestObject> leadRequestObject) {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+
+	    LocalDate today = LocalDate.now();
+	    ZoneId zone = ZoneId.systemDefault();
+	    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+
+	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+
+	        case "TODAY_PICKUP":
+	            // 2 days ago
+	            leadRequest.setFirstDate(firstDate);
+	            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "TOMORROW_PICKUP":
+	            // 3 days ago
+	            leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "AFTER_TOMORROW_PICKUP":
+	            // 4 days ago
+	            leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+	            break;
+
+	        case "CUSTOM":
+	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+	        default:
+//	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+//	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+	    }
+
+	    System.out.println("First Date : " + leadRequest.getFirstDate());
+	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+
+		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupListForCallConfirm(leadRequest);
+		return leadList;
+	}
 
 
 
