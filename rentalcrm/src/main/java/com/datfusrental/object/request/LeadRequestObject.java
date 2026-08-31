@@ -153,6 +153,14 @@ public class LeadRequestObject {
 	private String messageFrom;
 	private String messageTo; 
 	
+	private String paymentImage;
+	private String vehicleVideo;
+	private String frantImage;
+	private String backImage;
+	private String leftImage;
+	private String rightImage;
+
+	
 	private int respCode;
 	private String respMesg;
 	
