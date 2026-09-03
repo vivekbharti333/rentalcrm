@@ -1,5 +1,7 @@
 package com.datfusrental.config;
 
+import java.nio.file.Paths;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.datfusrental.constant.Constant;
 
 
 @Configuration
@@ -26,6 +29,8 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+		registry.addResourceHandler("/vehicle-files/**")
+				.addResourceLocations(Paths.get(Constant.docLocation, "vehicle_image").toUri().toString().replaceAll("/?$", "/"));
 	}
 	
 	@Bean

@@ -43,6 +43,11 @@ public class CustomerService {
 	    		leadRequest.setBackImage(saveBase64File(leadRequest.getBackImage(), leadRequest.getBookingId(), "image", "back"));
 	    		leadRequest.setLeftImage(saveBase64File(leadRequest.getLeftImage(), leadRequest.getBookingId(), "image", "left"));
 	    		leadRequest.setRightImage(saveBase64File(leadRequest.getRightImage(), leadRequest.getBookingId(), "image", "right"));
+			leadRequest.setFuelGaugeImage(saveBase64File(leadRequest.getFuelGaugeImage(), leadRequest.getBookingId(), "image", "fuel-gauge"));
+			if (!"cash".equalsIgnoreCase(leadRequest.getBalanceAmountPayMode())) {
+				leadRequest.setBalanceAmountPayImage(saveBase64File(leadRequest.getBalanceAmountPayImage(), leadRequest.getBookingId(), "image", "balance-payment"));
+			}
+			leadRequest.setSecurityAmountImage(saveBase64File(leadRequest.getSecurityAmountImage(), leadRequest.getBookingId(), "image", "security-amount"));
 	    		
 	    		CustomerPickupDetails customerPickupDetails =  customerHelper.getCustomerPickupDetailsByReqObj(leadRequest);
 		    	customerHelper.saveCustomerPickupDetails(customerPickupDetails);

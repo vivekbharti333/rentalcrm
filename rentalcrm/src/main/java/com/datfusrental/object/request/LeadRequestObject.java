@@ -159,6 +159,11 @@ public class LeadRequestObject {
 	private String backImage;
 	private String leftImage;
 	private String rightImage;
+	private String fuelGaugeImage;
+	private String balanceAmountPayTo;
+	private String balanceAmountPayMode;
+	private String balanceAmountPayImage;
+	private String securityAmountImage;
 
 	
 	private int respCode;

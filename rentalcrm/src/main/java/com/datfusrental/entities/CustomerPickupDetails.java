@@ -41,6 +41,21 @@ public class CustomerPickupDetails {
 	@Column(name = "right_image")
 	private String rightImage;
 	
+	@Column(name = "fuel_gauge_image")
+	private String fuelGaugeImage;
+	
+	@Column(name = "balance_amount_pay_to")
+	private String balanceAmountPayTo;
+	
+	@Column(name = "balance_amount_pay_mode")
+	private String balanceAmountPayMode;
+	
+	@Column(name = "balance_amount_pay_image")
+	private String balanceAmountPayImage;
+	
+	@Column(name = "security_amount_image")
+	private String securityAmountImage;
+	
 	@Lob
 	@Column(name = "notes")
 	private String notes;

@@ -52,6 +52,14 @@ public class CustomerHelper {
 		customerPickupDetails.setBackImage(leadRequest.getBackImage());
 		customerPickupDetails.setLeftImage(leadRequest.getLeftImage());
 		customerPickupDetails.setRightImage(leadRequest.getRightImage());
+		customerPickupDetails.setFuelGaugeImage(leadRequest.getFuelGaugeImage());
+		
+		customerPickupDetails.setSecurityAmountImage(leadRequest.getSecurityAmountImage());
+		
+		customerPickupDetails.setBalanceAmountPayTo(leadRequest.getBalanceAmountPayTo());
+		customerPickupDetails.setBalanceAmountPayMode(leadRequest.getBalanceAmountPayMode());
+		customerPickupDetails.setBalanceAmountPayImage(leadRequest.getBalanceAmountPayImage());
+		
 		customerPickupDetails.setNotes(leadRequest.getNotes());
 		
 		return customerPickupDetails;
