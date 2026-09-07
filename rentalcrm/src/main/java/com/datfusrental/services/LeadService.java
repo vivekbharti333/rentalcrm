@@ -3,12 +3,12 @@ package com.datfusrental.services;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -399,7 +399,10 @@ public class LeadService {
 		leadRequest.setDropHub("na");
 	}
 
-		leadRequest.setBookingId(StringUtils.substring(RandomStringUtils.random(64, true, true), 0, 12));
+		String customerMobile = StringUtils.defaultString(leadRequest.getCustomerMobile()).replaceAll("\\D", "");
+		String mobileSuffix = StringUtils.leftPad(StringUtils.right(customerMobile, 4), 4, '0');
+		String pickupDate = new SimpleDateFormat("ddMMyy").format(leadRequest.getPickupDateTime());
+		leadRequest.setBookingId(mobileSuffix + pickupDate);
 
 		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 		if (existsLeadDetails == null) {
