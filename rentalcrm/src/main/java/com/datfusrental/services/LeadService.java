@@ -402,7 +402,13 @@ public class LeadService {
 		String customerMobile = StringUtils.defaultString(leadRequest.getCustomerMobile()).replaceAll("\\D", "");
 		String mobileSuffix = StringUtils.leftPad(StringUtils.right(customerMobile, 4), 4, '0');
 		String pickupDate = new SimpleDateFormat("ddMMyy").format(leadRequest.getPickupDateTime());
-		leadRequest.setBookingId(mobileSuffix + pickupDate);
+		String baseBookingId = mobileSuffix + pickupDate;
+		String bookingId = baseBookingId;
+		int suffix = 1;
+		while (leadHelper.getLeadDetailsByBookingId(bookingId) != null) {
+			bookingId = baseBookingId + "/" + suffix++;
+		}
+		leadRequest.setBookingId(bookingId);
 
 		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 		if (existsLeadDetails == null) {

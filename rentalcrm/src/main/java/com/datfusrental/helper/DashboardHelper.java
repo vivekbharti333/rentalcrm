@@ -49,19 +49,15 @@ public class DashboardHelper {
 		boolean team = isSuperadmin(dashboardRequest);
 		String ownerFilter = team ? "LD.superadminId = :ownerId" : "LD.createdBy = :ownerId";
 		Object[] counts = leadDetailsDao.getEntityManager()
-				.createQuery("SELECT COUNT(LD), SUM(CASE WHEN LD.status = :status THEN 1 ELSE 0 END) "
-						+ "FROM LeadDetails LD WHERE " + ownerFilter
-						+ " AND LD.createdAt >= :startDate AND LD.createdAt < :endDate", Object[].class)
+				.createQuery("SELECT COUNT(LD), SUM(LD.actualAmount) "
+						+ "FROM LeadDetails LD WHERE LD.status = :status AND " + ownerFilter
+						+ " AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate", Object[].class)
 				.setParameter("status", Status.WON.name())
 				.setParameter("ownerId", team ? dashboardRequest.getSuperadminId() : dashboardRequest.getCreatedBy())
 				.setParameter("startDate", startDate)
 				.setParameter("endDate", endDate)
 				.getSingleResult();
-		Long total = ((Number) counts[0]).longValue();
-		Long won = counts[1] == null ? 0L : ((Number) counts[1]).longValue();
-		dashboardRequest.setTotalTodayOfTeam(team ? total : null);
-		dashboardRequest.setTotalTodayWonOfTeam(team ? won : null);
-		dashboardRequest.setTotalTodayOfIndividual(team ? null : total);
-		dashboardRequest.setTotalTodayWonOfIndividual(team ? null : won);
+		dashboardRequest.setTodayTotalWinCount(((Number) counts[0]).longValue());
+		dashboardRequest.setTodayTotalWonAmount(counts[1] == null ? 0L : ((Number) counts[1]).longValue());
 	}
 }

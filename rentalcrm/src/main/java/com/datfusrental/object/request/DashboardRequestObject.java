@@ -11,10 +11,8 @@ public class DashboardRequestObject {
 	private String token;
 
 	private Long totalNoOfUser;
-	private Long totalTodayOfTeam;
-	private Long totalTodayWonOfTeam;
-	private Long totalTodayOfIndividual;
-	private Long totalTodayWonOfIndividual;
+	private Long todayTotalWinCount;
+	private Long todayTotalWonAmount;
 
 	private String roleType;
 	private String status;
