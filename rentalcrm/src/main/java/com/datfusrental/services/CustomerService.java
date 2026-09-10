@@ -97,5 +97,36 @@ public class CustomerService {
 
 
 	
+	public LeadRequestObject addNewCustomerTickets(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
+	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+	    leadHelper.validateLeadRequest(leadRequest);
+
+	    LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
+	    if (leadDetails != null) {
+	    	CustomerPickupDetails existsDetails = customerHelper.getCustomerPickupDetailsByBookingId(leadRequest.getBookingId());
+	    	if(existsDetails == null) {
+	    	
+				
+	    		CustomerPickupDetails customerPickupDetails =  customerHelper.getCustomerPickupDetailsByReqObj(leadRequest);
+		    	customerHelper.saveCustomerPickupDetails(customerPickupDetails);
+		    	
+		    	leadRequest.setRespCode(Constant.SUCCESS_CODE);
+		    	leadRequest.setRespMesg("Successfully Submitted");
+				return leadRequest;
+	    	}
+	    	else {
+		    	
+	    	} 
+	    		
+	    	
+	    }else {
+	    	leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	    	leadRequest.setRespMesg("Invalid Request");
+			return leadRequest;
+	    }
+		return leadRequest;
+
+
+	}
 
 }

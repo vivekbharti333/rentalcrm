@@ -25,7 +25,7 @@ public class DashboardController {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
-	private DashboardService locationService;
+	private DashboardService dashboardService;
 
 
 	@RequestMapping(path = "dashCount", method = RequestMethod.POST)
@@ -33,7 +33,7 @@ public class DashboardController {
 			HttpServletRequest request) {
 		GenricResponse<DashboardRequestObject> responseObj = new GenricResponse<DashboardRequestObject>();
 		try {
-			DashboardRequestObject responce = locationService.dashCount(dashboardRequestObject);
+			DashboardRequestObject responce = dashboardService.dashCount(dashboardRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
