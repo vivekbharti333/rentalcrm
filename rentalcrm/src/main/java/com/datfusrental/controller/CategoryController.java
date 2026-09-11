@@ -87,6 +87,21 @@ public class CategoryController {
 		}
 	}
 	
+	@RequestMapping(path = "deleteCategoryType", method = RequestMethod.POST)
+	public Response<ItemRequestObject> deleteCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.deleteCategoryType(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
 	@RequestMapping(path = "getCategoryType", method = RequestMethod.POST)
 	public Response<CategoryType> getCategoryType(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<CategoryType> response = new GenricResponse<CategoryType>();
@@ -136,6 +151,21 @@ public class CategoryController {
 		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
 		try {
 			ItemRequestObject responce = categoryService.changeSuperCategoryStatus(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+	
+	@RequestMapping(path = "deleteSuperCategory", method = RequestMethod.POST)
+	public Response<ItemRequestObject> deleteSuperCategory(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.deleteSuperCategory(itemRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
@@ -276,6 +306,22 @@ public class CategoryController {
 		}
 	}
 
+	@RequestMapping(path = "deleteSubCategory", method = RequestMethod.POST)
+	public Response<ItemRequestObject> deleteSubCategory(@RequestBody Request<ItemRequestObject> itemRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<ItemRequestObject> responseObj = new GenricResponse<ItemRequestObject>();
+		try {
+			ItemRequestObject responce = categoryService.deleteSubCategory(itemRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+
+	
 	@RequestMapping(path = "getSubCategoryDetails", method = RequestMethod.POST)
 	public Response<ItemRequestObject> getSubCategoryDetails(@RequestBody Request<ItemRequestObject> itemRequestObject) {
 		GenricResponse<ItemRequestObject> response = new GenricResponse<ItemRequestObject>();

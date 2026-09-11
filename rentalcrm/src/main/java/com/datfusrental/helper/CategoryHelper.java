@@ -198,6 +198,12 @@ public class CategoryHelper {
 		return categoryType;
 	}
 	
+	@Transactional
+	public CategoryType deleteCategoryType(CategoryType categoryType) {
+		categoryTypeDao.delete(categoryType);
+		return categoryType;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<CategoryType> getCategoryType(ItemRequestObject itemRequest) {
 		List<CategoryType> results = new ArrayList<>();
@@ -251,6 +257,12 @@ public class CategoryHelper {
 	@Transactional
 	public SuperCategoryDetails updateSuperCategoryDetails(SuperCategoryDetails superCategoryDetails) {
 		superCategoryDetailsDao.update(superCategoryDetails);
+		return superCategoryDetails;
+	}
+	
+	@Transactional
+	public SuperCategoryDetails deleteSuperCategoryDetails(SuperCategoryDetails superCategoryDetails) {
+		superCategoryDetailsDao.delete(superCategoryDetails);
 		return superCategoryDetails;
 	}
 
@@ -570,6 +582,13 @@ public class CategoryHelper {
 	@Transactional
 	public SubCategoryDetails updateSubCategoryDetails(SubCategoryDetails subCategoryDetails) {
 		subCategoryDetailsDao.update(subCategoryDetails);
+		return subCategoryDetails;
+	}
+	
+	
+	@Transactional
+	public SubCategoryDetails deleteSubCategoryDetails(SubCategoryDetails subCategoryDetails) {
+		subCategoryDetailsDao.delete(subCategoryDetails);
 		return subCategoryDetails;
 	}
 

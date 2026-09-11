@@ -149,6 +149,25 @@ public class CategoryService {
 		List<CategoryType> categoryType = categoryHelper.getCategoryType(itemRequest);
 		return categoryType;
 	}
+	
+	@Transactional
+	public ItemRequestObject deleteCategoryType(Request<ItemRequestObject> itemRequestObject) throws BizException, Exception {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		categoryHelper.validateItemRequest(itemRequest);
+
+			CategoryType categoryType = categoryHelper.getCategoryTypeById(itemRequest.getCategoryTypeId());
+			if (categoryType != null) {
+				categoryHelper.deleteCategoryType(categoryType);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg("Delete Successfully");
+				return itemRequest;
+			}else {
+				itemRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+				return itemRequest;
+			}
+	}
 
 	@Transactional
 	public ItemRequestObject addSuperCategory(Request<ItemRequestObject> itemRequestObject)
@@ -252,6 +271,26 @@ public class CategoryService {
 //			itemRequest.setRespMesg(Constant.INVALID_TOKEN);
 //			return itemRequest;
 //		}
+	}
+	
+	@Transactional
+	public ItemRequestObject deleteSuperCategory(Request<ItemRequestObject> itemRequestObject) throws BizException, Exception {
+		ItemRequestObject itemRequest = itemRequestObject.getPayload();
+		categoryHelper.validateItemRequest(itemRequest);
+
+		SuperCategoryDetails superCategoryDetails = categoryHelper.getSuperCategoryDetailsById(itemRequest.getSuperCategoryId());
+		if (superCategoryDetails != null) {
+			
+				categoryHelper.deleteSuperCategoryDetails(superCategoryDetails);
+				
+				itemRequest.setRespCode(Constant.SUCCESS_CODE);
+				itemRequest.setRespMesg("Delete Successfully");
+				return itemRequest;
+			}else {
+				itemRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+				return itemRequest;
+			}
 	}
 	
 	public List<ItemRequestObject> getSuperCategoryDetails(Request<ItemRequestObject> itemRequestObject) {
@@ -505,6 +544,34 @@ public class CategoryService {
 		List<ItemRequestObject> subCategoryMasterList = categoryHelper.getSubCategoryDetails(itemRequest);
 		return subCategoryMasterList;
 	}
+
+
+
+	@Transactional
+	public ItemRequestObject deleteSubCategory(Request<ItemRequestObject> itemRequestObject) throws BizException {
+	ItemRequestObject itemRequest = itemRequestObject.getPayload();
+	categoryHelper.validateItemRequest(itemRequest);
+	
+	SubCategoryDetails subCategory = categoryHelper.getSubCategoryDetailsById(itemRequest.getSubCategoryId());
+	if(subCategory != null) {
+
+		categoryHelper.deleteSubCategoryDetails(subCategory);
+		
+		itemRequest.setRespCode(Constant.SUCCESS_CODE);
+		itemRequest.setRespMesg("Delete Successfully");
+		return itemRequest;
+	}else {
+		itemRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+		itemRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+		return itemRequest;
+	}
+}
+
+
+
+
+
+
 
 
 
