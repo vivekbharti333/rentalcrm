@@ -41,6 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/generateToken",
                     "/registerLead",
                     "/knowlarity/webhook",
+                    "/downloadPaymentReceipt",
+                    "/downloadEstimateInvoice",
                     "/health",
                     "/public/**",
                     "/resources/**",
