@@ -122,20 +122,16 @@ public class LeadService {
 		}
 
 		String categoryTypeName = leadDetails.getCategoryTypeName();
-		boolean isVehicleBooking = "Car".equalsIgnoreCase(categoryTypeName)
-				|| "Bike".equalsIgnoreCase(categoryTypeName);
+		boolean isVehicleBooking = "Car".equalsIgnoreCase(categoryTypeName) || "Bike".equalsIgnoreCase(categoryTypeName);
 
 		if (isVehicleBooking) {
-			leadRequest = bookingConformationVariable
-					.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);
+			leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);
 		} else {
-			leadRequest = bookingConformationVariable
-					.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);
+			leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);
 		}
 
 		String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-		WhatsAppMessageResponse sendMessageResponse = sendTextMessageHelper
-				.callSendTemplateTextMessage(templateParameter);
+		WhatsAppMessageResponse sendMessageResponse = sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
 
 		logger.info("Whats App Response : " + sendMessageResponse);
 		return leadRequest;

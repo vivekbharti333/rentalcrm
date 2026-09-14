@@ -165,6 +165,7 @@ public class LeadRequestObject {
 	private String balanceAmountPayImage;
 	private String securityAmountImage;
 
+	private Boolean allData;
 	
 	private int respCode;
 	private String respMesg;

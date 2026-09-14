@@ -73,10 +73,13 @@ public class BookingConformationVariable {
 
 			leadRequest.setMsgBodyVariable(bodyVariables);
 			
+//			List<TemplateButtonVariableRequest> buttonVariables = Arrays.asList(
+//				    createButtonVariable("url", leadDetails.getBookingId()),
+//				    createButtonVariable("url", leadDetails.getBookingId())
+//				    );
 			List<TemplateButtonVariableRequest> buttonVariables = Arrays.asList(
-				    createButtonVariable("url", leadDetails.getBookingId()),
 				    createButtonVariable("url", leadDetails.getBookingId())
-				    );
+				);
 
 			leadRequest.setButtonVariable(buttonVariables);
 			leadRequest.setTemplateName("rental_romeyourway");
@@ -116,7 +119,7 @@ public class BookingConformationVariable {
 			System.out.println("Booking id : "+leadDetails.getBookingId());
 			
 			List<TemplateButtonVariableRequest> buttonVariables = Arrays.asList(
-				    createButtonVariable("url", leadDetails.getBookingId()),
+//				    createButtonVariable("url", leadDetails.getBookingId()),
 				    createButtonVariable("url", leadDetails.getBookingId())
 				    );
 
