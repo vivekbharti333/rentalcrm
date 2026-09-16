@@ -1,0 +1,466 @@
+package com.datfusrental.helper;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.TemporalType;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.datfusrental.constant.Constant;
+import com.datfusrental.dao.LeadDetailsDao;
+import com.datfusrental.dao.LeadDetailsHistoryDao;
+import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.LeadDetailsHistory;
+import com.datfusrental.entities.User;
+import com.datfusrental.enums.RequestFor;
+import com.datfusrental.exceptions.BizException;
+import com.datfusrental.object.request.LeadRequestObject;
+
+@Component
+public class MessageHelper {
+
+	@Autowired
+	private LeadDetailsDao leadDetailsDao;
+	
+	@Autowired
+	private LeadDetailsHistoryDao leadDetailsHistoryDao;
+	
+	@Autowired
+	private UserHelper userHelper;
+
+	public void validateLeadRequest(LeadRequestObject leadRequestObject) throws BizException {
+		if (leadRequestObject == null) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
+		}
+	}
+	
+	List<String> excludedStatuses = List.of("WON", "LOST", "CANCELLED", "ASSIGNED");
+
+	@Transactional
+	public LeadDetails getLeadDetailsById(Long id) {
+
+		CriteriaBuilder criteriaBuilder = leadDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<LeadDetails> criteriaQuery = criteriaBuilder.createQuery(LeadDetails.class);
+		Root<LeadDetails> root = criteriaQuery.from(LeadDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("id"), id);
+		criteriaQuery.where(restriction);
+		LeadDetails leadDetails = leadDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return leadDetails;
+	}
+
+	@Transactional
+	public LeadDetails getLeadDetailsByBookingId(String bookingId) {
+
+		CriteriaBuilder criteriaBuilder = leadDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<LeadDetails> criteriaQuery = criteriaBuilder.createQuery(LeadDetails.class);
+		Root<LeadDetails> root = criteriaQuery.from(LeadDetails.class);
+		Predicate restriction = criteriaBuilder.equal(root.get("bookingId"), bookingId);
+		criteriaQuery.where(restriction);
+		LeadDetails leadDetails = leadDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return leadDetails;
+	}
+
+	public LeadDetails getLeadDetailsByReqObj(LeadRequestObject leadRequest) {
+		
+		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
+		
+		LeadDetails leadDetails = new LeadDetails();
+
+		leadDetails.setBookingId(leadRequest.getBookingId());
+		leadDetails.setCompanyName(leadRequest.getCompanyName());
+		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
+		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
+		leadDetails.setCategory(leadRequest.getCategory());
+		leadDetails.setSubCategory(leadRequest.getSubCategory());
+
+		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());
+		leadDetails.setPickupHub(leadRequest.getPickupHub());
+		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
+
+		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
+		leadDetails.setTotalDays(leadRequest.getTotalDays());
+		
+		// Confirmation is pending when a lead is registered. The status is set to
+		// CONFIRMED or NOT_CONFIRMED only by updateConformationStatus.
+		leadDetails.setPickupConfirmed(null);
+		leadDetails.setDropConfirmed(null);
+
+		leadDetails.setDropHub(leadRequest.getDropHub());
+		leadDetails.setDropPoint(leadRequest.getDropPoint());
+		
+		leadDetails.setActivityLocation(leadRequest.getActivityLocation());
+		leadDetails.setSelfPdType(leadRequest.getSelfPdType());
+
+		leadDetails.setCustomeName(leadRequest.getCustomeName());
+		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
+		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
+		leadDetails.setAlternateMobile(leadRequest.getAlternateMobile());
+		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
+
+		leadDetails.setQuantity(leadRequest.getQuantity());
+		leadDetails.setKidQuantity(leadRequest.getKidQuantity());
+		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
+
+		leadDetails.setVendorRate(leadRequest.getVendorRate());
+		leadDetails.setVendorRateForKids(leadRequest.getVendorRateForKids());
+
+		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setCompanyRateForKids(leadRequest.getCompanyRateForKids());
+		
+		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
+		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
+
+		leadDetails.setBookingAmount(leadRequest.getBookingAmount());
+		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
+		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
+		leadDetails.setActualAmount(leadRequest.getActualAmount());
+		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+		
+		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
+		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
+		
+		leadDetails.setActualAmount(leadRequest.getActualAmount());
+		leadDetails.setPaymentType(leadRequest.getPaymentType());
+		
+		leadDetails.setDiscountType(leadRequest.getDiscountType());
+		leadDetails.setDiscount(leadRequest.getDiscount());
+		
+		//Gst
+		leadDetails.setCustomerCompanyName(leadRequest.getCustomerCompanyName());
+		leadDetails.setCustomerCompanyAddress(leadRequest.getCustomerCompanyAddress());
+		leadDetails.setCustomerCompanyGST(leadRequest.getCustomerCompanyGST());
+		leadDetails.setNeedGstInvoice(leadRequest.getNeedGstInvoice());
+		leadDetails.setGstAmount(leadRequest.getGstAmount());
+		leadDetails.setBookingAmountWithGst(leadRequest.getBookingAmountWithGst());
+		leadDetails.setBalanceAmountWithGst(leadRequest.getBalanceAmountWithGst());
+		
+
+		leadDetails.setVendorName(leadRequest.getVendorName());
+		leadDetails.setRemarks(leadRequest.getRemarks());
+//		leadDetails.setStatus(leadRequest.getStatus());
+
+		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
+		leadDetails.setLeadType(leadRequest.getLeadType());
+		
+		leadDetails.setNextFollowupDate(leadRequest.getNextFollowupDate());
+		leadDetails.setNotes(leadRequest.getNotes());
+
+		leadDetails.setCreatedAt(new Date());
+		leadDetails.setUpdatedAt(new Date());
+		leadDetails.setChangeStatusDate(new Date());
+		
+		
+		if (!leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+			if (leadRequest.getActualAmount() > 0) {
+				leadDetails.setStatus("WON");
+			} else {
+				leadDetails.setStatus(leadRequest.getStatus());
+			}
+		} else {
+			leadDetails.setStatus("ENQUIRY");
+		}
+
+//		if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+//			
+//			leadDetails.setCreatedBy("WEBSITE");
+//			leadDetails.setCreatedByName("WEBSITE");
+//			leadDetails.setTeamleaderId("WEBSITE");
+//			leadDetails.setAdminId("WEBSITE");
+//			leadDetails.setSuperadminId("1234567890");
+//		} else {
+//			leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+//			leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
+//			leadDetails.setTeamleaderId(user.getTeamleaderId());
+//			leadDetails.setAdminId(user.getAdminId());
+//			leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+//		}
+		
+		leadDetails.setPseudoName(leadRequest.getPseudoName());
+		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+		leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
+		leadDetails.setPseudoName(user.getPseudoName());
+		leadDetails.setTeamleaderId(user.getTeamleaderId());
+		leadDetails.setAdminId(user.getAdminId());
+		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+		return leadDetails;
+	}
+
+	@Transactional
+	public LeadDetails saveLeadDetails(LeadDetails leadDetails) {
+		leadDetailsDao.persist(leadDetails);
+		return leadDetails;
+	}
+
+	public LeadDetails getUpdatedLeadDetailsByReqObj(LeadRequestObject leadRequest, LeadDetails leadDetails) {
+
+
+		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
+		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
+		leadDetails.setCategory(leadRequest.getCategory());
+		leadDetails.setSubCategory(leadRequest.getSubCategory());
+
+		leadDetails.setPickupDateTime(leadRequest.getPickupDateTime());  
+		leadDetails.setPickupHub(leadRequest.getPickupHub());
+		leadDetails.setPickupPoint(leadRequest.getPickupPoint());
+
+		leadDetails.setDropDateTime(leadRequest.getDropDateTime());
+		leadDetails.setDropHub(leadRequest.getDropHub());
+		leadDetails.setDropPoint(leadRequest.getDropPoint());
+		
+		leadDetails.setTotalDays(leadRequest.getTotalDays());
+
+		leadDetails.setCustomeName(leadRequest.getCustomeName());
+		leadDetails.setCountryDialCode(leadRequest.getCountryDialCode());
+		leadDetails.setCustomerMobile(leadRequest.getCustomerMobile());
+		leadDetails.setAlternateMobile(leadRequest.getAlternateMobile());
+		leadDetails.setCustomerEmailId(leadRequest.getCustomerEmailId());
+
+		leadDetails.setQuantity(leadRequest.getQuantity());
+		leadDetails.setKidQuantity(leadRequest.getKidQuantity());
+		leadDetails.setInfantQuantity(leadRequest.getInfantQuantity());
+
+		leadDetails.setVendorRate(leadRequest.getVendorRate());
+		leadDetails.setVendorRateForKids(leadRequest.getVendorRateForKids());
+
+		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setCompanyRateForKids(leadRequest.getCompanyRateForKids());
+
+		leadDetails.setVendorRate(leadRequest.getVendorRate());
+		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
+		leadDetails.setCompanyRate(leadRequest.getCompanyRate());
+		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
+
+		leadDetails.setBookingAmount(leadRequest.getBookingAmount());
+		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
+		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
+		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+		leadDetails.setPaymentType(leadRequest.getPaymentType());
+		
+		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
+		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
+		
+		leadDetails.setActualAmount(leadRequest.getActualAmount());
+		
+		leadDetails.setDiscountType(leadRequest.getDiscountType());
+		leadDetails.setDiscount(leadRequest.getDiscount());
+		
+		//gst
+		leadDetails.setCustomerCompanyName(leadRequest.getCustomerCompanyName());
+		leadDetails.setCustomerCompanyAddress(leadRequest.getCustomerCompanyAddress());
+		leadDetails.setCustomerCompanyGST(leadRequest.getCustomerCompanyGST());
+		leadDetails.setNeedGstInvoice(leadRequest.getNeedGstInvoice());
+		leadDetails.setGstAmount(leadRequest.getGstAmount());
+		leadDetails.setBookingAmountWithGst(leadRequest.getBookingAmountWithGst());
+		leadDetails.setBalanceAmountWithGst(leadRequest.getBalanceAmountWithGst());
+
+		leadDetails.setVendorName(leadRequest.getVendorName());
+		leadDetails.setRemarks(leadRequest.getRemarks());
+//		leadDetails.setStatus(leadRequest.getStatus());
+
+		leadDetails.setLeadOrigine(leadRequest.getLeadOrigine());
+		leadDetails.setLeadType(leadRequest.getLeadType());
+		
+		leadDetails.setDropPoint(leadRequest.getDropPoint());
+		
+		leadDetails.setActivityLocation(leadRequest.getActivityLocation());
+		leadDetails.setSelfPdType(leadRequest.getSelfPdType());
+		
+		leadDetails.setNextFollowupDate(leadRequest.getNextFollowupDate());
+		leadDetails.setNotes(leadRequest.getNotes());
+
+		leadDetails.setUpdatedAt(new Date());
+		
+		if(leadRequest.getActualAmount() > 0) {
+			leadDetails.setStatus("WON");
+		} else {
+			leadDetails.setStatus(leadRequest.getStatus());
+		}
+
+		leadRequest.setPseudoName(leadRequest.getPseudoName());
+		leadRequest.setCreatedByName(leadRequest.getCreatedByName());
+		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
+		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+		leadDetails.setChangeStatusDate(new Date());;
+
+		return leadDetails;
+	}
+
+	@Transactional
+	public LeadDetails updateLeadDetails(LeadDetails leadDetails) {
+		leadDetailsDao.update(leadDetails);
+		return leadDetails;
+	}
+	
+	public List<LeadDetailsHistory> getLeadHistoryById(LeadRequestObject leadRequest) {
+
+		 List<LeadDetailsHistory> results = new ArrayList<>();
+		 results = leadDetailsHistoryDao.getEntityManager()
+		            .createQuery("SELECT LH FROM LeadDetailsHistory LH WHERE LH.leadId = :leadId ORDER BY LH.id DESC",
+		                LeadDetailsHistory.class)
+		            .setParameter("leadId", leadRequest.getId())
+		            .setFirstResult(Constant.FIRST_RESULT)
+		            .setMaxResults(Constant.MAX_RESULT)
+		            .getResultList();
+		return results;
+	}
+
+	private Date plusOneDay(Date date) {
+	    if (date == null) return null;
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);
+	    cal.add(Calendar.DAY_OF_MONTH, 1);
+	    return cal.getTime();
+	}
+
+
+	public List<LeadDetails> getAllLeadList(LeadRequestObject leadRequest) {
+
+	    List<String> excludedStatus = List.of("WON", "ASSIGNED", "LOST");
+	    if(leadRequest.getAllData()) {
+	    	if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
+		        return leadDetailsDao.getEntityManager()
+		            .createQuery(
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
+		                LeadDetails.class
+		            )
+		            .setParameter("superadminId", leadRequest.getSuperadminId())
+		            .setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()))
+		            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate())) 
+		            .setParameter("statuses", excludedStatus)
+		            .setFirstResult(Constant.FIRST_RESULT)
+		            .setMaxResults(Constant.MAX_RESULT)
+		            .getResultList();
+
+		    } else {
+		        return leadDetailsDao.getEntityManager()
+		            .createQuery(
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) ORDER BY LD.id DESC",
+		                LeadDetails.class
+		            )
+		            .setParameter("superadminId", leadRequest.getSuperadminId())
+		            .setParameter("statuses", excludedStatus)
+		            .setFirstResult(Constant.FIRST_RESULT)
+		            .setMaxResults(Constant.MAX_RESULT)
+		            .getResultList();
+		    }
+	    } else {
+	    	if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
+		        return leadDetailsDao.getEntityManager()
+		            .createQuery(
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
+		                LeadDetails.class
+		            )
+		            .setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("createdBy", leadRequest.getLoginId())
+		            .setParameter("firstDate", this.plusOneDay(leadRequest.getFirstDate()))
+		            .setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate())) 
+		            .setParameter("statuses", excludedStatus)
+		            .setFirstResult(Constant.FIRST_RESULT)
+		            .setMaxResults(Constant.MAX_RESULT)
+		            .getResultList();
+
+		    } else {
+		        return leadDetailsDao.getEntityManager()
+		            .createQuery(
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses) ORDER BY LD.id DESC",
+		                LeadDetails.class
+		            )
+		            .setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("createdBy", leadRequest.getLoginId())
+		            .setParameter("statuses", excludedStatus)
+		            .setFirstResult(Constant.FIRST_RESULT)
+		            .setMaxResults(Constant.MAX_RESULT)
+		            .getResultList();
+		    }
+	    }
+	    
+	}
+	
+
+	
+	public List<LeadDetails> getAllHotLeadList(LeadRequestObject leadRequest) {
+
+		 if(leadRequest.getAllData()) {
+			 return leadDetailsDao.getEntityManager()
+				        .createQuery(
+				            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :startDate " +
+				            "AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
+				            LeadDetails.class
+				        )
+				        .setParameter("superadminId", leadRequest.getSuperadminId())
+				        .setParameter("statuses", excludedStatuses)
+				        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+				        .setParameter("endDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+				        .getResultList();
+				}else {
+					return leadDetailsDao.getEntityManager()
+					        .createQuery(
+					            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :startDate " +
+					            "AND LD.pickupDateTime < :endDate AND LD.createdAt >= :startDate AND LD.createdAt < :endDate ORDER BY LD.id DESC",
+					            LeadDetails.class
+					        )
+					        .setParameter("superadminId", leadRequest.getSuperadminId())
+							.setParameter("createdBy", leadRequest.getLoginId())
+					        .setParameter("statuses", excludedStatuses)
+					        .setParameter("startDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+					        .setParameter("endDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+					        .getResultList();
+					}
+				}
+		 
+	    
+
+
+	public List<LeadDetails> getFollowupLeadList(LeadRequestObject leadRequest) {
+		if(leadRequest.getAllData()) {
+			return leadDetailsDao.getEntityManager()
+			        .createQuery(
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) " +
+			            "AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+			            LeadDetails.class
+			        )
+			        .setParameter("superadminId", leadRequest.getSuperadminId())
+			        .setParameter("statuses", excludedStatuses)
+			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+			        .getResultList();
+		} else {
+			return leadDetailsDao.getEntityManager()
+			        .createQuery(
+			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy " +
+			            "AND LD.status NOT IN (:statuses) AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+			            LeadDetails.class
+			        )
+			        .setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("createdBy", leadRequest.getLoginId())
+			        .setParameter("statuses", excludedStatuses)
+			        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+			        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+			        .getResultList();
+		}
+	    
+	}
+
+	public List<LeadDetails> getBookingDetailsByBookingId(LeadRequestObject leadRequest) {
+		return leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT LD FROM LeadDetails LD WHERE LD.bookingId = :bookingId ORDER BY LD.id DESC",
+	                LeadDetails.class
+	            )
+	            .setParameter("bookingId", leadRequest.getBookingId())
+	            .getResultList();
+	    
+	}
+
+	
+}
