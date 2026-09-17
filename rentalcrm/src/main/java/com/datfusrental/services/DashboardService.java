@@ -1,5 +1,7 @@
 package com.datfusrental.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +31,13 @@ public class DashboardService {
 		dashboardHelper.populateTodayCounts(dashboardRequest);
 
 		return dashboardRequest;
+	}
+
+	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBy(
+			Request<DashboardRequestObject> dashboardRequestObject) throws BizException {
+		DashboardRequestObject dashboardRequest = dashboardRequestObject == null
+				? null
+				: dashboardRequestObject.getPayload();
+		return dashboardHelper.getTodayWonSummaryByCreatedBy(dashboardRequest);
 	}
 }

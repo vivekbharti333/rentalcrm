@@ -78,10 +78,15 @@ public class LeadByStatusHelper {
 	public List<LeadDetails> getLeadListBySecondStatus(LeadRequestObject leadRequest) {
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
 		List<String> excluedStatus = List.of("LOST","WON","ASSIGNED");
+		String ownerCondition = leadRequest.getAllData()
+				? "LD.superadminId = :ownerId"
+				: "LD.createdBy = :ownerId";
+		String ownerId = leadRequest.getAllData() ? leadRequest.getSuperadminId() : leadRequest.getLoginId();
+
 		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status  AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
-					.setParameter("superadminId", leadRequest.getSuperadminId())
+					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status AND " + ownerCondition + " AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+					.setParameter("ownerId", ownerId)
 					.setParameter("secondStatus", leadRequest.getSecondStatus())
 					.setParameter("status", excluedStatus)
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
@@ -90,8 +95,8 @@ public class LeadByStatusHelper {
 			return results;
 		} else {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
-					.setParameter("superadminId", leadRequest.getSuperadminId())
+					"SELECT LD FROM LeadDetails LD WHERE LD.secondStatus =:secondStatus AND LD.status NOT IN :status AND " + ownerCondition + " ORDER BY LD.id DESC")
+					.setParameter("ownerId", ownerId)
 					.setParameter("secondStatus", leadRequest.getSecondStatus())
 					.setParameter("status", excluedStatus)
 					.setFirstResult(Constant.FIRST_RESULT)
@@ -124,17 +129,24 @@ public class LeadByStatusHelper {
 	public List<LeadDetails> getEnquiryList(LeadRequestObject leadRequest) {
 
 	    List<String> includedStatus = List.of("ENQUIRY", "INFO");
+	    List<LeadDetails> results = new ArrayList<>();
+	    String ownerCondition = leadRequest.getAllData()
+	            ? "LD.superadminId = :ownerId"
+	            : "LD.createdBy = :ownerId";
+	    String ownerId = leadRequest.getAllData() ? leadRequest.getSuperadminId() : leadRequest.getLoginId();
 
-	    return leadDetailsDao.getEntityManager()
+	    results = leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
-	        .setParameter("superadminId", leadRequest.getSuperadminId())
+	            "SELECT LD FROM LeadDetails LD WHERE " + ownerCondition + " AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	        .setParameter("ownerId", ownerId)
 	        .setParameter("statusList", includedStatus)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	        .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	        .setFirstResult(Constant.FIRST_RESULT)
 	        .setMaxResults(Constant.MAX_RESULT)
 	        .getResultList();
+
+	    return results;
 	}
 
 	

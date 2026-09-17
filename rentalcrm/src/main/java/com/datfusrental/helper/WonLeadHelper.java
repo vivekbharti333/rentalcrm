@@ -48,20 +48,43 @@ public class WonLeadHelper {
 	public List<LeadDetails> getWonLeadList(LeadRequestObject leadRequest) {
 
 	    List<String> includedStatuses = List.of("WON", "ASSIGNED");
+	    List<LeadDetails> results = new ArrayList<>();
 
-	    return leadDetailsDao.getEntityManager()
-	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD " +
-	            "WHERE LD.status IN :includedStatuses " +
-	            "AND LD.changeStatusDate >= :fromDate " +
-	            "AND LD.changeStatusDate < :toDate " +
-	            "ORDER BY LD.changeStatusDate DESC",
-	            LeadDetails.class
-	        )
-	        .setParameter("includedStatuses", includedStatuses)
-	        .setParameter("fromDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-	        .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
-	        .getResultList();
+	    if (leadRequest.getAllData()) {
+	        results = leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT LD FROM LeadDetails LD " +
+	                "WHERE LD.superadminId = :superadminId " +
+	                "AND LD.status IN :includedStatuses " +
+	                "AND LD.changeStatusDate >= :fromDate " +
+	                "AND LD.changeStatusDate < :toDate " +
+	                "ORDER BY LD.changeStatusDate DESC",
+	                LeadDetails.class
+	            )
+	            .setParameter("superadminId", leadRequest.getSuperadminId())
+	            .setParameter("includedStatuses", includedStatuses)
+	            .setParameter("fromDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	            .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	            .getResultList();
+	    } else {
+	        results = leadDetailsDao.getEntityManager()
+	            .createQuery(
+	                "SELECT LD FROM LeadDetails LD " +
+	                "WHERE LD.createdBy = :createdBy " +
+	                "AND LD.status IN :includedStatuses " +
+	                "AND LD.changeStatusDate >= :fromDate " +
+	                "AND LD.changeStatusDate < :toDate " +
+	                "ORDER BY LD.changeStatusDate DESC",
+	                LeadDetails.class
+	            )
+	            .setParameter("createdBy", leadRequest.getLoginId())
+	            .setParameter("includedStatuses", includedStatuses)
+	            .setParameter("fromDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+	            .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
+	            .getResultList();
+	    }
+
+	    return results;
 	}
 	
 	

@@ -13,6 +13,10 @@ public class DashboardRequestObject {
 	private Long totalNoOfUser;
 	private Long todayTotalWinCount;
 	private Long todayTotalWonAmount;
+	private String createdByName;
+	private Long wonLeadCount;
+	private Long totalActualAmount;
+	private Long actualAmountCount;
 
 	private String roleType;
 	private String status;

@@ -550,6 +550,12 @@ public class LeadService {
 
 	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
 	    
+	    if("ASSIGNED".equals(existingLead.getStatus()) && !leadRequest.getCreatedBy().equalsIgnoreCase("1234567890")){
+	    	leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+            leadRequest.setRespMesg("Can not Update.");
+            return leadRequest;
+	    }
+	    
 		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
 			leadRequest.setPickupHub("na");
 			leadRequest.setDropHub("na");
@@ -947,6 +953,13 @@ public class LeadService {
 	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
 	            leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
 	            break;
+	        case "CUSTOM":
+	            ZoneId zone = ZoneId.systemDefault();
+	            LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
+	            LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
+	            leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
+	            leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
+	            break;
 	        default:
 	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
 	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
@@ -961,8 +974,15 @@ public class LeadService {
 	    LocalDate today = LocalDate.now();
 	    ZoneId zone = ZoneId.systemDefault();
 
-        leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
-        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	    if ("CUSTOM".equalsIgnoreCase(leadRequest.getRequestedFor())) {
+	        LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
+	        LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
+	        leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
+	        leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
+	    } else {
+	        leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+	        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+	    }
 
 	    return leadByStatusHelper.getEnquiryList(leadRequest);
 	}

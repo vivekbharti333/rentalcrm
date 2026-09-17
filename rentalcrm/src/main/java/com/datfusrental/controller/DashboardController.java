@@ -1,5 +1,7 @@
 package com.datfusrental.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -35,6 +37,22 @@ public class DashboardController {
 		try {
 			DashboardRequestObject responce = dashboardService.dashCount(dashboardRequestObject);
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+
+	@RequestMapping(path = "getTodayWonSummaryByCreatedBy", method = RequestMethod.POST)
+	public Response<DashboardRequestObject> getTodayWonSummaryByCreatedBy(
+			@RequestBody Request<DashboardRequestObject> dashboardRequestObject, HttpServletRequest request) {
+		GenricResponse<DashboardRequestObject> responseObj = new GenricResponse<DashboardRequestObject>();
+		try {
+			List<DashboardRequestObject> summary = dashboardService
+					.getTodayWonSummaryByCreatedBy(dashboardRequestObject);
+			return responseObj.createListResponse(summary, Constant.SUCCESS_CODE, String.valueOf(summary.size()));
 		} catch (BizException e) {
 			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
 		} catch (Exception e) {
