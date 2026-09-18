@@ -137,7 +137,7 @@ public class LeadByStatusHelper {
 
 	    results = leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE " + ownerCondition + " AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC", LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD WHERE " + ownerCondition + " AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.pickupDateTime DESC", LeadDetails.class)
 	        .setParameter("ownerId", ownerId)
 	        .setParameter("statusList", includedStatus)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)

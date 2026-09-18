@@ -68,7 +68,7 @@ public class LeadByPickAndDropHelper {
 		List<String> includeStatus = List.of("WON", "ASSIGNED");
 
 		return leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND (LD.pickupConfirmed IS NULL OR LD.pickupConfirmed <> :confirmed) ORDER BY LD.id DESC",
+				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND (LD.pickupConfirmed IS NULL OR LD.pickupConfirmed <> :confirmed) ORDER BY LD.pickupDateTime DESC",
 				LeadDetails.class)
 				.setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", includeStatus)

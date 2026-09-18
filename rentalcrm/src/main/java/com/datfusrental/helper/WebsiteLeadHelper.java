@@ -19,7 +19,7 @@ public class WebsiteLeadHelper {
 
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status =:status AND LD.leadOrigine =:leadOrigine  ORDER BY LD.id DESC", LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status =:status AND LD.leadOrigine =:leadOrigine  ORDER BY LD.pickupDateTime DESC", LeadDetails.class)
 	        .setParameter("superadminId", leadRequest.getSuperadminId())
 	        .setParameter("status", "WON")
 	        .setParameter("leadOrigine", "WEBSITE")

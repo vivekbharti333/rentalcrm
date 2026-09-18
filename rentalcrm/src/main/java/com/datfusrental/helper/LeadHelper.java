@@ -426,7 +426,7 @@ public class LeadHelper {
 			return leadDetailsDao.getEntityManager()
 			        .createQuery(
 			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) " +
-			            "AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+			            "AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
 			            LeadDetails.class
 			        )
 			        .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -438,7 +438,7 @@ public class LeadHelper {
 			return leadDetailsDao.getEntityManager()
 			        .createQuery(
 			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy " +
-			            "AND LD.status NOT IN (:statuses) AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC",
+			            "AND LD.status NOT IN (:statuses) AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
 			            LeadDetails.class
 			        )
 			        .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -454,7 +454,7 @@ public class LeadHelper {
 	public List<LeadDetails> getBookingDetailsByBookingId(LeadRequestObject leadRequest) {
 		return leadDetailsDao.getEntityManager()
 	            .createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.bookingId = :bookingId ORDER BY LD.id DESC",
+	                "SELECT LD FROM LeadDetails LD WHERE LD.bookingId = :bookingId ORDER BY LD.pickupDateTime DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("bookingId", leadRequest.getBookingId())

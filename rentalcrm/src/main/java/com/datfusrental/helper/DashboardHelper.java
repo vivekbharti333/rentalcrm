@@ -65,12 +65,6 @@ public class DashboardHelper {
 
 	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBy(DashboardRequestObject dashboardRequest)
 			throws BizException {
-		if (dashboardRequest == null) {
-			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
-		}
-		if (dashboardRequest.getSuperadminId() == null || dashboardRequest.getSuperadminId().trim().isEmpty()) {
-			throw new BizException(Constant.BAD_REQUEST_CODE, "Superadmin Id is required");
-		}
 
 		ZoneId zone = ZoneId.of("Asia/Kolkata");
 		LocalDate today = LocalDate.now(zone);
@@ -78,17 +72,13 @@ public class DashboardHelper {
 		Date endDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
 
 		List<Object[]> groupedResults = leadDetailsDao.getEntityManager()
-				.createQuery("SELECT LD.createdBy, U.firstName, U.lastName, "
-						+ "COUNT(LD.actualAmount) "
-						+ "FROM LeadDetails LD, User U "
-						+ "WHERE LD.createdBy = U.loginId "
-						+ "AND LD.status = :status "
-						+ "AND U.roleType = :roleType "
+				.createQuery("SELECT LD.createdByName, COUNT(LD), SUM(LD.actualAmount) "
+						+ "FROM LeadDetails LD "
+						+ "WHERE LD.status = :status "
 						+ "AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
-						+ "GROUP BY LD.createdBy, U.firstName, U.lastName "
-						+ "ORDER BY COUNT(LD.actualAmount) DESC", Object[].class)
+						+ "GROUP BY LD.createdByName "
+						+ "ORDER BY COUNT(LD) DESC, LD.createdByName ASC", Object[].class)
 				.setParameter("status", Status.WON.name())
-				.setParameter("roleType", "SALE_EXECUTIVE")
 				.setParameter("startDate", startDate)
 				.setParameter("endDate", endDate)
 				.getResultList();
@@ -96,13 +86,11 @@ public class DashboardHelper {
 		List<DashboardRequestObject> summary = new ArrayList<>();
 		for (Object[] row : groupedResults) {
 			DashboardRequestObject item = new DashboardRequestObject();
-			String firstName = row[1] == null ? "" : row[1].toString().trim();
-			String lastName = row[2] == null ? "" : row[2].toString().trim();
-			String agentName = (firstName + " " + lastName).trim();
-
-			item.setCreatedBy((String) row[0]);
-			item.setCreatedByName(agentName);
-			item.setActualAmountCount(((Number) row[3]).longValue());
+			item.setCreatedByName((String) row[0]);
+			item.setWonLeadCount(((Number) row[1]).longValue());
+			item.setTotalActualAmount(row[2] == null ? 0L : ((Number) row[2]).longValue());
+			// Keep the existing count field for clients already using it.
+			item.setActualAmountCount(item.getWonLeadCount());
 			summary.add(item);
 		}
 
@@ -111,7 +99,7 @@ public class DashboardHelper {
 	
 	
 	
-//	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBy(DashboardRequestObject dashboardRequest)
+//	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBynew(DashboardRequestObject dashboardRequest)
 //			throws BizException {
 //		if (dashboardRequest == null) {
 //			throw new BizException(Constant.BAD_REQUEST_CODE, "Bad Request Object Null");
