@@ -73,7 +73,7 @@ public class MobileHelper {
 
 		return leadDetailsDao.getEntityManager().createQuery(
 				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) "
-						+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
+						+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime ASC",
 				LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", includeStatuses)
 				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
@@ -88,7 +88,7 @@ public class MobileHelper {
 		List<String> categoryNames = Arrays.asList("Cruises", "Watersports", "Adventure", "Yacht", "Sightseeing");
 
 		results = categoryTypeDao.getEntityManager().createQuery(
-				"SELECT SC FROM CategoryType SC WHERE SC.superadminId = :superadminId AND SC.categoryTypeName IN (:categoryNames) ORDER BY SC.id DESC")
+				"SELECT SC FROM CategoryType SC WHERE SC.superadminId = :superadminId AND SC.categoryTypeName IN (:categoryNames) ORDER BY SC.id ASC")
 				.setParameter("superadminId", itemRequest.getSuperadminId())
 				.setParameter("categoryNames", categoryNames).getResultList();
 		return results;
@@ -101,7 +101,7 @@ public class MobileHelper {
 		if ("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
 			return leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
-							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
+							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime ASC",
 					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
 					.setParameter("statuses", includeStatuses)
@@ -110,7 +110,7 @@ public class MobileHelper {
 		} else {
 			return leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
-							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
+							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime ASC",
 					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("statuses", includeStatuses)
 					.setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
@@ -123,7 +123,7 @@ public class MobileHelper {
 
 		return leadDetailsDao.getEntityManager()
 				.createQuery("SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId "
-						+ "AND LD.vendorName IS NOT NULL AND TRIM(LD.vendorName) <> '' AND LD.status = :status ORDER BY LD.pickupDateTime DESC",
+						+ "AND LD.vendorName IS NOT NULL AND TRIM(LD.vendorName) <> '' AND LD.status = :status ORDER BY LD.pickupDateTime ASC",
 						LeadDetails.class)
 				.setParameter("superadminId", leadRequest.getSuperadminId()).setParameter("status", "BOOKED")
 				.getResultList();
@@ -140,13 +140,13 @@ public class MobileHelper {
 			if (RequestFor.BY_CREATED_DATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
 				sqlQuery = "SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
 						+ "AND LD.status IN (:statuses) " + "AND LD.createdAt >= :firstDate "
-						+ "AND LD.createdAt < :lastDate " + "ORDER BY LD.pickupDateTime DESC";
+						+ "AND LD.createdAt < :lastDate " + "ORDER BY LD.pickupDateTime ASC";
 			}
 
 			if (RequestFor.BY_PICKUP_DATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
 				sqlQuery = "SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
 						+ "AND LD.status IN (:statuses) " + "AND LD.pickupDateTime >= :firstDate "
-						+ "AND LD.pickupDateTime < :lastDate " + "ORDER BY LD.pickupDateTime DESC";
+						+ "AND LD.pickupDateTime < :lastDate " + "ORDER BY LD.pickupDateTime ASC";
 			}
 
 			return leadDetailsDao.getEntityManager().createQuery(sqlQuery, LeadDetails.class)
@@ -163,7 +163,7 @@ public class MobileHelper {
 			return leadDetailsDao.getEntityManager()
 					.createQuery("SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
 							+ "AND LD.status IN (:statuses) " + "AND LD.createdAt >= :firstDate "
-							+ "ORDER BY LD.pickupDateTime DESC", LeadDetails.class)
+							+ "ORDER BY LD.pickupDateTime ASC", LeadDetails.class)
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("statuses", includeStatus)
 					.setParameter("firstDate", oneMonthBackDate)
