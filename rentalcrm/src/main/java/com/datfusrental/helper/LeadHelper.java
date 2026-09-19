@@ -202,6 +202,8 @@ public class LeadHelper {
 
 	public LeadDetails getUpdatedLeadDetailsByReqObj(LeadRequestObject leadRequest, LeadDetails leadDetails) {
 
+		boolean hasWonEntryDate = "WON".equalsIgnoreCase(leadDetails.getStatus())
+				|| "ASSIGNED".equalsIgnoreCase(leadDetails.getStatus());
 
 		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
 		leadDetails.setSuperCategory(leadRequest.getSuperCategory());
@@ -284,14 +286,21 @@ public class LeadHelper {
 		} else {
 			leadDetails.setStatus(leadRequest.getStatus());
 		}
-
-		leadRequest.setPseudoName(leadRequest.getPseudoName());
-		leadRequest.setCreatedByName(leadRequest.getCreatedByName());
+		
+		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
+		
+		System.out.println("Created by : "+leadRequest.getCreatedBy());
+		System.out.println("updated by : "+leadRequest.getUpdatedBy());
+		
+		leadDetails.setPseudoName(user.getPseudoName());
+		leadDetails.setCreatedByName(user.getFirstName()+" "+user.getLastName());
 		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
 		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
-		leadDetails.setChangeStatusDate(new Date());;
-
+		
+		if(!hasWonEntryDate) {
+			leadDetails.setChangeStatusDate(new Date());
+		}
 		return leadDetails;
 	}
 

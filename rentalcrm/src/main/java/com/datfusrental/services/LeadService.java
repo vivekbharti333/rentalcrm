@@ -254,7 +254,11 @@ public class LeadService {
 			leadDetails.setPaymentType(leadRequest.getPaymentType());
 			leadDetails.setNotes(leadRequest.getNotes());
 			leadDetails.setStatus(leadRequest.getStatus());
-			leadDetails.setChangeStatusDate(new Date());
+			
+			if(!"WON".equalsIgnoreCase(leadDetails.getStatus())) {
+				leadDetails.setChangeStatusDate(new Date());
+			}
+//			leadDetails.setChangeStatusDate(new Date());
 
 			leadDetails = leadHelper.updateLeadDetails(leadDetails);
 			leadRequest = sendBookingConfirmationIfWon(leadRequest, leadDetails);
@@ -369,7 +373,7 @@ public class LeadService {
 		leadDetails.setVendorId(leadRequest.getVendorId());
 		leadDetails.setStatus("ASSIGNED");
 		leadDetails.setVendorName(vendorName);
-		leadDetails.setChangeStatusDate(new Date());
+//		leadDetails.setChangeStatusDate(new Date());
 
 		leadHelper.updateLeadDetails(leadDetails);
 

@@ -80,8 +80,8 @@ public class MobileService {
 
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-		LocalDate today = LocalDate.now();
-		ZoneId zone = ZoneId.systemDefault();
+		ZoneId zone = ZoneId.of("Asia/Kolkata");
+		LocalDate today = LocalDate.now(zone);
 
 		switch (leadRequest.getRequestedFor().toUpperCase()) {
 

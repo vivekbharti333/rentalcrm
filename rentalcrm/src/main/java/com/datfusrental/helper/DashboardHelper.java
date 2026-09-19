@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.TypedQuery;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,7 +64,7 @@ public class DashboardHelper {
 		dashboardRequest.setTodayTotalWinCount(((Number) counts[0]).longValue());
 		dashboardRequest.setTodayTotalWonAmount(counts[1] == null ? 0L : ((Number) counts[1]).longValue());
 	}
-
+	
 	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBy(DashboardRequestObject dashboardRequest)
 			throws BizException {
 
@@ -70,25 +72,36 @@ public class DashboardHelper {
 		LocalDate today = LocalDate.now(zone);
 		Date startDate = Date.from(today.atStartOfDay(zone).toInstant());
 		Date endDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+		boolean allData = dashboardRequest != null && Boolean.TRUE.equals(dashboardRequest.getAllData());
+		String roleFilter = allData ? "" : "AND U.roleType IN :roleTypes ";
 
-		List<Object[]> groupedResults = leadDetailsDao.getEntityManager()
-				.createQuery("SELECT LD.createdByName, COUNT(LD), SUM(LD.actualAmount) "
-						+ "FROM LeadDetails LD "
-						+ "WHERE LD.status = :status "
+		TypedQuery<Object[]> summaryQuery = leadDetailsDao.getEntityManager()
+				.createQuery("SELECT LD.createdBy, U.firstName, U.lastName, U.roleType, COUNT(LD), SUM(LD.actualAmount) "
+						+ "FROM LeadDetails LD, User U "
+						+ "WHERE LD.createdBy = U.loginId "
+						+ roleFilter
+						+ "AND LD.status IN :statuses "
 						+ "AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
-						+ "GROUP BY LD.createdByName "
-						+ "ORDER BY COUNT(LD) DESC, LD.createdByName ASC", Object[].class)
-				.setParameter("status", Status.WON.name())
+						+ "GROUP BY LD.createdBy, U.firstName, U.lastName, U.roleType "
+						+ "ORDER BY COUNT(LD) DESC, U.firstName ASC, U.lastName ASC", Object[].class)
+				.setParameter("statuses", List.of(Status.WON.name(), "ASSIGNED"))
 				.setParameter("startDate", startDate)
-				.setParameter("endDate", endDate)
-				.getResultList();
+				.setParameter("endDate", endDate);
+		if (!allData) {
+			summaryQuery.setParameter("roleTypes", List.of("SALE_EXECUTIVE", "SALE EXECUTIVE"));
+		}
+		List<Object[]> groupedResults = summaryQuery.getResultList();
 
 		List<DashboardRequestObject> summary = new ArrayList<>();
 		for (Object[] row : groupedResults) {
 			DashboardRequestObject item = new DashboardRequestObject();
-			item.setCreatedByName((String) row[0]);
-			item.setWonLeadCount(((Number) row[1]).longValue());
-			item.setTotalActualAmount(row[2] == null ? 0L : ((Number) row[2]).longValue());
+			String firstName = row[1] == null ? "" : row[1].toString().trim();
+			String lastName = row[2] == null ? "" : row[2].toString().trim();
+			item.setCreatedBy((String) row[0]);
+			item.setCreatedByName((firstName + " " + lastName).trim());
+			item.setRoleType((String) row[3]);
+			item.setWonLeadCount(((Number) row[4]).longValue());
+			item.setTotalActualAmount(row[5] == null ? 0L : ((Number) row[5]).longValue());
 			// Keep the existing count field for clients already using it.
 			item.setActualAmountCount(item.getWonLeadCount());
 			summary.add(item);
@@ -96,6 +109,40 @@ public class DashboardHelper {
 
 		return summary;
 	}
+
+//	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBy(DashboardRequestObject dashboardRequest)
+//			throws BizException {
+//
+//		ZoneId zone = ZoneId.of("Asia/Kolkata");
+//		LocalDate today = LocalDate.now(zone);
+//		Date startDate = Date.from(today.atStartOfDay(zone).toInstant());
+//		Date endDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+//
+//		List<Object[]> groupedResults = leadDetailsDao.getEntityManager()
+//				.createQuery("SELECT LD.createdByName, COUNT(LD), SUM(LD.actualAmount) "
+//						+ "FROM LeadDetails LD "
+//						+ "WHERE LD.status IN :statuses "
+//						+ "AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
+//						+ "GROUP BY LD.createdByName "
+//						+ "ORDER BY COUNT(LD) DESC, LD.createdByName ASC", Object[].class)
+//				.setParameter("statuses", List.of(Status.WON.name(), "ASSIGNED"))
+//				.setParameter("startDate", startDate)
+//				.setParameter("endDate", endDate)
+//				.getResultList();
+//
+//		List<DashboardRequestObject> summary = new ArrayList<>();
+//		for (Object[] row : groupedResults) {
+//			DashboardRequestObject item = new DashboardRequestObject();
+//			item.setCreatedByName((String) row[0]);
+//			item.setWonLeadCount(((Number) row[1]).longValue());
+//			item.setTotalActualAmount(row[2] == null ? 0L : ((Number) row[2]).longValue());
+//			// Keep the existing count field for clients already using it.
+//			item.setActualAmountCount(item.getWonLeadCount());
+//			summary.add(item);
+//		}
+//
+//		return summary;
+//	}
 	
 	
 	

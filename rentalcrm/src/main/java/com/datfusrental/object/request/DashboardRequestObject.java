@@ -23,6 +23,7 @@ public class DashboardRequestObject {
 
 	@JsonAlias("requestFor")
 	private String requestedFor;
+	private Boolean allData;
 	private String loginId;
 	private String createdBy;
 	private String teamleaderId;

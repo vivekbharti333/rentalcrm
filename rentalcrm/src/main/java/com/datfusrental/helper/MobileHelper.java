@@ -97,14 +97,15 @@ public class MobileHelper {
 	public List<LeadDetails> getLeadListByCategoryTypeName(LeadRequestObject leadRequest) {
 
 		List<String> includeStatuses = List.of("WON");
+		List<String> categoryNames = Arrays.asList("Cruises", "Watersports", "Adventure", "Yacht", "Sightseeing");
 
 		if ("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
 			return leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
 							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime ASC",
 					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
-					.setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
 					.setParameter("statuses", includeStatuses)
+					.setParameter("categoryTypeName", categoryNames)
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
 		} else {
