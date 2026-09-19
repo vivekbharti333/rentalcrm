@@ -22,6 +22,9 @@ public class LeadByStatusHelper {
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
 
+	@Autowired
+	private LeadDetailsHistoryHelper leadDetailsHistoryHelper;
+
 	
 	@SuppressWarnings("unchecked")
 	public List<LeadDetails> getLeadListByStatus(LeadRequestObject leadRequest) {
@@ -154,6 +157,21 @@ public class LeadByStatusHelper {
 	public int updateStatusToLost(Date cutoffDate) {
 
 	    List<String> excludedStatus = List.of("WON", "ASSIGNED");
+	    List<LeadDetails> leadsToUpdate = leadDetailsDao.getEntityManager()
+	        .createQuery(
+	            "SELECT LD FROM LeadDetails LD WHERE LD.status NOT IN :statusList " +
+	            "AND LD.pickupDateTime <= :cutoffDate", LeadDetails.class
+	        )
+	        .setParameter("statusList", excludedStatus)
+	        .setParameter("cutoffDate", cutoffDate, TemporalType.TIMESTAMP)
+	        .getResultList();
+
+	    for (LeadDetails lead : leadsToUpdate) {
+	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(lead);
+	        LeadDetails updatedLead = leadDetailsHistoryHelper.snapshot(lead);
+	        updatedLead.setStatus("LOST");
+	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, updatedLead, "SYSTEM");
+	    }
 
 	    return leadDetailsDao.getEntityManager()
 	        .createQuery(

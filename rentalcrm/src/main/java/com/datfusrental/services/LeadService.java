@@ -207,8 +207,9 @@ public class LeadService {
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
 		if (leadDetails != null) {
-			
-			
+			LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
+
+
 			VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
 
 			if (vendorDetails != null) {
@@ -261,6 +262,7 @@ public class LeadService {
 //			leadDetails.setChangeStatusDate(new Date());
 
 			leadDetails = leadHelper.updateLeadDetails(leadDetails);
+			leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 			leadRequest = sendBookingConfirmationIfWon(leadRequest, leadDetails);
 
 			leadRequest.setRespCode(Constant.SUCCESS_CODE);
@@ -283,9 +285,11 @@ public class LeadService {
 
 			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 			if (leadDetails != null) {
+				LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
 				leadDetails.setSecondStatus(leadRequest.getSecondStatus());
 				leadHelper.updateLeadDetails(leadDetails);
+				leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 
 				leadRequest.setRespCode(Constant.SUCCESS_CODE);
 				leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getSecondStatus());
@@ -348,7 +352,8 @@ public class LeadService {
 			leadRequest.setRespCode(Constant.NOT_EXISTS);
 			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 			return leadRequest;
-		} 
+		}
+		LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 		
 		
 		 boolean isPickupDatePassed = this.isPickupDateLessThanToday(leadDetails.getPickupDateTime());
@@ -376,6 +381,7 @@ public class LeadService {
 //		leadDetails.setChangeStatusDate(new Date());
 
 		leadHelper.updateLeadDetails(leadDetails);
+		leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 
 		vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadDetails.getPayToCompany());
 		vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
@@ -478,12 +484,14 @@ public class LeadService {
 
 	}
 	
+	@Transactional
 	public LeadRequestObject updatePaymentDetails(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
 	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
 	    leadHelper.validateLeadRequest(leadRequest);
 
 	    LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 	    if (leadDetails != null) {
+	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
 	        // 1) Get order ID using payment link ID
 	        String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId(), leadRequest);
@@ -532,6 +540,7 @@ public class LeadService {
 
 	        leadDetails.setUpdatedAt(new Date());
 	        leadHelper.updateLeadDetails(leadDetails);
+	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 	        
 	        leadRequest.setPgResponseBody(responseBody);
 
@@ -566,6 +575,7 @@ public class LeadService {
 		}
 
 	    if (existingLead != null) {
+	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(existingLead);
 	    	
 	        boolean isPickupDatePassed = this.isPickupDateLessThanToday(existingLead.getPickupDateTime());
 
@@ -601,15 +611,9 @@ public class LeadService {
 
 	    	}
 
-	        // ✅ Clone the old entity before updating
-//	        LeadDetails oldLead = new LeadDetails();
-//	        BeanUtils.copyProperties(existingLead, oldLead);
-
-	        // ✅ Update and persist new lead
 	        existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
 	        existingLead = leadHelper.updateLeadDetails(existingLead);
-
-//	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
+	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
 	        
 	        
 	      //Save Other Location
@@ -1114,6 +1118,7 @@ public class LeadService {
 
 
 
+	@Transactional
 	public int updateStatusToLost() {
 
 	    LocalDate today = LocalDate.now(ZoneId.systemDefault());
@@ -1161,6 +1166,7 @@ public class LeadService {
 		if (leadDetails == null) {
 			throw new BizException(Constant.NOT_EXISTS, "Lead not found");
 		}
+		LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
 		String existingStatus = "PICKUP".equals(requestedFor)
 				? leadDetails.getPickupConfirmed()
@@ -1181,6 +1187,7 @@ public class LeadService {
 		}
 
 		leadHelper.updateLeadDetails(leadDetails);
+		leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 
 		leadRequest.setRespCode(Constant.SUCCESS_CODE);
 		leadRequest.setRespMesg(Constant.CONFIRMED.equals(requestedStatus)

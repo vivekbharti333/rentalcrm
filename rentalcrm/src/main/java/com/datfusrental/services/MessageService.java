@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.exceptions.BizException;
+import com.datfusrental.helper.LeadDetailsHistoryHelper;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.object.request.LeadRequestObject;
 import com.datfusrental.object.request.Request;
@@ -17,6 +18,9 @@ public class MessageService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+
+	@Autowired
+	private LeadDetailsHistoryHelper leadDetailsHistoryHelper;
 
 
 	@Transactional
@@ -28,9 +32,11 @@ public class MessageService {
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
 		if (leadDetails != null) {
+			LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
 			// Send Message
 			leadDetails = leadHelper.updateLeadDetails(leadDetails);
+			leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 //			leadRequest = sendBookingConfirmationIfWon(leadRequest, leadDetails);
 
 			leadRequest.setRespCode(Constant.SUCCESS_CODE);

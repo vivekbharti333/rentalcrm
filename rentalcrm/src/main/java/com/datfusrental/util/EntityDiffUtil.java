@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ import java.util.Objects;
 public class EntityDiffUtil {
 
     public Map<String, Map<String, Object>> getDifferences(Object oldObj, Object newObj) throws IllegalAccessException {
-        Map<String, Map<String, Object>> diffs = new HashMap<>();
+        Map<String, Map<String, Object>> diffs = new LinkedHashMap<>();
         if (oldObj == null || newObj == null) return diffs;
 
         Class<?> clazz = oldObj.getClass();
@@ -42,14 +42,12 @@ public class EntityDiffUtil {
             if (oldValue != null && oldValue.getClass().isArray()) oldValue = arrayToString(oldValue);
             if (newValue != null && newValue.getClass().isArray()) newValue = arrayToString(newValue);
 
-            // ✅ Limit long text values for display
-            if (oldValue instanceof String s && s.length() > 300) oldValue = s.substring(0, 300) + "...";
-            if (newValue instanceof String s && s.length() > 300) newValue = s.substring(0, 300) + "...";
-
-            diffs.put(field.getName(), Map.of("old", oldValue, "new", newValue));
+            // Null is a valid old/new value, so Map.of cannot be used here.
+            Map<String, Object> values = new LinkedHashMap<>();
+            values.put("old", oldValue);
+            values.put("new", newValue);
+            diffs.put(field.getName(), values);
         }
-
-        System.out.println("DIFF : " + diffs);
         return diffs;
     }
 

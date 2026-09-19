@@ -287,14 +287,14 @@ public class LeadHelper {
 			leadDetails.setStatus(leadRequest.getStatus());
 		}
 		
-		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
+//		User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 		
-		System.out.println("Created by : "+leadRequest.getCreatedBy());
-		System.out.println("updated by : "+leadRequest.getUpdatedBy());
+//		System.out.println("Created by : "+leadRequest.getCreatedBy());
+//		System.out.println("updated by : "+leadRequest.getUpdatedBy());
 		
-		leadDetails.setPseudoName(user.getPseudoName());
-		leadDetails.setCreatedByName(user.getFirstName()+" "+user.getLastName());
-		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
+//		leadDetails.setPseudoName(user.getPseudoName());
+//		leadDetails.setCreatedByName(user.getFirstName()+" "+user.getLastName());
+//		leadDetails.setCreatedBy(leadRequest.getCreatedBy());
 		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
 		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
 		
