@@ -1,13 +1,15 @@
 package com.datfusrental.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 
 import com.datfusrental.pdf.EstimateInvoiceGenerator;
 import com.datfusrental.pdf.PaymentReceiptGenerator;
@@ -26,8 +28,10 @@ public class DownloadController {
 		this.estimateInvoiceGenerator = estimateInvoiceGenerator;
 	}
 
-	@GetMapping(value = "/downloadPaymentReceipt/{bookingId}", produces = MediaType.APPLICATION_PDF_VALUE)
-	public ResponseEntity<byte[]> downloadPaymentReceipt(@PathVariable("bookingId") String bookingId) throws Exception {
+	@GetMapping(value = "/downloadPaymentReceipt/**", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> downloadPaymentReceipt(HttpServletRequest request) throws Exception {
+
+		String bookingId = extractBookingId(request, "/downloadPaymentReceipt/");
 
 		byte[] pdf = paymentReceiptGenerator.generatePdf(bookingId);
 
@@ -36,9 +40,27 @@ public class DownloadController {
 		return createPdfResponse(pdf, filename);
 	}
 
-	@GetMapping(value = "/downloadEstimateInvoice/{bookingId}", produces = MediaType.APPLICATION_PDF_VALUE)
-	public ResponseEntity<byte[]> downloadEstimateInvoice(@PathVariable("bookingId") String bookingId)
-			throws Exception {
+	private String extractBookingId(HttpServletRequest request, String endpointPrefix) {
+
+		String requestPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+
+		if (requestPath == null || !requestPath.startsWith(endpointPrefix)) {
+			throw new IllegalArgumentException("Invalid download URL");
+		}
+
+		String bookingId = requestPath.substring(endpointPrefix.length());
+
+		if (bookingId.isBlank()) {
+			throw new IllegalArgumentException("Booking ID is required");
+		}
+
+		return bookingId;
+	}
+
+	@GetMapping(value = "/downloadEstimateInvoice/**", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> downloadEstimateInvoice(HttpServletRequest request) throws Exception {
+
+		String bookingId = extractBookingId(request, "/downloadEstimateInvoice/");
 
 		byte[] pdf = estimateInvoiceGenerator.generatePdf(bookingId);
 
