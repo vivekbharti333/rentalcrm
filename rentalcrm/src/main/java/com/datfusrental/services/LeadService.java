@@ -562,17 +562,24 @@ public class LeadService {
 	    leadHelper.validateLeadRequest(leadRequest);
 
 	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
-	    
-	    if("ASSIGNED".equals(existingLead.getStatus()) && !leadRequest.getCreatedBy().equalsIgnoreCase("1234567890")){
-	    	leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-            leadRequest.setRespMesg("Can not Update.");
-            return leadRequest;
+
+	    if (existingLead == null) {
+	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+	        return leadRequest;
+	    }
+
+	    if ("ASSIGNED".equalsIgnoreCase(existingLead.getStatus())
+	            && !"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType())) {
+	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+	        leadRequest.setRespMesg("Only SUPERADMIN can update an assigned lead.");
+	        return leadRequest;
 	    }
 	    
-		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
-			leadRequest.setPickupHub("na");
-			leadRequest.setDropHub("na");
-		}
+//		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
+//			leadRequest.setPickupHub("na");
+//			leadRequest.setDropHub("na");
+//		}
 
 	    if (existingLead != null) {
 	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(existingLead);
