@@ -44,6 +44,21 @@ public class DashboardController {
 			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
 		}
 	}
+	
+	@RequestMapping(path = "saleVsTarget", method = RequestMethod.POST)
+	public Response<DashboardRequestObject> saleVsTarget(@RequestBody Request<DashboardRequestObject> dashboardRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<DashboardRequestObject> responseObj = new GenricResponse<DashboardRequestObject>();
+		try {
+			List<DashboardRequestObject> targets = dashboardService.saleVsTarget(dashboardRequestObject);
+			return responseObj.createListResponse(targets, Constant.SUCCESS_CODE, String.valueOf(targets.size()));
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
 
 	@RequestMapping(path = "getTodayWonSummaryByCreatedBy", method = RequestMethod.POST)
 	public Response<DashboardRequestObject> getTodayWonSummaryByCreatedBy(

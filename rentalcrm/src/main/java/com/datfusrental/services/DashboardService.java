@@ -32,6 +32,13 @@ public class DashboardService {
 
 		return dashboardRequest;
 	}
+	
+	public List<DashboardRequestObject> saleVsTarget(Request<DashboardRequestObject> dashboardRequestObject) throws BizException, Exception {
+		DashboardRequestObject dashboardRequest = dashboardRequestObject == null ? null : dashboardRequestObject.getPayload();
+		dashboardHelper.validateDashboardRequest(dashboardRequest);
+
+		return dashboardHelper.saleVsTarget(dashboardRequest);
+	}
 
 	public List<DashboardRequestObject> getTodayWonSummaryByCreatedBy(
 			Request<DashboardRequestObject> dashboardRequestObject) throws BizException {
@@ -40,4 +47,6 @@ public class DashboardService {
 				: dashboardRequestObject.getPayload();
 		return dashboardHelper.getTodayWonSummaryByCreatedBy(dashboardRequest);
 	}
+
+
 }
