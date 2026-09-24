@@ -40,7 +40,6 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.datfusrental.entities.InvoiceHeaderDetails;
 import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.helper.InvoiceHeaderHelper;
-import com.itextpdf.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;

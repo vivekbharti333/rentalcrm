@@ -23,6 +23,25 @@ public class LeadDetails {
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
+
+    // Null for existing bookings. Upgrade rows contain financial differences only.
+    @Column(name = "upgrade_root_id")
+    private Long upgradeRootId;
+    @Column(name = "upgrade_previous_id", unique = true)
+    private Long upgradePreviousId;
+    @Column(name = "upgrade_request_id", unique = true, length = 36)
+    private String upgradeRequestId;
+    @Column(name = "upgrade_old_total")
+    private Long upgradeOldTotal;
+    @Column(name = "upgrade_new_total")
+    private Long upgradeNewTotal;
+    @Column(name = "upgrade_received_margin")
+    private Long upgradeReceivedMargin;
+    @Lob
+    @Column(name = "upgrade_snapshot")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String upgradeSnapshot;
+
 	
 	@Column(name = "booking_id")
 	private String bookingId;

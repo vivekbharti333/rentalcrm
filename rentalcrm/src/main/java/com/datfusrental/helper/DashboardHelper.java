@@ -56,7 +56,7 @@ public class DashboardHelper {
 		boolean team = isSuperadmin(dashboardRequest);
 		String ownerFilter = team ? "LD.superadminId = :ownerId" : "LD.createdBy = :ownerId";
 		Object[] counts = leadDetailsDao.getEntityManager()
-				.createQuery("SELECT COUNT(LD), SUM(LD.actualAmount) "
+				.createQuery("SELECT SUM(CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END), SUM(LD.actualAmount) "
 						+ "FROM LeadDetails LD WHERE LD.status = :status AND " + ownerFilter
 						+ " AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate", Object[].class)
 				.setParameter("status", Status.WON.name())
@@ -64,7 +64,7 @@ public class DashboardHelper {
 				.setParameter("startDate", startDate)
 				.setParameter("endDate", endDate)
 				.getSingleResult();
-		dashboardRequest.setTodayTotalWinCount(((Number) counts[0]).longValue());
+		dashboardRequest.setTodayTotalWinCount(counts[0] == null ? 0L : ((Number) counts[0]).longValue());
 		dashboardRequest.setTodayTotalWonAmount(counts[1] == null ? 0L : ((Number) counts[1]).longValue());
 		populateKpiCounts(dashboardRequest, team, startDate, endDate);
 	}
@@ -87,10 +87,10 @@ public class DashboardHelper {
 		// one query, conditional sums.
 		Object[] actuals = leadDetailsDao.getEntityManager()
 				.createQuery("SELECT "
-						+ "SUM(CASE WHEN LD.changeStatusDate >= :dayStart THEN CASE WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.changeStatusDate >= :weekStart THEN CASE WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.changeStatusDate >= :biweeklyStart THEN CASE WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.changeStatusDate >= :monthStart THEN CASE WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END) "
+						+ "SUM(CASE WHEN LD.changeStatusDate >= :dayStart THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.changeStatusDate >= :weekStart THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.changeStatusDate >= :biweeklyStart THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.changeStatusDate >= :monthStart THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END) "
 						+ "FROM LeadDetails LD WHERE LD.status IN :wonStatuses AND " + ownerFilter + " "
 						+ "AND LD.changeStatusDate >= :biweeklyStart AND LD.changeStatusDate < :dayEnd", Object[].class)
 				.setParameter("ownerId", team ? dashboardRequest.getSuperadminId() : dashboardRequest.getCreatedBy())
@@ -166,21 +166,21 @@ public class DashboardHelper {
 
 		Object[] kpi = leadDetailsDao.getEntityManager()
 				.createQuery("SELECT "
-						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN 1 ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
-						+ "     THEN CASE WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
+						+ "     THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN LD.bookingAmount ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate "
-						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate THEN 1 ELSE 0 END), "
+						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate "
-						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.status IN :wonStatuses THEN 1 ELSE 0 END), "
+						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.status IN :wonStatuses THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
-						+ "     AND LD.nextFollowupDate IS NOT NULL THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL AND LD.nextFollowupDate < :now THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status = 'LOST' AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NULL THEN 1 ELSE 0 END) "
+						+ "     AND LD.nextFollowupDate IS NOT NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL AND LD.nextFollowupDate < :now THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status = 'LOST' AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END) "
 						+ "FROM LeadDetails LD WHERE " + ownerFilter + " "
 						+ "AND ((LD.createdAt >= :startDate AND LD.createdAt < :endDate) "
 						+ "     OR (LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate) "
@@ -256,16 +256,16 @@ public class DashboardHelper {
 		// received today, same-day leads/won, follow-up pool and overdue follow-ups.
 		TypedQuery<Object[]> summaryQuery = leadDetailsDao.getEntityManager()
 				.createQuery("SELECT LD.createdBy, U.firstName, U.lastName, U.roleType, U.pseudoName, "
-						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN 1 ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
-						+ "     THEN CASE WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate THEN 1 ELSE 0 END), "
+						+ "     THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate "
-						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate THEN 1 ELSE 0 END), "
+						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
 						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate "
-						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.status IN :wonStatuses THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL THEN 1 ELSE 0 END), "
-						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL AND LD.nextFollowupDate < :now THEN 1 ELSE 0 END) "
+						+ "     AND LD.pickupDateTime >= :startDate AND LD.pickupDateTime < :endDate AND LD.status IN :wonStatuses THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL AND LD.nextFollowupDate < :now THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END) "
 						+ "FROM LeadDetails LD, User U "
 						+ "WHERE LD.createdBy = U.loginId "
 						+ roleFilter
@@ -273,7 +273,7 @@ public class DashboardHelper {
 						+ "     OR (LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate) "
 						+ "     OR (LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL)) "
 						+ "GROUP BY LD.createdBy, U.firstName, U.lastName, U.roleType, U.pseudoName "
-						+ "ORDER BY SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN 1 ELSE 0 END) DESC, U.firstName ASC, U.lastName ASC",
+						+ "ORDER BY SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END) DESC, U.firstName ASC, U.lastName ASC",
 						Object[].class)
 				.setParameter("wonStatuses", wonStatuses)
 				.setParameter("closedStatuses", closedStatuses)

@@ -15,6 +15,10 @@ import lombok.Data;
 public class LeadRequestObject {
 	
 	private Long id;
+    private Long upgradePreviousId;
+    private String upgradeRequestId;
+    private Long upgradeExpectedUpdatedAt;
+
 	private String token;
 	private String bookingId;
 	private Long vendorId;

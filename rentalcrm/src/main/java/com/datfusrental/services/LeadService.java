@@ -65,6 +65,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+
+    @Autowired
+    private BookingUpgradeService bookingUpgradeService;
 	
 	@Autowired
 	private VendorHelper vendorHelper;
@@ -568,6 +571,8 @@ public class LeadService {
 	        leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
 	        return leadRequest;
 	    }
+
+        bookingUpgradeService.validateOrdinaryEdit(existingLead, leadRequest);
 
 	    if ("ASSIGNED".equalsIgnoreCase(existingLead.getStatus())
 	            && !"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType())) {
