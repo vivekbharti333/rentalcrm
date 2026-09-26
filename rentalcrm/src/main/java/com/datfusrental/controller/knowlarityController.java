@@ -27,9 +27,8 @@ public class knowlarityController {
 	KnowlarityService knowlarityService;
 
 	/**
-	 * Public webhook called by Knowlarity Notifications (Streaming API).
-	 * Receives every call event (ORIGINATE, CUSTOMER_CALL, BRIDGE, HANGUP, CDR...)
-	 * and captures the caller's mobile number into the CRM.
+	 * Public webhook called by Knowlarity with call details.
+	 * Captures inbound caller numbers into the CRM.
 	 */
 	@RequestMapping(path = "knowlarity/webhook", method = RequestMethod.POST)
 	public Response<KnowlarityWebhookRequest> knowlarityWebhook(@RequestBody String rawBody) {
@@ -43,8 +42,8 @@ public class knowlarityController {
 				responce.setRespMesg("Duplicate notification ignored");
 			} else {
 				responce.setRespCode(Constant.SUCCESS_CODE);
-				responce.setRespMesg("Webhook received. caller=" + callLog.getCustomerNumber()
-						+ ", event=" + callLog.getEvent() + ", leadCreated=" + callLog.getLeadCreated());
+				responce.setRespMesg("Webhook received. caller=" + callLog.getCallerNumber()
+						+ ", status=" + callLog.getCallStatus() + ", leadCreated=" + callLog.getLeadCreated());
 			}
 			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
 		} catch (Exception e) {

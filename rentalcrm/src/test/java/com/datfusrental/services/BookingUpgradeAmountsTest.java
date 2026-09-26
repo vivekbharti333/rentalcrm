@@ -19,6 +19,8 @@ public class BookingUpgradeAmountsTest extends TestCase {
         LeadDetails lead = new LeadDetails();
         lead.setCategoryTypeName("Car");
         lead.setNeedGstInvoice(gst);
+        lead.setQuantity(1);
+        lead.setTotalDays(1);
         BookingUpgradeAmounts.calculate(lead, request(price, vendor, paid));
         return lead;
     }
@@ -71,6 +73,8 @@ public class BookingUpgradeAmountsTest extends TestCase {
         request.setCompanyRateForKids(1000);
         request.setVendorRateForKids(500);
         request.setDiscount(200);
+        next.setQuantity(2);
+        next.setKidQuantity(1);
         BookingUpgradeAmounts.calculate(next, request);
         assertEquals(4800L, next.getTotalAmount());
         assertEquals(2300L, next.getBookingAmount());
@@ -86,7 +90,11 @@ public class BookingUpgradeAmountsTest extends TestCase {
     public void testRejectOverflowAndOverpayment() {
         LeadRequestObject request = request(Long.MAX_VALUE, 1, 0);
         request.setQuantity(2);
-        try { BookingUpgradeAmounts.calculate(new LeadDetails(), request); fail(); }
+        LeadDetails next = new LeadDetails();
+        next.setCategoryTypeName("Car");
+        next.setQuantity(2);
+        next.setTotalDays(1);
+        try { BookingUpgradeAmounts.calculate(next, request); fail(); }
         catch (ArithmeticException expected) { }
         try { booking(5000, 3000, 6000, false); fail(); }
         catch (IllegalArgumentException expected) { }

@@ -40,9 +40,9 @@ public class KnowlarityService {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
-	 * Processes a Knowlarity notification (Streaming API telephony event or CDR).
+	 * Processes a Knowlarity call webhook.
 	 * 1. Parses the raw JSON payload.
-	 * 2. Ignores duplicates (same uuid + event).
+	 * 2. Ignores duplicates (same call_uuid + call_status).
 	 * 3. Persists the call notification in knowlarity_call_log.
 	 * 4. For inbound calls with a caller number, auto-creates a CRM lead (enquiry)
 	 *    if no lead exists yet for that mobile number.
@@ -54,28 +54,30 @@ public class KnowlarityService {
 
 		KnowlarityWebhookRequest notification = objectMapper.readValue(rawBody, KnowlarityWebhookRequest.class);
 
-		String uuid = StringUtils.defaultString(notification.getUuid());
-		String event = StringUtils.defaultString(notification.getEvent());
-		if (StringUtils.isBlank(event)) {
-			event = StringUtils.defaultString(notification.getType()); // CDR events carry type=CDR
-		}
+		String uuid = StringUtils.trimToEmpty(notification.getCallUuid());
+		String status = StringUtils.trimToEmpty(notification.getCallStatus());
 
-		// 1) Deduplicate - Knowlarity may retry/re-send the same event
-		if (StringUtils.isNotBlank(uuid) && isDuplicateNotification(uuid, event)) {
-			logger.info("Duplicate Knowlarity notification ignored. uuid=" + uuid + ", event=" + event);
+		// Knowlarity may retry the same status notification for a call.
+		if (StringUtils.isNotBlank(uuid) && isDuplicateNotification(uuid, status)) {
+			logger.info("Duplicate Knowlarity notification ignored. call_uuid=" + uuid + ", call_status=" + status);
 			return null;
 		}
 
-		// 2) Persist the raw notification
 		KnowlarityCallLog callLog = new KnowlarityCallLog();
 		callLog.setUuid(uuid);
-		callLog.setEvent(event);
-		callLog.setCallDirection(StringUtils.defaultString(notification.getCallDirection()));
-		callLog.setBusinessCallType(StringUtils.defaultString(notification.getBusinessCallType()));
-		callLog.setCustomerNumber(StringUtils.defaultString(notification.getCustomerNumber()));
-		callLog.setAgentNumber(StringUtils.defaultString(notification.getAgentNumber()));
-		callLog.setKnowlarityNumber(StringUtils.defaultString(notification.getKnowlarityNumber()));
-		callLog.setCallRecording(StringUtils.defaultString(notification.getCallRecording()));
+		callLog.setCallDate(StringUtils.trimToNull(notification.getCallDate()));
+		callLog.setCallTime(StringUtils.trimToNull(notification.getCallTime()));
+		callLog.setCallerNumber(StringUtils.trimToNull(notification.getCallerNumber()));
+		callLog.setCallDirection(StringUtils.trimToNull(notification.getCallDirection()));
+		callLog.setCalledNumber(StringUtils.trimToNull(notification.getCalledNumber()));
+		callLog.setCallStatus(status);
+		callLog.setEvent(status); // Keep the legacy event column populated for existing reports.
+		callLog.setAgentNumber(StringUtils.trimToNull(notification.getAgentNumber()));
+		callLog.setCallTransferStatus(StringUtils.trimToNull(notification.getCallTransferStatus()));
+		callLog.setCallerDuration(StringUtils.trimToNull(notification.getCallerDuration()));
+		callLog.setRecordingUrl(StringUtils.trimToNull(notification.getRecordingUrl()));
+		callLog.setHangupCause(StringUtils.trimToNull(notification.getHangupCause()));
+		callLog.setMenuExtension(StringUtils.trimToNull(notification.getMenuExtension()));
 		callLog.setLeadCreated(false);
 		callLog.setRawPayload(rawBody);
 		callLog.setCreatedAt(new Date());
@@ -124,14 +126,14 @@ public class KnowlarityService {
 	// Private helpers
 	// -------------------------------------------------------------------------
 
-	private boolean isDuplicateNotification(String uuid, String event) {
+	private boolean isDuplicateNotification(String uuid, String status) {
 		CriteriaBuilder criteriaBuilder = knowlarityCallLogDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 		Root<KnowlarityCallLog> root = criteriaQuery.from(KnowlarityCallLog.class);
 
 		Predicate uuidPredicate = criteriaBuilder.equal(root.get("uuid"), uuid);
-		Predicate eventPredicate = criteriaBuilder.equal(root.get("event"), event);
-		criteriaQuery.where(criteriaBuilder.and(uuidPredicate, eventPredicate));
+		Predicate statusPredicate = criteriaBuilder.equal(root.get("callStatus"), status);
+		criteriaQuery.where(criteriaBuilder.and(uuidPredicate, statusPredicate));
 		criteriaQuery.select(criteriaBuilder.count(root));
 
 		Long count = knowlarityCallLogDao.getSession().createQuery(criteriaQuery).uniqueResult();
@@ -139,17 +141,12 @@ public class KnowlarityService {
 	}
 
 	private String extractCallerNumber(KnowlarityWebhookRequest notification) {
-		// Telephony events carry customer_number; CDR carries caller_id for incoming calls
-		String caller = StringUtils.defaultIfBlank(notification.getCustomerNumber(), notification.getCallerId());
-		return StringUtils.trimToNull(caller);
+		return StringUtils.trimToNull(notification.getCallerNumber());
 	}
 
 	private boolean isInboundCall(KnowlarityWebhookRequest notification) {
-		if (StringUtils.isNotBlank(notification.getCallDirection())) {
-			return "Inbound".equalsIgnoreCase(notification.getCallDirection().trim());
-		}
-		// CDR event
-		return "Incoming".equalsIgnoreCase(StringUtils.defaultString(notification.getCallType()).trim());
+		String direction = StringUtils.trimToEmpty(notification.getCallDirection());
+		return "Inbound".equalsIgnoreCase(direction) || "Incoming".equalsIgnoreCase(direction);
 	}
 
 	/**
@@ -189,9 +186,8 @@ public class KnowlarityService {
 		leadDetails.setStatus("NEW");
 		leadDetails.setSelfPdType("na");
 		leadDetails.setRemarks("Inbound call on "
-				+ StringUtils.defaultIfBlank(notification.getKnowlarityNumber(),
-						StringUtils.defaultString(notification.getDispnumber()))
-				+ " | uuid: " + StringUtils.defaultString(notification.getUuid()));
+				+ StringUtils.defaultString(notification.getCalledNumber())
+				+ " | uuid: " + StringUtils.defaultString(notification.getCallUuid()));
 		leadDetails.setCreatedBy("KNOWLARITY_WEBHOOK");
 		leadDetails.setCreatedByName("Knowlarity Webhook");
 		leadDetails.setCreatedAt(new Date());

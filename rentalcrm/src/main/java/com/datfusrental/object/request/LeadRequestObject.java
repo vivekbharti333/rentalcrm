@@ -66,6 +66,7 @@ public class LeadRequestObject {
 	private long companyRateForKids;
 	private long payToCompany;
 	private long bookingAmount;
+	private long upgradeBookingAmount;
 	private long balanceAmount;
 	private long totalAmount;
 	private long securityAmount;

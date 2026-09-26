@@ -27,26 +27,56 @@ public class KnowlarityCallLog {
 	@Column(name = "call_uuid")
 	private String uuid;
 
+	@Column(name = "call_date")
+	private String callDate;
+
+	@Column(name = "call_time")
+	private String callTime;
+
+	@Column(name = "caller_number")
+	private String callerNumber;
+
+	@Column(name = "called_number")
+	private String calledNumber;
+
+	@Column(name = "call_status")
+	private String callStatus;
+
+	@Column(name = "call_transfer_status")
+	private String callTransferStatus;
+
+	@Column(name = "caller_duration")
+	private String callerDuration;
+
+	@Column(name = "recording_url", columnDefinition = "TEXT")
+	private String recordingUrl;
+
+	@Column(name = "hangup_cause")
+	private String hangupCause;
+
+	@Column(name = "menu_extension")
+	private String menuExtension;
+
 	@Column(name = "event")
 	private String event;
 
 	@Column(name = "call_direction")
 	private String callDirection;
 
-	@Column(name = "business_call_type")
-	private String businessCallType;
+//	@Column(name = "business_call_type")
+//	private String businessCallType;
 
-	@Column(name = "customer_number")
-	private String customerNumber;
+//	@Column(name = "customer_number")
+//	private String customerNumber;
 
 	@Column(name = "agent_number")
 	private String agentNumber;
 
-	@Column(name = "knowlarity_number")
-	private String knowlarityNumber;
+//	@Column(name = "knowlarity_number")
+//	private String knowlarityNumber;
 
-	@Column(name = "call_recording")
-	private String callRecording;
+//	@Column(name = "call_recording")
+//	private String callRecording;
 
 	@Column(name = "lead_created")
 	private Boolean leadCreated;

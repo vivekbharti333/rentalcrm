@@ -14,7 +14,7 @@ public final class BookingUpgradeAmounts {
     public static void calculate(LeadDetails next, LeadRequestObject request) {
         boolean vehicle = "Car".equalsIgnoreCase(next.getCategoryTypeName())
                 || "Bike".equalsIgnoreCase(next.getCategoryTypeName());
-        if (request.getQuantity() <= 0 || (vehicle && request.getTotalDays() < 1) || request.getKidQuantity() < 0
+        if (next.getQuantity() <= 0 || (vehicle && next.getTotalDays() < 1) || next.getKidQuantity() < 0
                 || request.getCompanyRate() < 0 || request.getVendorRate() < 0
                 || request.getCompanyRateForKids() < 0 || request.getVendorRateForKids() < 0
                 || request.getDeliveryAmountToCompany() < 0 || request.getDeliveryAmountToVendor() < 0
@@ -22,16 +22,16 @@ public final class BookingUpgradeAmounts {
             throw new IllegalArgumentException("Invalid upgrade quantities, rates or payment.");
         }
         long total = vehicle
-                ? Math.multiplyExact(Math.addExact(Math.multiplyExact(request.getCompanyRate(), request.getTotalDays()),
-                    request.getDeliveryAmountToCompany()), request.getQuantity())
-                : Math.addExact(Math.multiplyExact(request.getCompanyRate(), request.getQuantity()),
-                    Math.multiplyExact(request.getCompanyRateForKids(), request.getKidQuantity()));
+                ? Math.multiplyExact(Math.addExact(Math.multiplyExact(request.getCompanyRate(), next.getTotalDays()),
+                    request.getDeliveryAmountToCompany()), next.getQuantity())
+                : Math.addExact(Math.multiplyExact(request.getCompanyRate(), next.getQuantity()),
+                    Math.multiplyExact(request.getCompanyRateForKids(), next.getKidQuantity()));
         total = Math.subtractExact(total, request.getDiscount());
         long vendor = vehicle
-                ? Math.multiplyExact(Math.addExact(Math.multiplyExact(request.getVendorRate(), request.getTotalDays()),
-                    request.getDeliveryAmountToVendor()), request.getQuantity())
-                : Math.addExact(Math.multiplyExact(request.getVendorRate(), request.getQuantity()),
-                    Math.multiplyExact(request.getVendorRateForKids(), request.getKidQuantity()));
+                ? Math.multiplyExact(Math.addExact(Math.multiplyExact(request.getVendorRate(), next.getTotalDays()),
+                    request.getDeliveryAmountToVendor()), next.getQuantity())
+                : Math.addExact(Math.multiplyExact(request.getVendorRate(), next.getQuantity()),
+                    Math.multiplyExact(request.getVendorRateForKids(), next.getKidQuantity()));
         if (total <= 0 || vendor > total) throw new IllegalArgumentException("Upgrade price must cover the vendor amount.");
         long booking = total - vendor;
         long tax = Boolean.TRUE.equals(next.getNeedGstInvoice()) ? Math.multiplyExact(total, 18) / 100 : 0;

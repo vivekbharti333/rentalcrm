@@ -624,6 +624,7 @@ public class LeadService {
 	    	}
 
 	        existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
+            bookingUpgradeService.synchronizeEditedUpgrade(oldLead, existingLead);
 	        existingLead = leadHelper.updateLeadDetails(existingLead);
 	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
 	        

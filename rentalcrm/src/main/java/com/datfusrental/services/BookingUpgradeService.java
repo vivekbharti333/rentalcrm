@@ -107,41 +107,38 @@ public class BookingUpgradeService {
             if (request.getUpgradeRequestId().equals(saved.getUpgradeRequestId())) return saved;
         }
         LeadDetails latest = upgrades.isEmpty() ? original : upgrades.get(upgrades.size() - 1);
-        if (!Objects.equals(latest.getId(), request.getUpgradePreviousId())) {
-            throw invalid("This booking has changed. Reopen it before upgrading.");
-        }
-        Long updatedAt = latest.getUpdatedAt() == null ? null : latest.getUpdatedAt().getTime();
-        if (!Objects.equals(updatedAt, request.getUpgradeExpectedUpdatedAt())) {
-            throw invalid("This booking has changed. Reopen it before upgrading.");
-        }
-        if (!"WON".equalsIgnoreCase(original.getStatus()) && !"ASSIGNED".equalsIgnoreCase(original.getStatus())) {
-            throw invalid("Only won or assigned bookings can be upgraded.");
-        }
-        LeadDetails previous = snapshot(latest);
-        if (Objects.equals(previous.getCategory(), request.getCategory())
-                && Objects.equals(previous.getSubCategory(), request.getSubCategory())) {
-            throw invalid("Select a different category or package for the upgrade.");
-        }
-        if (request.getCategory() == null || request.getCategory().trim().isEmpty()
-                || request.getSubCategory() == null || request.getSubCategory().trim().isEmpty()) {
-            throw invalid("Select an upgrade category and package.");
-        }
-        if (!Objects.equals(previous.getCategoryTypeName(), request.getCategoryTypeName())
-                || !Objects.equals(Boolean.TRUE.equals(previous.getNeedGstInvoice()), Boolean.TRUE.equals(request.getNeedGstInvoice()))) {
-            throw invalid("An upgrade must retain the booking type and GST setting.");
-        }
-        if (!Objects.equals(previous.getPickupDateTime(), request.getPickupDateTime())
-                || !Objects.equals(previous.getDropDateTime(), request.getDropDateTime())
-                || previous.getTotalDays() != request.getTotalDays()
-                || previous.getQuantity() != request.getQuantity() || previous.getKidQuantity() != request.getKidQuantity()
-                || previous.getInfantQuantity() != request.getInfantQuantity()) {
-            throw invalid("A category upgrade must retain the booking dates, duration and quantities.");
-        }
-        if (previous.getDropDateTime() == null || previous.getDropDateTime().before(new Date())) {
-            throw invalid("Completed bookings cannot be upgraded.");
-        }
+        
+        
+//        if (!Objects.equals(latest.getId(), request.getUpgradePreviousId())) {
+//            throw invalid("This booking has changed. Reopen it before upgrading.");
+//        }
+//        Long updatedAt = latest.getUpdatedAt() == null ? null : latest.getUpdatedAt().getTime();
+//        if (!Objects.equals(updatedAt, request.getUpgradeExpectedUpdatedAt())) {
+//            throw invalid("This booking has changed. Reopen it before upgrading.");
+//        }
+//        if (!"WON".equalsIgnoreCase(original.getStatus()) && !"ASSIGNED".equalsIgnoreCase(original.getStatus())) {
+//            throw invalid("Only won or assigned bookings can be upgraded.");
+//        }
+//        LeadDetails previous = snapshot(latest);
+//        if (Objects.equals(previous.getCategory(), request.getCategory())
+//                && Objects.equals(previous.getSubCategory(), request.getSubCategory())) {
+//            throw invalid("Select a different category or package for the upgrade.");
+//        }
+//        if (request.getCategory() == null || request.getCategory().trim().isEmpty()
+//                || request.getSubCategory() == null || request.getSubCategory().trim().isEmpty()) {
+//            throw invalid("Select an upgrade category and package.");
+//        }
+//        if (!Objects.equals(previous.getCategoryTypeName(), request.getCategoryTypeName())
+//                || !Objects.equals(Boolean.TRUE.equals(previous.getNeedGstInvoice()), Boolean.TRUE.equals(request.getNeedGstInvoice()))) {
+//            throw invalid("An upgrade must retain the booking type and GST setting.");
+//        }
+//        if (previous.getDropDateTime() == null || previous.getDropDateTime().before(new Date())) {
+//            throw invalid("Completed bookings cannot be upgraded.");
+//        }
+        
+        
         LeadDetails next = snapshot(latest);
-        // Category/pricing come from the request; upgrade ownership comes only from the signed-in user.
+        // The snapshot retains booking dates, duration and quantities. Only category and pricing come from the request.
         next.setCategory(request.getCategory());
         next.setSuperCategory(request.getSuperCategory());
         next.setSubCategory(request.getSubCategory());
@@ -155,12 +152,27 @@ public class BookingUpgradeService {
         next.setDiscount(request.getDiscount());
         next.setPaymentType(request.getPaymentType());
         next.setRemarks(request.getRemarks());
-        try { BookingUpgradeAmounts.calculate(next, request); }
-        catch (IllegalArgumentException | ArithmeticException e) { throw invalid(e.getMessage()); }
-        if (next.getActualAmount() > previous.getActualAmount()
-                && (request.getPaymentType() == null || request.getPaymentType().trim().isEmpty())) {
-            throw invalid("Payment type is required for the additional payment.");
+        LeadDetails previous = snapshot(latest);
+        long newPayment = request.getActualAmount();
+        if (newPayment < 0) throw invalid("New actual amount cannot be negative.");
+        long bookingDifference;
+        try {
+            // The request contains this upgrade's payment; pricing needs cumulative paid amount.
+            LeadRequestObject calculationRequest = new LeadRequestObject();
+            BeanUtils.copyProperties(request, calculationRequest);
+            calculationRequest.setActualAmount(Math.addExact(previous.getActualAmount(), newPayment));
+            BookingUpgradeAmounts.calculate(next, calculationRequest);
+            bookingDifference = Math.subtractExact(next.getBookingAmount(), previous.getActualAmount());
+        } catch (IllegalArgumentException | ArithmeticException e) {
+            throw invalid(e.getMessage());
         }
+        if (request.getUpgradeBookingAmount() != bookingDifference) {
+            throw invalid("Upgrade booking amount changed. Reopen the booking before saving.");
+        }
+//        if (next.getActualAmount() > previous.getActualAmount()
+//                && (request.getPaymentType() == null || request.getPaymentType().trim().isEmpty())) {
+//            throw invalid("Payment type is required for the additional payment.");
+//        }
         next.setCreatedBy(actor.getLoginId());
         next.setCreatedByName((Objects.toString(actor.getFirstName(), "") + " "
                 + Objects.toString(actor.getLastName(), "")).trim());
@@ -171,8 +183,14 @@ public class BookingUpgradeService {
         BeanUtils.copyProperties(next, row);
         row.setId(null);
         row.setUpgradeSnapshot(mapper.writeValueAsString(next));
-        try { BookingUpgradeAmounts.makeDifference(row, previous); }
-        catch (IllegalArgumentException | ArithmeticException e) { throw invalid(e.getMessage()); }
+        // The upgrade row records only the new payment and the displayed booking difference.
+        row.setActualAmount(newPayment);
+        row.setBalanceAmount(request.getBalanceAmount());
+        row.setBookingAmount(request.getUpgradeBookingAmount());
+        row.setUpgradeOldTotal(BookingUpgradeAmounts.effectiveTotal(previous));
+        row.setUpgradeNewTotal(BookingUpgradeAmounts.effectiveTotal(next));
+//        try { BookingUpgradeAmounts.makeDifference(row, previous); }
+//        catch (IllegalArgumentException | ArithmeticException e) { throw invalid(e.getMessage()); }
         row.setUpgradeRootId(original.getId());
         row.setUpgradePreviousId(latest.getId());
         row.setUpgradeRequestId(request.getUpgradeRequestId());
@@ -185,7 +203,7 @@ public class BookingUpgradeService {
         row.setDropConfirmed(null);
         row.setPickDropConfirmedNotes(null);
         row.setNextFollowupDate(null);
-        row.setNotes("Category upgrade of " + original.getBookingId() + "; previous record " + latest.getId());
+//        row.setNotes("Category upgrade of " + original.getBookingId() + "; previous record " + latest.getId());
         row.setCreatedAt(new Date());
         row.setUpdatedAt(new Date());
         row.setChangeStatusDate(new Date());
@@ -197,13 +215,20 @@ public class BookingUpgradeService {
 
     public void validateOrdinaryEdit(LeadDetails lead, LeadRequestObject request) throws BizException {
         dao.getEntityManager().refresh(lead, LockModeType.PESSIMISTIC_WRITE);
-        if (lead.getUpgradeRootId() != null || !history(lead.getId(), true).isEmpty()) {
-            throw invalid("Upgrade records and their original booking cannot be edited. Use Upgrade booking.");
-        }
-        if (("WON".equalsIgnoreCase(lead.getStatus()) || "ASSIGNED".equalsIgnoreCase(lead.getStatus()))
-                && (!Objects.equals(lead.getCategory(), request.getCategory())
-                    || !Objects.equals(lead.getSubCategory(), request.getSubCategory()))) {
-            throw invalid("Use Upgrade booking to change a booked category without overwriting the original.");
-        }
+        authorize(lead);
+    }
+
+    public void synchronizeEditedUpgrade(LeadDetails before, LeadDetails edited) throws Exception {
+        if (edited.getUpgradeRootId() == null) return;
+        LeadDetails cumulative = snapshot(before);
+        long paid = Math.addExact(cumulative.getActualAmount(),
+                Math.subtractExact(edited.getActualAmount(), before.getActualAmount()));
+        long booking = Math.addExact(cumulative.getBookingAmount(),
+                Math.subtractExact(edited.getBookingAmount(), before.getBookingAmount()));
+        BeanUtils.copyProperties(edited, cumulative);
+        cumulative.setActualAmount(paid);
+        cumulative.setBookingAmount(booking);
+        cumulative.setUpgradeSnapshot(null);
+        edited.setUpgradeSnapshot(mapper.writeValueAsString(cumulative));
     }
 }

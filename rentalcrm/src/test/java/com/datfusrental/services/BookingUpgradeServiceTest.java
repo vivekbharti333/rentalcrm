@@ -107,6 +107,8 @@ public class BookingUpgradeServiceTest extends TestCase {
         request.setVendorRate(4000);
         request.setPickupDateTime(original.getPickupDateTime());
         request.setDropDateTime(original.getDropDateTime());
+        request.setUpgradeBookingAmount(1000);
+        request.setActualAmount(0);
     }
     @Override protected void tearDown() { SecurityContextHolder.clearContext(); }
 
@@ -127,6 +129,20 @@ public class BookingUpgradeServiceTest extends TestCase {
         assertEquals(0L, saved.getActualAmount());
         assertFalse(original.getBookingId().equals(saved.getBookingId()));
         assertEquals(7000L, ((LeadDetails) service.context(1L).get("current")).getTotalAmount());
+    }
+    public void testUpgradeStoresNewPaymentAndBookingDifference() throws Exception {
+        request.setActualAmount(500);
+        request.setBalanceAmount(4200);
+        LeadDetails saved = service.upgrade(request);
+        LeadDetails current = (LeadDetails) service.context(1L).get("current");
+        assertEquals(500L, saved.getActualAmount());
+        assertEquals(4200L, saved.getBalanceAmount());
+        assertEquals(1000L, saved.getBookingAmount());
+        assertEquals(Long.valueOf(5000), saved.getUpgradeOldTotal());
+        assertEquals(Long.valueOf(7000), saved.getUpgradeNewTotal());
+        assertEquals(2500L, current.getActualAmount());
+        assertEquals(3000L, current.getBookingAmount());
+        assertEquals(2000L, original.getActualAmount());
     }
     public void testRetryDoesNotCreateDuplicate() throws Exception {
         LeadDetails saved = service.upgrade(request);
@@ -156,6 +172,24 @@ public class BookingUpgradeServiceTest extends TestCase {
         assertEquals(Long.valueOf(7000), second.getUpgradeOldTotal());
         assertEquals(5000L, original.getTotalAmount());
     }
+    public void testUpgradeUsesSavedScheduleAndHeadcounts() throws Exception {
+        request.setPickupDateTime(new Date(original.getPickupDateTime().getTime() + 60000));
+        request.setDropDateTime(new Date(original.getDropDateTime().getTime() + 60000));
+        request.setTotalDays(4);
+        request.setQuantity(3);
+        request.setKidQuantity(2);
+        request.setInfantQuantity(1);
+
+        LeadDetails saved = service.upgrade(request);
+        LeadDetails current = (LeadDetails) service.context(1L).get("current");
+        assertEquals(original.getPickupDateTime(), current.getPickupDateTime());
+        assertEquals(original.getDropDateTime(), current.getDropDateTime());
+        assertEquals(original.getTotalDays(), current.getTotalDays());
+        assertEquals(original.getQuantity(), current.getQuantity());
+        assertEquals(original.getKidQuantity(), current.getKidQuantity());
+        assertEquals(original.getInfantQuantity(), current.getInfantQuantity());
+        assertEquals(2000L, saved.getTotalAmount());
+    }
     public void testOtherTenantDenied() throws Exception {
         user.setSuperadminId("other");
         try { service.upgrade(request); fail(); } catch (BizException expected) { }
@@ -174,10 +208,27 @@ public class BookingUpgradeServiceTest extends TestCase {
         assertEquals("WON", saved.getStatus());
         assertNull(saved.getVendorId());
     }
-    public void testOrdinaryEditCannotOverwriteUpgradeOrOriginal() throws Exception {
+    public void testOrdinaryEditAllowsSelectedRecordWithUpgradeHistory() throws Exception {
         LeadDetails saved = service.upgrade(request);
-        try { service.validateOrdinaryEdit(original, request); fail(); } catch (BizException expected) { }
-        try { service.validateOrdinaryEdit(saved, request); fail(); } catch (BizException expected) { }
+        service.validateOrdinaryEdit(original, request);
+        service.validateOrdinaryEdit(saved, request);
+        assertEquals(2, rows.size());
+    }
+    public void testEditedUpgradeKeepsCumulativeSnapshotInSync() throws Exception {
+        request.setActualAmount(500);
+        LeadDetails saved = service.upgrade(request);
+        LeadDetails before = new LeadDetails();
+        BeanUtils.copyProperties(saved, before);
+        saved.setActualAmount(700);
+        saved.setBalanceAmount(4300);
+        saved.setRemarks("Edited current record");
+        service.synchronizeEditedUpgrade(before, saved);
+        LeadDetails current = (LeadDetails) service.context(1L).get("current");
+        assertEquals(2700L, current.getActualAmount());
+        assertEquals(3000L, current.getBookingAmount());
+        assertEquals(4300L, current.getBalanceAmount());
+        assertEquals("Edited current record", current.getRemarks());
+        assertEquals(2, rows.size());
     }
     public void testRequestCannotSpoofUpgradeOwner() throws Exception {
         request.setCreatedBy("someone-else");
