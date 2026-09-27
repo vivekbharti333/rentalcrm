@@ -252,4 +252,7 @@ public class LeadDetails {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "change_status_date")
 	private Date changeStatusDate;
+	
+	@Column(name = "vendor_code")
+	private String vendorCode;
 }

@@ -1,6 +1,7 @@
 package com.datfusrental.services;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,9 @@ import com.datfusrental.dao.KnowlarityCallLogDao;
 import com.datfusrental.dao.LeadDetailsDao;
 import com.datfusrental.entities.KnowlarityCallLog;
 import com.datfusrental.entities.LeadDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.helper.LeadHelper;
+import com.datfusrental.helper.UserHelper;
 import com.datfusrental.object.request.KnowlarityWebhookRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,6 +36,9 @@ public class KnowlarityService {
 
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
+	
+	@Autowired
+	private UserHelper userHelper;
 
 	@Autowired
 	private LeadHelper leadHelper;
@@ -82,6 +88,37 @@ public class KnowlarityService {
 		callLog.setRawPayload(rawBody);
 		callLog.setCreatedAt(new Date());
 		knowlarityCallLogDao.persist(callLog);
+		
+		
+		//Save Lead Details
+		LeadDetails leadDetails = new LeadDetails();
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, 1);
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		leadDetails.setCustomeName("GUEST");
+		leadDetails.setCustomerMobile(StringUtils.trimToNull(notification.getCallerNumber()));
+		leadDetails.setStatus("NEW");
+		leadDetails.setCreatedAt(new Date());
+		leadDetails.setPickupDateTime(new Date());
+		leadDetails.setDropDateTime(calendar.getTime());
+		leadDetails.setQuantity(1);
+		
+		User userDetails = userHelper.getUserDetailsByLoginId(StringUtils.trimToNull(notification.getAgentNumber()));
+		if(userDetails != null) {
+			leadDetails.setCreatedBy(userDetails.getLoginId());
+			leadDetails.setAdminId(userDetails.getAdminId());
+			leadDetails.setTeamleaderId(userDetails.getTeamleaderId());
+			leadDetails.setCreatedByName(userDetails.getFirstName()+" "+userDetails.getLastName());
+		}
+		
+		leadDetails.setSuperadminId("1234567890");
+		leadHelper.saveLeadDetails(leadDetails);
+		
 
 		// 3) Auto-create a lead for inbound calls with a caller number
 		String callerNumber = extractCallerNumber(notification);
