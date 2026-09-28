@@ -101,7 +101,31 @@ public class LeadByPickAndDropHelper {
 		return results;
 	}
 	
-	
+	@SuppressWarnings("unchecked")
+	public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
+		
+		List<String> includeStatus = List.of("WON", "ASSIGNED");
+		List<LeadDetails> results = new ArrayList<LeadDetails>();
+		
+		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
+					.setParameter("statuses", includeStatus)
+					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
+
+		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
+			results = leadDetailsDao.getEntityManager().createQuery(
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+					.setParameter("statuses", includeStatus)
+					.setParameter("superadminId", leadRequest.getSuperadminId())
+					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
+			return results;
+		}
+
+		return results;
+	}
 	
 	public List<LeadDetails> getDropListForCallConfirm(LeadRequestObject leadRequest) {
 		return leadDetailsDao.getEntityManager().createQuery(
