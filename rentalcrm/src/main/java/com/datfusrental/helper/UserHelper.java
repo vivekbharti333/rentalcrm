@@ -77,6 +77,19 @@ public class UserHelper {
 		}
 	}
 	
+	@Transactional
+	public User getUserDetailsByAlternateMobileNo(String alternateMobile) {
+
+		CriteriaBuilder criteriaBuilder = userDetailsDao.getSession().getCriteriaBuilder();
+		CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		Root<User> root = criteriaQuery.from(User.class);
+		Predicate restriction1 = criteriaBuilder.equal(root.get("alternateMobile"), alternateMobile);
+		Predicate restriction2 = criteriaBuilder.notEqual(root.get("status"), Status.REMOVED.name());
+		criteriaQuery.where(restriction1,restriction2);
+		User user = userDetailsDao.getSession().createQuery(criteriaQuery).uniqueResult();
+		return user;
+	}
+	
 
 	@Transactional
 	public User getUserDetailsByLoginId(String loginId) {

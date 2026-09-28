@@ -108,7 +108,7 @@ public class KnowlarityService {
 		leadDetails.setDropDateTime(calendar.getTime());
 		leadDetails.setQuantity(1);
 		
-		User userDetails = userHelper.getUserDetailsByLoginId(StringUtils.trimToNull(notification.getAgentNumber()));
+		User userDetails = userHelper.getUserDetailsByAlternateMobileNo(StringUtils.trimToNull(notification.getAgentNumber()));
 		if(userDetails != null) {
 			leadDetails.setCreatedBy(userDetails.getLoginId());
 			leadDetails.setAdminId(userDetails.getAdminId());

@@ -85,8 +85,7 @@ public class LeadByPickAndDropHelper {
 		
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
-					.setParameter("superadminId", leadRequest.getSuperadminId())
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
 
