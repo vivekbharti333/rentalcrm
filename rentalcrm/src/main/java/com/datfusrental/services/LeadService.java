@@ -935,9 +935,11 @@ public class LeadService {
 			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
 		}
 
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.AFTER_TOMORROW.name())) {
+			ZoneId zone = ZoneId.systemDefault();
+			LocalDate afterTomorrow = LocalDate.now(zone).plusDays(2);
+			leadRequest.setFirstDate(Date.from(afterTomorrow.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(afterTomorrow.plusDays(1).atStartOfDay(zone).toInstant()));
 		}
 
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropWonLeadList(leadRequest);

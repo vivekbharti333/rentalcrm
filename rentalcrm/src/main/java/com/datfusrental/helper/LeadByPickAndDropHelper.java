@@ -105,22 +105,27 @@ public class LeadByPickAndDropHelper {
 	public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
 		
 		List<String> includeStatus = List.of("WON", "ASSIGNED");
+		boolean afterTomorrow = RequestFor.AFTER_TOMORROW.name().equalsIgnoreCase(leadRequest.getRequestedFor());
+		String dateCondition = afterTomorrow
+				? "LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate"
+				: "LD.dropDateTime BETWEEN :firstDate AND :lastDate";
+		TemporalType dateType = afterTomorrow ? TemporalType.TIMESTAMP : TemporalType.DATE;
 		List<LeadDetails> results = new ArrayList<LeadDetails>();
 		
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND " + dateCondition + " ORDER BY LD.dropDateTime DESC")
 					.setParameter("statuses", includeStatus)
-					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
+					.setParameter("firstDate", leadRequest.getFirstDate(), dateType)
+					.setParameter("lastDate", leadRequest.getLastDate(), dateType).getResultList();
 
 		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.superadminId =:superadminId AND " + dateCondition + " ORDER BY LD.pickupDateTime DESC")
 					.setParameter("statuses", includeStatus)
 					.setParameter("superadminId", leadRequest.getSuperadminId())
-					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
+					.setParameter("firstDate", leadRequest.getFirstDate(), dateType)
+					.setParameter("lastDate", leadRequest.getLastDate(), dateType).getResultList();
 			return results;
 		}
 
