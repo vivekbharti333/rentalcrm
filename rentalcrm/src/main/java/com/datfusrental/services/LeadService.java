@@ -98,6 +98,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadByPickAndDropHelper leadByPickAndDropHelper;
+
+	@Autowired
+	private DropWonLeadService dropWonLeadService;
 	
 	@Autowired
 	private AssignedLeadHelper assignedLeadHelper;
@@ -923,6 +926,7 @@ public class LeadService {
 	}
 	
 	public List<LeadDetails> getDropWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+//<<<<<<< HEAD
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
 		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
@@ -942,8 +946,10 @@ public class LeadService {
 			leadRequest.setLastDate(Date.from(afterTomorrow.plusDays(1).atStartOfDay(zone).toInstant()));
 		}
 
-		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropWonLeadList(leadRequest);
-		return leadList;
+//		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropWonLeadList(leadRequest);
+//		return leadList;
+
+		return dropWonLeadService.getDropWonLeadList(leadRequestObject);
 	}
 	
 	public List<LeadDetails> getDropListForCallConfirm(Request<LeadRequestObject> leadRequestObject) {

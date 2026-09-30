@@ -101,37 +101,71 @@ public class LeadByPickAndDropHelper {
 		return results;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
-		
-		List<String> includeStatus = List.of("WON", "ASSIGNED");
-		boolean afterTomorrow = RequestFor.AFTER_TOMORROW.name().equalsIgnoreCase(leadRequest.getRequestedFor());
-		String dateCondition = afterTomorrow
-				? "LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate"
-				: "LD.dropDateTime BETWEEN :firstDate AND :lastDate";
-		TemporalType dateType = afterTomorrow ? TemporalType.TIMESTAMP : TemporalType.DATE;
-		List<LeadDetails> results = new ArrayList<LeadDetails>();
-		
-		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
-			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND " + dateCondition + " ORDER BY LD.dropDateTime DESC")
-					.setParameter("statuses", includeStatus)
-					.setParameter("firstDate", leadRequest.getFirstDate(), dateType)
-					.setParameter("lastDate", leadRequest.getLastDate(), dateType).getResultList();
 
-		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
-			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.superadminId =:superadminId AND " + dateCondition + " ORDER BY LD.pickupDateTime DESC")
-					.setParameter("statuses", includeStatus)
-					.setParameter("superadminId", leadRequest.getSuperadminId())
-					.setParameter("firstDate", leadRequest.getFirstDate(), dateType)
-					.setParameter("lastDate", leadRequest.getLastDate(), dateType).getResultList();
-			return results;
-		}
-
-		return results;
-	}
+//	@SuppressWarnings("unchecked")
+//	public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
+//		
+//		List<String> includeStatus = List.of("WON", "ASSIGNED");
+//		boolean afterTomorrow = RequestFor.AFTER_TOMORROW.name().equalsIgnoreCase(leadRequest.getRequestedFor());
+//		String dateCondition = afterTomorrow
+//				? "LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate"
+//				: "LD.dropDateTime BETWEEN :firstDate AND :lastDate";
+//		TemporalType dateType = afterTomorrow ? TemporalType.TIMESTAMP : TemporalType.DATE;
+//		List<LeadDetails> results = new ArrayList<LeadDetails>();
+//		
+//		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
+//			results = leadDetailsDao.getEntityManager().createQuery(
+//					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND " + dateCondition + " ORDER BY LD.dropDateTime DESC")
+//					.setParameter("statuses", includeStatus)
+//					.setParameter("firstDate", leadRequest.getFirstDate(), dateType)
+//					.setParameter("lastDate", leadRequest.getLastDate(), dateType).getResultList();
+//
+//		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
+//			results = leadDetailsDao.getEntityManager().createQuery(
+//					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.status IN (:statuses) AND LD.superadminId =:superadminId AND " + dateCondition + " ORDER BY LD.pickupDateTime DESC")
+//					.setParameter("statuses", includeStatus)
+//					.setParameter("superadminId", leadRequest.getSuperadminId())
+//					.setParameter("firstDate", leadRequest.getFirstDate(), dateType)
+//					.setParameter("lastDate", leadRequest.getLastDate(), dateType).getResultList();
+//			return results;
+//		}
+//
+//		return results;
+//	}
 	
+
+    public List<LeadDetails> getDropWonLeadList(LeadRequestObject leadRequest) {
+        // Scope is populated by DropWonLeadService from the authenticated user.
+        String role = leadRequest.getRoleType();
+        String ownerCondition;
+        switch (role) {
+            case "SUPERADMIN": case "ADMIN":
+                ownerCondition = "";
+                break;
+            case "TEAM_LEADER":
+                ownerCondition = " AND (LD.teamleaderId = :loginId OR LD.createdBy = :loginId)";
+                break;
+            case "SALE_EXECUTIVE": case "SALES_EXECUTIVE": case "CUSTOMER_EXECUTIVE":
+                ownerCondition = " AND LD.createdBy = :loginId";
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported drop-list role");
+        }
+        javax.persistence.TypedQuery<LeadDetails> query = leadDetailsDao.getEntityManager().createQuery(
+                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId"
+                + ownerCondition
+                + " AND NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id)"
+                + " AND LD.status IN (:statuses)"
+                + " AND LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate"
+                + " ORDER BY LD.dropDateTime DESC, LD.id DESC", LeadDetails.class)
+                .setParameter("superadminId", leadRequest.getSuperadminId())
+                .setParameter("statuses", List.of("WON", "ASSIGNED"))
+                .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
+                .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP);
+        if (!ownerCondition.isEmpty()) query.setParameter("loginId", leadRequest.getLoginId());
+        return query.getResultList();
+    }
+
 	public List<LeadDetails> getDropListForCallConfirm(LeadRequestObject leadRequest) {
 		return leadDetailsDao.getEntityManager().createQuery(
 				"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.superadminId = :superadminId AND LD.status = :status AND LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate AND (LD.dropConfirmed IS NULL OR LD.dropConfirmed <> :confirmed) ORDER BY LD.dropDateTime ASC",
