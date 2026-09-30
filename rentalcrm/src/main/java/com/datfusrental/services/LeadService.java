@@ -98,6 +98,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadByPickAndDropHelper leadByPickAndDropHelper;
+
+	@Autowired
+	private DropWonLeadService dropWonLeadService;
 	
 	@Autowired
 	private AssignedLeadHelper assignedLeadHelper;
@@ -923,25 +926,7 @@ public class LeadService {
 	}
 	
 	public List<LeadDetails> getDropWonLeadList(Request<LeadRequestObject> leadRequestObject) {
-		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TODAY.name())) {
-			leadRequest.setFirstDate(new Date());
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-		}
-
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.TOMORROW.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
-		}
-
-		if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.MONTH.name())) {
-			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
-			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
-		}
-
-		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropWonLeadList(leadRequest);
-		return leadList;
+		return dropWonLeadService.getDropWonLeadList(leadRequestObject);
 	}
 	
 	public List<LeadDetails> getDropListForCallConfirm(Request<LeadRequestObject> leadRequestObject) {
