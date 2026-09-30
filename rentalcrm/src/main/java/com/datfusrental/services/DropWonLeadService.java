@@ -56,8 +56,8 @@ public class DropWonLeadService {
                 first = today; exclusiveLast = today.plusDays(1); break;
             case "TOMORROW":
                 first = today.plusDays(1); exclusiveLast = today.plusDays(2); break;
-            case "MONTH":
-                first = today.withDayOfMonth(1); exclusiveLast = first.plusMonths(1); break;
+            case "AFTER_TOMORROW":
+                first = today.plusDays(2); exclusiveLast = today.plusDays(3); break;
             case "CUSTOM": case "CUSTOME": // Keep deployed older clients working.
                 if (input.getFirstDate() == null || input.getLastDate() == null) {
                     throw new IllegalArgumentException("First date and last date are required for custom search.");
@@ -67,7 +67,7 @@ public class DropWonLeadService {
                 if (last.isBefore(first)) throw new IllegalArgumentException("Last date must not be before first date.");
                 exclusiveLast = last.plusDays(1); break;
             default:
-                throw new IllegalArgumentException("requestedFor must be TODAY, TOMORROW, MONTH or CUSTOM.");
+                throw new IllegalArgumentException("requestedFor must be TODAY, TOMORROW, AFTER_TOMORROW or CUSTOM.");
         }
 
         // Never trust role, company, login or owner IDs from the browser.

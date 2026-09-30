@@ -66,16 +66,16 @@ public class DropWonLeadServiceTest extends TestCase {
     public void testTomorrowAcrossMonthBoundary() {
         service.getDropWonLeadList(request("TOMORROW")); range("2026-10-01", "2026-10-02");
     }
-    public void testMonthIncludesEntireLastDay() {
-        service.getDropWonLeadList(request("MONTH")); range("2026-09-01", "2026-10-01");
-        now.set(Instant.parse("2028-02-20T12:00:00Z"));
-        service.getDropWonLeadList(request("MONTH")); range("2028-02-01", "2028-03-01");
+    public void testAfterTomorrowAcrossMonthAndLeapYearBoundaries() {
+        service.getDropWonLeadList(request("AFTER_TOMORROW")); range("2026-10-02", "2026-10-03");
+        now.set(Instant.parse("2028-02-27T12:00:00Z"));
+        service.getDropWonLeadList(request("AFTER_TOMORROW")); range("2028-02-29", "2028-03-01");
     }
     public void testSameServiceRefreshesDatesAfterMidnight() {
         service.getDropWonLeadList(request("TODAY")); range("2026-09-30", "2026-10-01");
         now.set(now.get().plusSeconds(2));
         service.getDropWonLeadList(request("TODAY")); range("2026-10-01", "2026-10-02");
-        service.getDropWonLeadList(request("MONTH")); range("2026-10-01", "2026-11-01");
+        service.getDropWonLeadList(request("AFTER_TOMORROW")); range("2026-10-03", "2026-10-04");
     }
     public void testCustomSingleDayAndLegacySpellingIncludeFullDay() {
         for (String name : List.of("CUSTOM", "CUSTOME")) {
@@ -86,7 +86,7 @@ public class DropWonLeadServiceTest extends TestCase {
         }
     }
     public void testRejectsMissingReversedAndUnknownFilters() {
-        rejected(null); rejected(new Request<LeadRequestObject>()); rejected(request(null)); rejected(request("ALL"));
+        rejected(null); rejected(new Request<LeadRequestObject>()); rejected(request(null)); rejected(request("ALL")); rejected(request("MONTH"));
         rejected(request("CUSTOM"));
         Request<LeadRequestObject> input = request("CUSTOM");
         input.getPayload().setFirstDate(day("2026-10-02")); input.getPayload().setLastDate(day("2026-10-01"));
