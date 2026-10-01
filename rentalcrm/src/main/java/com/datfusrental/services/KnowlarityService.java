@@ -70,10 +70,14 @@ public class KnowlarityService {
 		}
 
 		KnowlarityCallLog callLog = new KnowlarityCallLog();
+		String callerNumber = extractCallerNumber(notification);
+		String countryDialCode = extractCountryDialCode(notification);
+		
 		callLog.setUuid(uuid);
 		callLog.setCallDate(StringUtils.trimToNull(notification.getCallDate()));
 		callLog.setCallTime(StringUtils.trimToNull(notification.getCallTime()));
-		callLog.setCallerNumber(StringUtils.trimToNull(notification.getCallerNumber()));
+		callLog.setCallerNumber(callerNumber);
+		callLog.setCountryDialCode(countryDialCode);
 		callLog.setCallDirection(StringUtils.trimToNull(notification.getCallDirection()));
 		callLog.setCalledNumber(StringUtils.trimToNull(notification.getCalledNumber()));
 		callLog.setCallStatus(status);
@@ -101,7 +105,8 @@ public class KnowlarityService {
 		calendar.set(Calendar.MILLISECOND, 0);
 		
 		leadDetails.setCustomeName("GUEST");
-		leadDetails.setCustomerMobile(StringUtils.trimToNull(notification.getCallerNumber()));
+		leadDetails.setCustomerMobile(callerNumber);
+		leadDetails.setCountryDialCode(countryDialCode);
 		leadDetails.setStatus("NEW");
 		leadDetails.setCreatedAt(new Date());
 		leadDetails.setPickupDateTime(new Date());
@@ -121,7 +126,6 @@ public class KnowlarityService {
 		
 
 		// 3) Auto-create a lead for inbound calls with a caller number
-		String callerNumber = extractCallerNumber(notification);
 		if (StringUtils.isNotBlank(callerNumber) && isInboundCall(notification)
 				&& !isLeadExistsByMobile(callerNumber)) {
 			try {
@@ -178,7 +182,24 @@ public class KnowlarityService {
 	}
 
 	private String extractCallerNumber(KnowlarityWebhookRequest notification) {
-		return StringUtils.trimToNull(notification.getCallerNumber());
+		String number = StringUtils.trimToNull(notification.getCallerNumber());
+		if (number == null) {
+			return null;
+		}
+		String digits = number.replaceAll("\\D", "");
+		if (digits.length() == 14 && digits.startsWith("0091")) {
+			return digits.substring(4);
+		}
+		if (digits.length() == 12 && digits.startsWith("91")) {
+			return digits.substring(2);
+		}
+		return number;
+	}
+
+	private String extractCountryDialCode(KnowlarityWebhookRequest notification) {
+		String number = StringUtils.trimToEmpty(notification.getCallerNumber()).replaceAll("\\D", "");
+		return (number.length() == 12 && number.startsWith("91"))
+				|| (number.length() == 14 && number.startsWith("0091")) ? "+91" : "";
 	}
 
 	private boolean isInboundCall(KnowlarityWebhookRequest notification) {
@@ -217,7 +238,7 @@ public class KnowlarityService {
 		leadDetails.setBookingId(bookingId);
 		leadDetails.setCustomeName("Knowlarity Caller");
 		leadDetails.setCustomerMobile(callerNumber);
-		leadDetails.setCountryDialCode(digitsOnly.startsWith("91") && digitsOnly.length() == 12 ? "+91" : "");
+		leadDetails.setCountryDialCode(callLog.getCountryDialCode());
 		leadDetails.setLeadOrigine("KNOWLARITY");
 		leadDetails.setLeadType("CALL");
 		leadDetails.setStatus("NEW");

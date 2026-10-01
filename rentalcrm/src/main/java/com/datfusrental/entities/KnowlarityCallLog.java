@@ -35,6 +35,9 @@ public class KnowlarityCallLog {
 
 	@Column(name = "caller_number")
 	private String callerNumber;
+	
+	@Column(name = "country_dial_code")
+	private String countryDialCode;
 
 	@Column(name = "called_number")
 	private String calledNumber;
