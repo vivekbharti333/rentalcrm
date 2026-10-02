@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Entity
@@ -32,12 +34,18 @@ public class KnowlarityCallLog {
 
 	@Column(name = "call_time")
 	private String callTime;
+	
+	@Column(name = "caller_country_dial_code")
+	private String callerCountryDialCode;
 
 	@Column(name = "caller_number")
 	private String callerNumber;
 	
 	@Column(name = "country_dial_code")
 	private String countryDialCode;
+	
+	@Column(name = "called_country_dial_code")
+	private String calledCountryDialCode;
 
 	@Column(name = "called_number")
 	private String calledNumber;
@@ -74,6 +82,9 @@ public class KnowlarityCallLog {
 
 	@Column(name = "agent_number")
 	private String agentNumber;
+
+	@Column(name = "agent_country_dial_code")
+	private String agentCountryDialCode;
 
 //	@Column(name = "knowlarity_number")
 //	private String knowlarityNumber;

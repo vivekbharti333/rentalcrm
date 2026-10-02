@@ -1,5 +1,7 @@
 package com.datfusrental.object.request;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,6 +17,9 @@ public class KnowlarityWebhookRequest {
 
     @JsonProperty("call_time")
     private String callTime;
+    
+    @JsonProperty("caller_country_dial_code")
+	private String callerCountryDialCode;
 
     @JsonProperty("caller_number")
     private String callerNumber;
@@ -22,11 +27,17 @@ public class KnowlarityWebhookRequest {
     @JsonProperty("call_direction")
     private String callDirection;
 
+    @JsonProperty("called_country_dial_code")
+	private String calledCountryDialCode;
+    
     @JsonProperty("called_number")
     private String calledNumber;
 
     @JsonProperty("call_status")
     private String callStatus;
+    
+    @JsonProperty("agent_country_dial_code")
+	private String agentCountryDialCode;
 
     @JsonProperty("agent_number")
     private String agentNumber;

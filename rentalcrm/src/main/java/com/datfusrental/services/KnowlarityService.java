@@ -70,19 +70,29 @@ public class KnowlarityService {
 		}
 
 		KnowlarityCallLog callLog = new KnowlarityCallLog();
-		String callerNumber = extractCallerNumber(notification);
-		String countryDialCode = extractCountryDialCode(notification);
+		String countryDialCode = resolveCountryDialCode(notification.getCallerCountryDialCode(), notification.getCallerNumber());
+		String callerNumber = extractPhoneNumber(notification.getCallerNumber(), countryDialCode);
 		
+		System.out.println("countryDialCode : "+countryDialCode);
+		System.out.println("callerNumber : "+callerNumber);
+
 		callLog.setUuid(uuid);
 		callLog.setCallDate(StringUtils.trimToNull(notification.getCallDate()));
 		callLog.setCallTime(StringUtils.trimToNull(notification.getCallTime()));
 		callLog.setCallerNumber(callerNumber);
 		callLog.setCountryDialCode(countryDialCode);
+		callLog.setCallerCountryDialCode(countryDialCode);
 		callLog.setCallDirection(StringUtils.trimToNull(notification.getCallDirection()));
-		callLog.setCalledNumber(StringUtils.trimToNull(notification.getCalledNumber()));
+		String calledCountryDialCode = resolveCountryDialCode(notification.getCalledCountryDialCode(), notification.getCalledNumber());
+		callLog.setCalledCountryDialCode(calledCountryDialCode);
+		callLog.setCalledNumber(StringUtils.isNotBlank(calledCountryDialCode)
+				? extractPhoneNumber(notification.getCalledNumber(), calledCountryDialCode)
+				: StringUtils.trimToNull(notification.getCalledNumber()));
 		callLog.setCallStatus(status);
 		callLog.setEvent(status); // Keep the legacy event column populated for existing reports.
-		callLog.setAgentNumber(StringUtils.trimToNull(notification.getAgentNumber()));
+		String agentCountryDialCode = resolveCountryDialCode(notification.getAgentCountryDialCode(), notification.getAgentNumber());
+		callLog.setAgentCountryDialCode(agentCountryDialCode);
+		callLog.setAgentNumber(extractPhoneNumber(notification.getAgentNumber(), agentCountryDialCode));
 		callLog.setCallTransferStatus(StringUtils.trimToNull(notification.getCallTransferStatus()));
 		callLog.setCallerDuration(StringUtils.trimToNull(notification.getCallerDuration()));
 		callLog.setRecordingUrl(StringUtils.trimToNull(notification.getRecordingUrl()));
@@ -113,7 +123,8 @@ public class KnowlarityService {
 		leadDetails.setDropDateTime(calendar.getTime());
 		leadDetails.setQuantity(1);
 		
-		User userDetails = userHelper.getUserDetailsByAlternateMobileNo(StringUtils.trimToNull(notification.getAgentNumber()));
+		User userDetails = StringUtils.isNotBlank(callLog.getAgentNumber())
+				? userHelper.getUserDetailsByAlternateMobileNo(callLog.getAgentNumber()) : null;
 		if(userDetails != null) {
 			leadDetails.setCreatedBy(userDetails.getLoginId());
 			leadDetails.setAdminId(userDetails.getAdminId());
@@ -182,24 +193,75 @@ public class KnowlarityService {
 	}
 
 	private String extractCallerNumber(KnowlarityWebhookRequest notification) {
-		String number = StringUtils.trimToNull(notification.getCallerNumber());
+		return extractPhoneNumber(notification.getCallerNumber());
+	}
+
+	private String resolveCountryDialCode(String suppliedCode, String rawNumber) {
+		if (StringUtils.isBlank(suppliedCode)) {
+			return extractCountryDialCode(rawNumber);
+		}
+		String code = suppliedCode.trim().replaceAll("(?i)%2b", "+");
+		if (!code.matches("\\+?[1-9][0-9]{0,2}")) {
+			throw new IllegalArgumentException("Invalid country dial code: " + suppliedCode);
+		}
+		code = code.startsWith("+") ? code : "+" + code;
+		String inferred = extractCountryDialCode(rawNumber);
+		if (StringUtils.isNotBlank(inferred) && !code.equals(inferred)) {
+			throw new IllegalArgumentException("Country dial code does not match phone number");
+		}
+		return code;
+	}
+
+	private String extractPhoneNumber(String rawNumber, String countryCode) {
+		String decoded = StringUtils.trimToEmpty(rawNumber).replaceAll("(?i)%2b", "+");
+		if (StringUtils.isNotBlank(countryCode) && (decoded.startsWith("+") || decoded.startsWith("00"))) {
+			String digits = phoneDigits(decoded);
+			if (decoded.startsWith("00")) {
+				digits = digits.substring(2);
+			}
+			String prefix = countryCode.substring(1);
+			if (!digits.startsWith(prefix) || digits.length() <= prefix.length()) {
+				throw new IllegalArgumentException("Country dial code does not match phone number");
+			}
+			return digits.substring(prefix.length());
+		}
+		return extractPhoneNumber(rawNumber);
+	}
+
+	private String extractPhoneNumber(String rawNumber) {
+		String number = StringUtils.trimToNull(rawNumber);
 		if (number == null) {
 			return null;
 		}
-		String digits = number.replaceAll("\\D", "");
+		String digits = phoneDigits(number);
 		if (digits.length() == 14 && digits.startsWith("0091")) {
 			return digits.substring(4);
 		}
 		if (digits.length() == 12 && digits.startsWith("91")) {
 			return digits.substring(2);
 		}
-		return number;
+		// Normalize local numbers too, so formatting never reaches customer_mobile.
+		if (digits.length() == 11 && digits.startsWith("0")) {
+			return digits.substring(1);
+		}
+		return StringUtils.trimToNull(digits);
 	}
 
 	private String extractCountryDialCode(KnowlarityWebhookRequest notification) {
-		String number = StringUtils.trimToEmpty(notification.getCallerNumber()).replaceAll("\\D", "");
+		return extractCountryDialCode(notification.getCallerNumber());
+	}
+
+	private String extractCountryDialCode(String rawNumber) {
+		String number = phoneDigits(rawNumber);
 		return (number.length() == 12 && number.startsWith("91"))
 				|| (number.length() == 14 && number.startsWith("0091")) ? "+91" : "";
+	}
+
+	private String phoneDigits(String rawNumber) {
+		// Knowlarity also sends the '+' prefix percent-encoded inside JSON strings.
+		// Replace it before stripping punctuation, otherwise '%2b' contributes a '2'.
+		return StringUtils.trimToEmpty(rawNumber)
+				.replaceAll("(?i)%2b", "+").replaceAll("\\D", "");
 	}
 
 	private boolean isInboundCall(KnowlarityWebhookRequest notification) {
@@ -238,7 +300,7 @@ public class KnowlarityService {
 		leadDetails.setBookingId(bookingId);
 		leadDetails.setCustomeName("Knowlarity Caller");
 		leadDetails.setCustomerMobile(callerNumber);
-		leadDetails.setCountryDialCode(callLog.getCountryDialCode());
+		leadDetails.setCountryDialCode(callLog.getCallerCountryDialCode());
 		leadDetails.setLeadOrigine("KNOWLARITY");
 		leadDetails.setLeadType("CALL");
 		leadDetails.setStatus("NEW");

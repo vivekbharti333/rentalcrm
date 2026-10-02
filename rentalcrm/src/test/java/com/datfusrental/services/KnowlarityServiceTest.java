@@ -39,7 +39,7 @@ public class KnowlarityServiceTest extends TestCase {
             }
         });
 
-        // No call UUID avoids a database lookup; outbound calls never create leads.
+        // No call UUID avoids a database lookup; outbound skips the inbound enquiry lookup.
         String json = "{\"call_date\":\"2026-09-26\",\"call_time\":\"14:30:00\","
                 + "\"caller_number\":\"9876543210\",\"call_direction\":\"Outbound\","
                 + "\"called_number\":\"08012345678\",\"call_status\":\"Answered\","
@@ -63,18 +63,76 @@ public class KnowlarityServiceTest extends TestCase {
         assertEquals("101", saved.getMenuExtension());
         assertFalse(saved.getLeadCreated());
         assertEquals("", saved.getCountryDialCode());
+        assertEquals("", saved.getCallerCountryDialCode());
+        assertEquals("", saved.getCalledCountryDialCode());
+        assertEquals("", saved.getAgentCountryDialCode());
         KnowlarityCallLog international = service.processWebhook(json.replace("9876543210", "+919876543210"));
         assertEquals("9876543210", international.getCallerNumber());
         assertEquals("+91", international.getCountryDialCode());
         assertEquals("9876543210", lead[0].getCustomerMobile());
         assertEquals("+91", lead[0].getCountryDialCode());
+        KnowlarityCallLog encoded = service.processWebhook(json.replace("9876543210", "%2b918105295871"));
+        assertEquals("8105295871", encoded.getCallerNumber());
+        assertEquals("+91", encoded.getCountryDialCode());
+        assertEquals("8105295871", lead[0].getCustomerMobile());
+        assertEquals("+91", lead[0].getCountryDialCode());
+        KnowlarityCallLog bothEncoded = service.processWebhook(json
+                .replace("9876543210", "%2b918105295871")
+                .replace("08012345678", "%2b919513166378"));
+        assertEquals("8105295871", bothEncoded.getCallerNumber());
+        assertEquals("+91", bothEncoded.getCountryDialCode());
+        assertEquals("+91", bothEncoded.getCallerCountryDialCode());
+        assertEquals("9513166378", bothEncoded.getCalledNumber());
+        assertEquals("+91", bothEncoded.getCalledCountryDialCode());
+        assertEquals("8105295871", lead[0].getCustomerMobile());
+        assertEquals("+91", lead[0].getCountryDialCode());
+        assertEquals("9513166378", service.processWebhook(json
+                .replace("08012345678", "+919513166378")).getCalledNumber());
+        assertEquals("9513166378", service.processWebhook(json
+                .replace("08012345678", "%2B919513166378")).getCalledNumber());
+        for (String agent : new String[] { "%2b919999999999", "%2B919999999999", "+919999999999" }) {
+            KnowlarityCallLog agentLog = service.processWebhook(json.replace("9999999999", agent));
+            assertEquals("9999999999", agentLog.getAgentNumber());
+            assertEquals("+91", agentLog.getAgentCountryDialCode());
+        }
+        KnowlarityCallLog noAgent = service.processWebhook(json.replace("9999999999", "False"));
+        assertNull(noAgent.getAgentNumber());
+        assertEquals("", noAgent.getAgentCountryDialCode());
+        String explicitCodes = ",\"caller_country_dial_code\":\"+91\","
+                + "\"called_country_dial_code\":\"%2b91\",\"agent_country_dial_code\":\"91\"}";
+        KnowlarityCallLog explicit = service.processWebhook(json
+                .replace("08012345678", "9513166378")
+                .replace("}", explicitCodes));
+        assertEquals("9876543210", explicit.getCallerNumber());
+        assertEquals("9513166378", explicit.getCalledNumber());
+        assertEquals("9999999999", explicit.getAgentNumber());
+        assertEquals("+91", explicit.getCallerCountryDialCode());
+        assertEquals("+91", explicit.getCalledCountryDialCode());
+        assertEquals("+91", explicit.getAgentCountryDialCode());
+        KnowlarityCallLog explicitEncoded = service.processWebhook(json
+                .replace("9876543210", "%2b918105295871")
+                .replace("08012345678", "%2b919513166378")
+                .replace("9999999999", "%2b919999999999")
+                .replace("}", explicitCodes));
+        assertEquals("8105295871", explicitEncoded.getCallerNumber());
+        assertEquals("9513166378", explicitEncoded.getCalledNumber());
+        assertEquals("9999999999", explicitEncoded.getAgentNumber());
     }
 
     public void testCallerNumberFormats() throws Exception {
         assertSplit("+91 98765-43210", "9876543210", "+91");
+        assertSplit("+919876543210", "9876543210", "+91");
+        assertSplit("%2b918105295871", "8105295871", "+91");
+        assertSplit("%2B918105295871", "8105295871", "+91");
+        assertSplit("%2b919513166378", "9513166378", "+91");
         assertSplit("919876543210", "9876543210", "+91");
         assertSplit("00919876543210", "9876543210", "+91");
+        assertSplit("0091 98765-43210", "9876543210", "+91");
+        assertSplit("98765-43210", "9876543210", "");
+        assertSplit("(98765) 43210", "9876543210", "");
+        assertSplit("09876543210", "9876543210", "");
         assertSplit("9123456789", "9123456789", "");
+        assertSplit("---", null, "");
         assertSplit(null, null, "");
         assertSplit(" ", null, "");
     }
@@ -87,7 +145,7 @@ public class KnowlarityServiceTest extends TestCase {
         numberMethod.setAccessible(true);
         Method codeMethod = KnowlarityService.class.getDeclaredMethod("extractCountryDialCode", KnowlarityWebhookRequest.class);
         codeMethod.setAccessible(true);
-//        assertEquals(mobile, numberMethod.invoke(service, request));
-//        assertEquals(code, codeMethod.invoke(service, request));
+        assertEquals(mobile, numberMethod.invoke(service, request));
+        assertEquals(code, codeMethod.invoke(service, request));
     }
 }

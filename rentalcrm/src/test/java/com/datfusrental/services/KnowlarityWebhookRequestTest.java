@@ -35,4 +35,13 @@ public class KnowlarityWebhookRequestTest extends TestCase {
                 KnowlarityWebhookRequest.class);
         assertNull(request.getMenuExtension());
     }
+
+    public void testParsesAllCountryDialCodes() throws Exception {
+        KnowlarityWebhookRequest request = new ObjectMapper().readValue(
+                "{\"caller_country_dial_code\":\"+91\",\"called_country_dial_code\":\"+91\","
+                + "\"agent_country_dial_code\":\"+91\"}", KnowlarityWebhookRequest.class);
+        assertEquals("+91", request.getCallerCountryDialCode());
+        assertEquals("+91", request.getCalledCountryDialCode());
+        assertEquals("+91", request.getAgentCountryDialCode());
+    }
 }
