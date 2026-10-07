@@ -82,6 +82,12 @@ public class KnowlarityCallLog {
 
 	@Column(name = "agent_number")
 	private String agentNumber;
+	
+	@Column(name = "agent_name")
+	private String agentName;
+	
+	@Column(name = "login_id")
+	private String loginId;
 
 	@Column(name = "agent_country_dial_code")
 	private String agentCountryDialCode;

@@ -75,6 +75,9 @@ public class KnowlarityService {
 		
 		System.out.println("countryDialCode : "+countryDialCode);
 		System.out.println("callerNumber : "+callerNumber);
+		
+		
+		
 
 		callLog.setUuid(uuid);
 		callLog.setCallDate(StringUtils.trimToNull(notification.getCallDate()));
@@ -93,6 +96,12 @@ public class KnowlarityService {
 		String agentCountryDialCode = resolveCountryDialCode(notification.getAgentCountryDialCode(), notification.getAgentNumber());
 		callLog.setAgentCountryDialCode(agentCountryDialCode);
 		callLog.setAgentNumber(extractPhoneNumber(notification.getAgentNumber(), agentCountryDialCode));
+		User userDetails = StringUtils.isNotBlank(callLog.getAgentNumber())
+				? userHelper.getUserDetailsByAlternateMobileNo(callLog.getAgentNumber()) : null;
+		if (userDetails != null) {
+			callLog.setLoginId(userDetails.getLoginId());
+			callLog.setAgentName(userDetails.getFirstName()+" "+userDetails.getLastName());
+		}
 		callLog.setCallTransferStatus(StringUtils.trimToNull(notification.getCallTransferStatus()));
 		callLog.setCallerDuration(StringUtils.trimToNull(notification.getCallerDuration()));
 		callLog.setRecordingUrl(StringUtils.trimToNull(notification.getRecordingUrl()));
@@ -105,49 +114,49 @@ public class KnowlarityService {
 		
 		
 		//Save Lead Details
-		LeadDetails leadDetails = new LeadDetails();
+//		LeadDetails leadDetails = new LeadDetails();
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.add(Calendar.DATE, 1);
+//		calendar.set(Calendar.HOUR_OF_DAY, 10);
+//		calendar.set(Calendar.MINUTE, 0);
+//		calendar.set(Calendar.SECOND, 0);
+//		calendar.set(Calendar.MILLISECOND, 0);
+//		
+//		leadDetails.setCustomeName("GUEST");
+//		leadDetails.setCustomerMobile(callerNumber);
+//		leadDetails.setCountryDialCode(countryDialCode);
+//		leadDetails.setStatus("NEW");
+//		leadDetails.setCreatedAt(new Date());
+//		leadDetails.setPickupDateTime(new Date());
+//		leadDetails.setDropDateTime(calendar.getTime());
+//		leadDetails.setQuantity(1);
 		
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, 1);
-		calendar.set(Calendar.HOUR_OF_DAY, 10);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+//		User userDetails = StringUtils.isNotBlank(callLog.getAgentNumber())
+//				? userHelper.getUserDetailsByAlternateMobileNo(callLog.getAgentNumber()) : null;
+//		if(userDetails != null) {
+//			leadDetails.setCreatedBy(userDetails.getLoginId());
+//			leadDetails.setAdminId(userDetails.getAdminId());
+//			leadDetails.setTeamleaderId(userDetails.getTeamleaderId());
+//			leadDetails.setCreatedByName(userDetails.getFirstName()+" "+userDetails.getLastName());
+//		}
 		
-		leadDetails.setCustomeName("GUEST");
-		leadDetails.setCustomerMobile(callerNumber);
-		leadDetails.setCountryDialCode(countryDialCode);
-		leadDetails.setStatus("NEW");
-		leadDetails.setCreatedAt(new Date());
-		leadDetails.setPickupDateTime(new Date());
-		leadDetails.setDropDateTime(calendar.getTime());
-		leadDetails.setQuantity(1);
-		
-		User userDetails = StringUtils.isNotBlank(callLog.getAgentNumber())
-				? userHelper.getUserDetailsByAlternateMobileNo(callLog.getAgentNumber()) : null;
-		if(userDetails != null) {
-			leadDetails.setCreatedBy(userDetails.getLoginId());
-			leadDetails.setAdminId(userDetails.getAdminId());
-			leadDetails.setTeamleaderId(userDetails.getTeamleaderId());
-			leadDetails.setCreatedByName(userDetails.getFirstName()+" "+userDetails.getLastName());
-		}
-		
-		leadDetails.setSuperadminId("1234567890");
-		leadHelper.saveLeadDetails(leadDetails);
+//		leadDetails.setSuperadminId("1234567890");
+//		leadHelper.saveLeadDetails(leadDetails);
 		
 
 		// 3) Auto-create a lead for inbound calls with a caller number
-		if (StringUtils.isNotBlank(callerNumber) && isInboundCall(notification)
-				&& !isLeadExistsByMobile(callerNumber)) {
-			try {
-				createEnquiryLead(callerNumber, notification, callLog);
-				callLog.setLeadCreated(true);
-				knowlarityCallLogDao.update(callLog);
-			} catch (Exception e) {
-				// Lead creation must never break the webhook acknowledgement
-				logger.error("Failed to auto-create lead for caller " + callerNumber, e);
-			}
-		}
+//		if (StringUtils.isNotBlank(callerNumber) && isInboundCall(notification)
+//				&& !isLeadExistsByMobile(callerNumber)) {
+//			try {
+//				createEnquiryLead(callerNumber, notification, callLog);
+//				callLog.setLeadCreated(true);
+//				knowlarityCallLogDao.update(callLog);
+//			} catch (Exception e) {
+//				// Lead creation must never break the webhook acknowledgement
+//				logger.error("Failed to auto-create lead for caller " + callerNumber, e);
+//			}
+//		}
 
 		return callLog;
 	}

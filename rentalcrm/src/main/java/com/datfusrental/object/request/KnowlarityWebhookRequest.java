@@ -59,6 +59,12 @@ public class KnowlarityWebhookRequest {
 
     @JsonProperty("menu_extension")
     private String menuExtension;
+    
+    @JsonProperty("agent_name")
+	private String agentName;
+	
+    @JsonProperty("login_id")
+	private String loginId;
 
     // Response fields used by the existing webhook acknowledgement.
     private int respCode;

@@ -107,6 +107,7 @@ public class UserService {
 
 	    // Set user info
 	    loginRequest.setLoginId(user.getLoginId());
+	    loginRequest.setAlternateMobile(user.getAlternateMobile());
 	    loginRequest.setUserPicture(user.getUserPicture());
 	    loginRequest.setFirstName(user.getFirstName());
 	    loginRequest.setLastName(user.getLastName());

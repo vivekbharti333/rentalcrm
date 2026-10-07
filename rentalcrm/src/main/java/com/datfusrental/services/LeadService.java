@@ -1,9 +1,9 @@
 package com.datfusrental.services;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +21,7 @@ import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.LeadDetailsHistory;
 import com.datfusrental.entities.LocationDetails;
 import com.datfusrental.entities.TransactionDetails;
+import com.datfusrental.entities.User;
 import com.datfusrental.entities.VendorDetails;
 import com.datfusrental.enums.RequestFor;
 import com.datfusrental.enums.Status;
@@ -34,6 +35,7 @@ import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.helper.LocationHelper;
 import com.datfusrental.helper.SendWhatsAppTextMessageHelper;
 import com.datfusrental.helper.TransactionHelper;
+import com.datfusrental.helper.UserHelper;
 import com.datfusrental.helper.VendorHelper;
 import com.datfusrental.helper.WebsiteLeadHelper;
 import com.datfusrental.helper.WonLeadHelper;
@@ -42,7 +44,6 @@ import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.WhatsAppMessageResponse;
 import com.datfusrental.paymentgateways.CashfreePaymentGateways;
 import com.datfusrental.util.EntityDiffUtil;
-import com.datfusrental.whatsapp.request.WhatsAppMessageRequestObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whatsapp.parameter.BookingConformationVariable;
@@ -65,6 +66,9 @@ public class LeadService {
 
 	@Autowired
 	private LeadHelper leadHelper;
+	
+	@Autowired
+	private UserHelper userHelper;
 
     @Autowired
     private BookingUpgradeService bookingUpgradeService;
@@ -424,6 +428,26 @@ public class LeadService {
 
 		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 		if (existsLeadDetails == null) {
+			
+			
+			System.out.println(leadRequest.getRequestedFor()+" req");
+			System.out.println(leadRequest.getCreatedBy()+" crea");
+				if("KNOWLAIRITY ".equalsIgnoreCase(leadRequest.getRequestedFor())) {
+				
+				User userDetails = StringUtils.isNotBlank(leadRequest.getCreatedBy())
+						? userHelper.getUserDetailsByAlternateMobileNo(leadRequest.getCreatedBy()) : null;
+				if(userDetails != null) {
+					leadRequest.setCreatedBy(userDetails.getLoginId());
+					leadRequest.setAdminId(userDetails.getAdminId());
+					leadRequest.setTeamleaderId(userDetails.getTeamleaderId());
+					leadRequest.setCreatedByName(userDetails.getFirstName()+" "+userDetails.getLastName());
+					leadRequest.setSuperadminId("1234567890");
+				}
+				
+			}
+			
+				System.out.println(leadRequest.getRequestedFor()+" 2 req");
+				System.out.println(leadRequest.getCreatedBy()+" 2 crea");
 
 			// Lead Details
 			LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
