@@ -32,7 +32,7 @@ public class LeadByStatusHelper {
 		if(leadRequest.getAllData()) {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("status", leadRequest.getStatus())
 						.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
@@ -41,7 +41,7 @@ public class LeadByStatusHelper {
 				return results;
 			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId ORDER BY LD.id DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.isSplit = false ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("status", leadRequest.getStatus())
 						.setFirstResult(Constant.FIRST_RESULT)
@@ -52,7 +52,7 @@ public class LeadByStatusHelper {
 		} else {
 			if (leadRequest.getRequestedFor().equalsIgnoreCase(RequestFor.BYDATE.name())) {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdBy =:createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.id DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdBy =:createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("createdBy", leadRequest.getLoginId())
 						.setParameter("status", leadRequest.getStatus())
@@ -63,7 +63,7 @@ public class LeadByStatusHelper {
 				return results;
 			} else {
 				results = leadDetailsDao.getEntityManager().createQuery(
-						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdBy =:createdBy ORDER BY LD.id DESC")
+						"SELECT LD FROM LeadDetails LD WHERE LD.status =:status AND LD.superadminId =:superadminId AND LD.createdBy =:createdBy AND LD.isSplit = false ORDER BY LD.id DESC")
 						.setParameter("superadminId", leadRequest.getSuperadminId())
 						.setParameter("createdBy", leadRequest.getLoginId())
 						.setParameter("status", leadRequest.getStatus())
@@ -140,7 +140,7 @@ public class LeadByStatusHelper {
 
 	    results = leadDetailsDao.getEntityManager()
 	        .createQuery(
-	            "SELECT LD FROM LeadDetails LD WHERE " + ownerCondition + " AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.pickupDateTime DESC", LeadDetails.class)
+	            "SELECT LD FROM LeadDetails LD WHERE " + ownerCondition + " AND LD.status IN :statusList AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC", LeadDetails.class)
 	        .setParameter("ownerId", ownerId)
 	        .setParameter("statusList", includedStatus)
 	        .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)

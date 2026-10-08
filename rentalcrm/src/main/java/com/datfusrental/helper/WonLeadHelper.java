@@ -58,7 +58,7 @@ public class WonLeadHelper {
 	                "AND LD.status IN :includedStatuses " +
 	                "AND LD.changeStatusDate >= :fromDate " +
 	                "AND LD.changeStatusDate < :toDate " +
-	                "ORDER BY LD.changeStatusDate DESC",
+	                "AND LD.isSplit = false ORDER BY LD.changeStatusDate DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -74,7 +74,7 @@ public class WonLeadHelper {
 	                "AND LD.status IN :includedStatuses " +
 	                "AND LD.changeStatusDate >= :fromDate " +
 	                "AND LD.changeStatusDate < :toDate " +
-	                "ORDER BY LD.changeStatusDate DESC",
+	                "AND LD.isSplit = false ORDER BY LD.changeStatusDate DESC",
 	                LeadDetails.class
 	            )
 	            .setParameter("createdBy", leadRequest.getLoginId())

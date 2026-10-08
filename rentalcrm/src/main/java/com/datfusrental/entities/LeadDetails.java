@@ -41,8 +41,10 @@ public class LeadDetails {
     @Column(name = "upgrade_snapshot")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private String upgradeSnapshot;
+    
+    @Column(name = "is_split")
+	private Boolean isSplit;
 
-	
 	@Column(name = "booking_id")
 	private String bookingId;
 	

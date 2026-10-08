@@ -23,7 +23,7 @@ public class AssignedLeadHelper {
 
 	    if (leadRequest.getAllData()) {
 	        results = leadDetailsDao.getEntityManager().createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.status = :status AND LD.superadminId = :superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+	                "SELECT LD FROM LeadDetails LD WHERE LD.status = :status AND LD.superadminId = :superadminId AND LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC")
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
 	            .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	            .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
@@ -32,7 +32,7 @@ public class AssignedLeadHelper {
 
 	    } else {
 	        results = leadDetailsDao.getEntityManager().createQuery(
-	                "SELECT LD FROM LeadDetails LD WHERE LD.status = :status AND LD.superadminId = :superadminId AND LD.createdBy = :createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+	                "SELECT LD FROM LeadDetails LD WHERE LD.status = :status AND LD.superadminId = :superadminId AND LD.createdBy = :createdBy AND LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC")
 	            .setParameter("superadminId", leadRequest.getSuperadminId())
 	            .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	            .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)

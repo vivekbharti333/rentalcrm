@@ -410,10 +410,15 @@ public class LeadService {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 		
-		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
-		leadRequest.setPickupHub("na");
-		leadRequest.setDropHub("na");
-	}
+		// Preserve supplied hubs; self mode only needs defaults for missing locations.
+		if ("self".equalsIgnoreCase(leadRequest.getSelfPdType())) {
+			if (StringUtils.isBlank(leadRequest.getPickupHub())) {
+				leadRequest.setPickupHub("na");
+			}
+			if (StringUtils.isBlank(leadRequest.getDropHub())) {
+				leadRequest.setDropHub("na");
+			}
+		}
 
 		String customerMobile = StringUtils.defaultString(leadRequest.getCustomerMobile()).replaceAll("\\D", "");
 		String mobileSuffix = StringUtils.leftPad(StringUtils.right(customerMobile, 4), 4, '0');
@@ -608,10 +613,52 @@ public class LeadService {
 	        return leadRequest;
 	    }
 	    
-//		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
-//			leadRequest.setPickupHub("na");
-//			leadRequest.setDropHub("na");
-//		}
+
+	    //For Split Amount
+	    if(leadRequest.getIsSplit()) {
+	    	User user = userHelper.getUserDetailsByLoginId(leadRequest.getSplitLoginId());
+	    	if(user != null) {
+//	    		user.setUserWalletAmount(leadRequest.getSplitAmount());
+//	    		userHelper.UpdateUserDetails(user);
+	    		
+	    		LeadDetails leadDetails = new LeadDetails();
+	    		leadDetails.setIsSplit(leadRequest.getIsSplit());
+	    		leadDetails.setBookingId(leadRequest.getId().toString());	
+	    		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
+	    		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
+
+	    		
+	    		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
+	    		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
+	    		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
+	    		
+	    		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
+	    		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
+	    		
+	    		leadDetails.setBookingAmount(leadRequest.getSplitBookingAmount());
+	    		leadDetails.setActualAmount(leadRequest.getSplitActualAmount());
+	    		leadDetails.setPaymentType(leadRequest.getPaymentType());
+	    		
+	    		leadDetails.setDiscountType(leadRequest.getDiscountType());
+	    		leadDetails.setDiscount(leadRequest.getDiscount());
+	    		
+	    		leadDetails.setCreatedAt(new Date());
+	    		leadDetails.setUpdatedAt(new Date());
+	    		leadDetails.setChangeStatusDate(new Date());
+	    		
+	    		leadDetails.setStatus("WON");
+	    		
+	    		leadDetails.setPseudoName(user.getPseudoName());
+	    		leadDetails.setCreatedBy(leadRequest.getSplitLoginId());
+	    		leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
+	    		leadDetails.setPseudoName(user.getPseudoName());
+	    		leadDetails.setTeamleaderId(user.getTeamleaderId());
+	    		leadDetails.setAdminId(user.getAdminId());
+	    		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+	    		
+	    		leadHelper.saveLeadDetails(leadDetails);
+	    	}
+	    }
 
 	    if (existingLead != null) {
 	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(existingLead);

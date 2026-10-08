@@ -75,6 +75,7 @@ public class LeadHelper {
 		
 		LeadDetails leadDetails = new LeadDetails();
 
+		leadDetails.setIsSplit(false);
 		leadDetails.setBookingId(leadRequest.getBookingId());
 		leadDetails.setCompanyName(leadRequest.getCompanyName());
 		leadDetails.setCategoryTypeName(leadRequest.getCategoryTypeName());
@@ -291,9 +292,6 @@ public class LeadHelper {
 
 			User user = userHelper.getUserDetailsByLoginId(leadRequest.getCreatedBy());
 
-//		System.out.println("Created by : "+leadRequest.getCreatedBy());
-//		System.out.println("updated by : "+leadRequest.getUpdatedBy());
-
 			leadDetails.setPseudoName(user.getPseudoName());
 			leadDetails.setCreatedByName(user.getFirstName() + " " + user.getLastName());
 			leadDetails.setCreatedBy(leadRequest.getCreatedBy());
@@ -342,7 +340,7 @@ public class LeadHelper {
 	    	if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
 		        return leadDetailsDao.getEntityManager()
 		            .createQuery(
-		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.isSplit = false ORDER BY LD.id DESC",
 		                LeadDetails.class
 		            )
 		            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -356,7 +354,7 @@ public class LeadHelper {
 		    } else {
 		        return leadDetailsDao.getEntityManager()
 		            .createQuery(
-		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) ORDER BY LD.id DESC",
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) AND LD.isSplit = false ORDER BY LD.id DESC",
 		                LeadDetails.class
 		            )
 		            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -369,7 +367,7 @@ public class LeadHelper {
 	    	if (RequestFor.BYDATE.name().equalsIgnoreCase(leadRequest.getRequestedFor())) {
 		        return leadDetailsDao.getEntityManager()
 		            .createQuery(
-		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate ORDER BY LD.id DESC",
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses)  AND LD.createdAt >= :firstDate AND LD.createdAt < :lastDate AND LD.isSplit = false ORDER BY LD.id DESC",
 		                LeadDetails.class
 		            )
 		            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -384,7 +382,7 @@ public class LeadHelper {
 		    } else {
 		        return leadDetailsDao.getEntityManager()
 		            .createQuery(
-		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses) ORDER BY LD.id DESC",
+		                "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy AND LD.status NOT IN (:statuses) AND LD.isSplit = false ORDER BY LD.id DESC",
 		                LeadDetails.class
 		            )
 		            .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -438,7 +436,7 @@ public class LeadHelper {
 			return leadDetailsDao.getEntityManager()
 			        .createQuery(
 			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status NOT IN (:statuses) " +
-			            "AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
+			            "AND LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC",
 			            LeadDetails.class
 			        )
 			        .setParameter("superadminId", leadRequest.getSuperadminId())
@@ -450,7 +448,7 @@ public class LeadHelper {
 			return leadDetailsDao.getEntityManager()
 			        .createQuery(
 			            "SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.createdBy =:createdBy " +
-			            "AND LD.status NOT IN (:statuses) AND LD.createdAt BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC",
+			            "AND LD.status NOT IN (:statuses) AND LD.createdAt BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC",
 			            LeadDetails.class
 			        )
 			        .setParameter("superadminId", leadRequest.getSuperadminId())

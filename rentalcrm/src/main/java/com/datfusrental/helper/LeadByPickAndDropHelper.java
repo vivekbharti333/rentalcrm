@@ -53,7 +53,7 @@ public class LeadByPickAndDropHelper {
 		String ownerId = leadRequest.getAllData() ? leadRequest.getSuperadminId() : leadRequest.getLoginId();
 
 		results = leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND " + ownerCondition + " AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate ORDER BY LD.id DESC",
+				"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND " + ownerCondition + " AND LD.status NOT IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND LD.isSplit = false ORDER BY LD.id DESC",
 				LeadDetails.class)
 				.setParameter("ownerId", ownerId)
 				.setParameter("statuses", excludedStatus)
@@ -68,7 +68,7 @@ public class LeadByPickAndDropHelper {
 		List<String> includeStatus = List.of("WON", "ASSIGNED");
 
 		return leadDetailsDao.getEntityManager().createQuery(
-				"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND (LD.pickupConfirmed IS NULL OR LD.pickupConfirmed <> :confirmed) ORDER BY LD.pickupDateTime DESC",
+				"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.pickupDateTime >= :firstDate AND LD.pickupDateTime < :lastDate AND (LD.pickupConfirmed IS NULL OR LD.pickupConfirmed <> :confirmed) AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC",
 				LeadDetails.class)
 				.setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", includeStatus)
@@ -85,13 +85,13 @@ public class LeadByPickAndDropHelper {
 		
 		if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.dropDateTime DESC")
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.dropDateTime BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.dropDateTime DESC")
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
 
 		} else if (leadRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
 			results = leadDetailsDao.getEntityManager().createQuery(
-					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime DESC")
+					"SELECT LD FROM LeadDetails LD WHERE NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id) AND LD.superadminId =:superadminId AND LD.dropDateTime BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime DESC")
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.DATE)
 					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.DATE).getResultList();
@@ -157,7 +157,7 @@ public class LeadByPickAndDropHelper {
                 + " AND NOT EXISTS (SELECT U.id FROM LeadDetails U WHERE U.upgradePreviousId = LD.id)"
                 + " AND LD.status IN (:statuses)"
                 + " AND LD.dropDateTime >= :firstDate AND LD.dropDateTime < :lastDate"
-                + " ORDER BY LD.dropDateTime DESC, LD.id DESC", LeadDetails.class)
+                + " AND LD.isSplit = false ORDER BY LD.dropDateTime DESC, LD.id DESC", LeadDetails.class)
                 .setParameter("superadminId", leadRequest.getSuperadminId())
                 .setParameter("statuses", List.of("WON", "ASSIGNED"))
                 .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)

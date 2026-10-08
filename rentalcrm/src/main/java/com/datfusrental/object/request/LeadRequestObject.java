@@ -172,6 +172,11 @@ public class LeadRequestObject {
 
 	private Boolean allData;
 	
+	private Boolean isSplit;
+	private Long splitBookingAmount;
+	private long splitActualAmount;
+	private String splitLoginId;
+	
 	private int respCode;
 	private String respMesg;
 	

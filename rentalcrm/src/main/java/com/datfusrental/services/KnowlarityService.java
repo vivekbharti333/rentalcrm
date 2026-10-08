@@ -177,7 +177,8 @@ public class KnowlarityService {
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 
 		Predicate restriction = criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), cal.getTime());
-		criteriaQuery.where(restriction);
+		Predicate leadNotCreated = criteriaBuilder.isFalse(root.<Boolean>get("leadCreated"));
+		criteriaQuery.where(criteriaBuilder.and(restriction, leadNotCreated));
 		criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
 
 		return knowlarityCallLogDao.getSession().createQuery(criteriaQuery).getResultList();
