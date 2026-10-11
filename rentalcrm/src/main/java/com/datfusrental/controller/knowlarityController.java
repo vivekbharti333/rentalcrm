@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.KnowlarityCallLog;
+import com.datfusrental.object.request.KnowlarityCallLogRequest;
 import com.datfusrental.object.request.KnowlarityWebhookRequest;
+import com.datfusrental.object.request.Request;
 import com.datfusrental.object.response.GenricResponse;
 import com.datfusrental.object.response.Response;
 import com.datfusrental.services.KnowlarityService;
@@ -53,13 +55,15 @@ public class knowlarityController {
 	}
 
 	/**
-	 * Returns today's Knowlarity call notifications (for CRM verification).
+	 * Returns Knowlarity call notifications filtered by date range.
+	 * requestedFor: TODAY (default), YESTERDAY, LAST_WEEK or CUSTOM.
+	 * For CUSTOM, firstDate and lastDate (yyyy-MM-dd, both inclusive) are required.
 	 */
-	@RequestMapping(path = "knowlarity/getTodayCallLogs", method = RequestMethod.GET)
-	public Response<KnowlarityCallLog> getTodayCallLogs() {
+	@RequestMapping(path = "knowlarity/getCallLogs", method = RequestMethod.POST)
+	public Response<KnowlarityCallLog> getCallLogs(@RequestBody Request<KnowlarityCallLogRequest> requestObject) {
 		GenricResponse<KnowlarityCallLog> response = new GenricResponse<KnowlarityCallLog>();
 		try {
-			List<KnowlarityCallLog> callLogs = knowlarityService.getTodayCallLogs();
+			List<KnowlarityCallLog> callLogs = knowlarityService.getCallLogs(requestObject);
 			return response.createListResponse(callLogs, Constant.SUCCESS_CODE, String.valueOf(callLogs.size()));
 		} catch (Exception e) {
 			e.printStackTrace();

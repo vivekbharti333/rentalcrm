@@ -76,4 +76,34 @@ public class DashboardController {
 		}
 	}
 
+	@RequestMapping(path = "followupHealth", method = RequestMethod.POST)
+	public Response<DashboardRequestObject> followupHealth(@RequestBody Request<DashboardRequestObject> dashboardRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<DashboardRequestObject> responseObj = new GenricResponse<DashboardRequestObject>();
+		try {
+			DashboardRequestObject responce = dashboardService.followupHealth(dashboardRequestObject);
+			return responseObj.createSuccessResponse(responce, Constant.SUCCESS_CODE);
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+
+	@RequestMapping(path = "leadSourceSplit", method = RequestMethod.POST)
+	public Response<DashboardRequestObject> leadSourceSplit(@RequestBody Request<DashboardRequestObject> dashboardRequestObject,
+			HttpServletRequest request) {
+		GenricResponse<DashboardRequestObject> responseObj = new GenricResponse<DashboardRequestObject>();
+		try {
+			List<DashboardRequestObject> sources = dashboardService.leadSourceSplit(dashboardRequestObject);
+			return responseObj.createListResponse(sources, Constant.SUCCESS_CODE, String.valueOf(sources.size()));
+		} catch (BizException e) {
+			return responseObj.createErrorResponse(Constant.BAD_REQUEST_CODE, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseObj.createErrorResponse(Constant.INTERNAL_SERVER_ERR, e.getMessage());
+		}
+	}
+
 }

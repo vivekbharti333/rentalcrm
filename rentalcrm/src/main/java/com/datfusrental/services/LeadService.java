@@ -451,9 +451,6 @@ public class LeadService {
 				
 			}
 			
-				System.out.println(leadRequest.getRequestedFor()+" 2 req");
-				System.out.println(leadRequest.getCreatedBy()+" 2 crea");
-
 			// Lead Details
 			LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
 			leadDetails = leadHelper.saveLeadDetails(leadDetails);

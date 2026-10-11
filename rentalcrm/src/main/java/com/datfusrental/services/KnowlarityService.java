@@ -1,6 +1,8 @@
 package com.datfusrental.services;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +25,9 @@ import com.datfusrental.entities.LeadDetails;
 import com.datfusrental.entities.User;
 import com.datfusrental.helper.LeadHelper;
 import com.datfusrental.helper.UserHelper;
+import com.datfusrental.object.request.KnowlarityCallLogRequest;
 import com.datfusrental.object.request.KnowlarityWebhookRequest;
+import com.datfusrental.object.request.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -162,23 +166,61 @@ public class KnowlarityService {
 	}
 
 	/**
-	 * Returns today's call notifications (for verification from the CRM panel).
+	 * Returns call notifications filtered by date range (for the CRM panel).
+	 * requestedFor: TODAY (default), YESTERDAY, LAST_WEEK (last 7 days) or CUSTOM.
+	 * For CUSTOM, firstDate and lastDate (yyyy-MM-dd, both inclusive) are required.
 	 */
 	@Transactional
-	public List<KnowlarityCallLog> getTodayCallLogs() {
+	public List<KnowlarityCallLog> getCallLogs(Request<KnowlarityCallLogRequest> requestObject) {
+		KnowlarityCallLogRequest logRequest = requestObject != null ? requestObject.getPayload() : null;
+
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
+
+		String requestedFor = (logRequest != null && StringUtils.isNotBlank(logRequest.getRequestedFor()))
+				? logRequest.getRequestedFor().toUpperCase()
+				: "TODAY";
+
+		Date firstDate;
+		Date lastDate;
+
+		switch (requestedFor) {
+		case "YESTERDAY":
+			firstDate = Date.from(today.minusDays(1).atStartOfDay(zone).toInstant());
+			lastDate = Date.from(today.atStartOfDay(zone).toInstant());
+			break;
+
+		case "LAST_WEEK":
+			firstDate = Date.from(today.minusDays(7).atStartOfDay(zone).toInstant());
+			lastDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+			break;
+
+		case "CUSTOM":
+			if (logRequest == null || StringUtils.isBlank(logRequest.getFirstDate())
+					|| StringUtils.isBlank(logRequest.getLastDate())) {
+				throw new IllegalArgumentException("firstDate and lastDate (yyyy-MM-dd) are required for CUSTOM");
+			}
+			LocalDate fromDate = LocalDate.parse(logRequest.getFirstDate().trim());
+			LocalDate toDate = LocalDate.parse(logRequest.getLastDate().trim());
+			firstDate = Date.from(fromDate.atStartOfDay(zone).toInstant());
+			lastDate = Date.from(toDate.plusDays(1).atStartOfDay(zone).toInstant());
+			break;
+
+		case "TODAY":
+		default:
+			firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+			lastDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+			break;
+		}
+
 		CriteriaBuilder criteriaBuilder = knowlarityCallLogDao.getSession().getCriteriaBuilder();
 		CriteriaQuery<KnowlarityCallLog> criteriaQuery = criteriaBuilder.createQuery(KnowlarityCallLog.class);
 		Root<KnowlarityCallLog> root = criteriaQuery.from(KnowlarityCallLog.class);
 
-		java.util.Calendar cal = java.util.Calendar.getInstance();
-		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-		cal.set(java.util.Calendar.MINUTE, 0);
-		cal.set(java.util.Calendar.SECOND, 0);
-		cal.set(java.util.Calendar.MILLISECOND, 0);
-
-		Predicate restriction = criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), cal.getTime());
+		Predicate fromRestriction = criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), firstDate);
+		Predicate toRestriction = criteriaBuilder.lessThan(root.get("createdAt"), lastDate);
 		Predicate leadNotCreated = criteriaBuilder.isFalse(root.<Boolean>get("leadCreated"));
-		criteriaQuery.where(criteriaBuilder.and(restriction, leadNotCreated));
+		criteriaQuery.where(criteriaBuilder.and(fromRestriction, toRestriction, leadNotCreated));
 		criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
 
 		return knowlarityCallLogDao.getSession().createQuery(criteriaQuery).getResultList();

@@ -48,5 +48,19 @@ public class DashboardService {
 		return dashboardHelper.getTodayWonSummaryByCreatedBy(dashboardRequest);
 	}
 
+	public DashboardRequestObject followupHealth(Request<DashboardRequestObject> dashboardRequestObject)
+			throws BizException, Exception {
+		DashboardRequestObject dashboardRequest = dashboardRequestObject == null ? null : dashboardRequestObject.getPayload();
+		dashboardHelper.validateDashboardRequest(dashboardRequest);
+		return dashboardHelper.followupHealth(dashboardRequest);
+	}
+
+	public List<DashboardRequestObject> leadSourceSplit(Request<DashboardRequestObject> dashboardRequestObject)
+			throws BizException, Exception {
+		DashboardRequestObject dashboardRequest = dashboardRequestObject == null ? null : dashboardRequestObject.getPayload();
+		dashboardHelper.validateDashboardRequest(dashboardRequest);
+		return dashboardHelper.leadSourceSplit(dashboardRequest);
+	}
+
 
 }

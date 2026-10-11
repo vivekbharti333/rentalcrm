@@ -1,5 +1,7 @@
 package com.datfusrental.object.request;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 import lombok.Data;
@@ -60,6 +62,23 @@ public class DashboardRequestObject {
 	private Long weeklyTarget;
 	private Long biweeklyTarget;
 	private Long monthlyTarget;
+
+	// Follow-up Health card fields (team/agent level, followupHealth endpoint)
+	private Long followupUniqueLeads;
+	private Long followupWon;
+	private Long directWon;
+	private Long missingPickupDate;
+	private Long pendingPaymentCount;
+	private Long autoClosedCount;
+	private Long manualClosedCount;
+	private List<com.datfusrental.object.response.FollowupStageCount> followupPoolByStage;
+
+	// Lead Source Split fields (one item per lead origin, leadSourceSplit endpoint)
+	private String source;
+	private Long leads;
+	private Long won;
+	private Double convPct;
+	private Long revenue;
 
 	private String roleType;
 	private String status;

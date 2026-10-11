@@ -20,6 +20,7 @@ import com.datfusrental.enums.RoleType;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.object.request.DashboardRequestObject;
+import com.datfusrental.object.response.FollowupStageCount;
 
 @Component
 public class DashboardHelper {
@@ -316,6 +317,119 @@ public class DashboardHelper {
 		return summary;
 	}
 
+	// Follow-up Health card: open follow-up pool breakdown plus outcome counters.
+	// followupPool / overdueFollowups / untouchedLeads use the exact same
+	// definitions as the KPI strip (populateKpiCounts). followupUniqueLeads
+	// equals followupPool because this schema stores one row per lead.
+	// autoClosedCount = open leads whose requirement (pickup) date has already
+	// crossed (the pool a date-crossed auto-close would sweep).
+	// manualClosedCount = leads disposed as LOST today.
+	public DashboardRequestObject followupHealth(DashboardRequestObject dashboardRequest) {
+		ZoneId zone = ZoneId.of("Asia/Kolkata");
+		LocalDate today = LocalDate.now(zone);
+		Date startDate = Date.from(today.atStartOfDay(zone).toInstant());
+		Date endDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+		Date now = new Date();
+		boolean team = isSuperadmin(dashboardRequest);
+		String ownerFilter = team ? "LD.superadminId = :ownerId" : "LD.createdBy = :ownerId";
+		String ownerId = team ? dashboardRequest.getSuperadminId() : dashboardRequest.getCreatedBy();
+		List<String> wonStatuses = List.of(Status.WON.name(), "ASSIGNED");
+		List<String> closedStatuses = List.of(Status.WON.name(), "ASSIGNED", "LOST");
 
+		Object[] health = leadDetailsDao.getEntityManager()
+				.createQuery("SELECT "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate AND LD.nextFollowupDate IS NOT NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate AND LD.nextFollowupDate IS NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL AND LD.nextFollowupDate < :now THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.pickupDateTime IS NULL THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.secondStatus = 'PENDING_PAYMENT' THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status NOT IN :closedStatuses AND LD.pickupDateTime IS NOT NULL AND LD.pickupDateTime < :now THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status = 'LOST' AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END) "
+						+ "FROM LeadDetails LD WHERE " + ownerFilter, Object[].class)
+				.setParameter("ownerId", ownerId)
+				.setParameter("wonStatuses", wonStatuses)
+				.setParameter("closedStatuses", closedStatuses)
+				.setParameter("startDate", startDate)
+				.setParameter("endDate", endDate)
+				.setParameter("now", now)
+				.getSingleResult();
+
+		// Open follow-up pool broken down by CRM tab (lead status).
+		List<Object[]> stageRows = leadDetailsDao.getEntityManager()
+				.createQuery("SELECT LD.status, COUNT(LD.id) FROM LeadDetails LD WHERE " + ownerFilter
+						+ " AND LD.status NOT IN :closedStatuses AND LD.nextFollowupDate IS NOT NULL AND LD.upgradeRootId IS NULL "
+						+ "GROUP BY LD.status", Object[].class)
+				.setParameter("ownerId", ownerId)
+				.setParameter("closedStatuses", closedStatuses)
+				.getResultList();
+
+		List<FollowupStageCount> poolByStage = new ArrayList<>();
+		for (Object[] stageRow : stageRows) {
+			poolByStage.add(new FollowupStageCount(stageRow[0] == null ? "UNKNOWN" : stageRow[0].toString(),
+					((Number) stageRow[1]).longValue()));
+		}
+		poolByStage.sort((a, b) -> Long.compare(b.getCount(), a.getCount()));
+
+		DashboardRequestObject result = new DashboardRequestObject();
+		result.setFollowupPool(nz(health[0]));
+		result.setFollowupUniqueLeads(nz(health[0]));
+		result.setFollowupWon(nz(health[1]));
+		result.setDirectWon(nz(health[2]));
+		result.setOverdueFollowups(nz(health[3]));
+		result.setUntouchedLeads(nz(health[4]));
+		result.setMissingPickupDate(nz(health[5]));
+		result.setPendingPaymentCount(nz(health[6]));
+		result.setAutoClosedCount(nz(health[7]));
+		result.setManualClosedCount(nz(health[8]));
+		result.setFollowupPoolByStage(poolByStage);
+		return result;
+	}
+
+	// Lead Source Split card: per lead origin (CALL / WHATSAPP / WEBSITE / EMAIL /
+	// OTHER) the leads received today, leads won today, cohort conversion % and
+	// sales collected (min of actual/booking per won lead, same as leaderboard).
+	public List<DashboardRequestObject> leadSourceSplit(DashboardRequestObject dashboardRequest) {
+		ZoneId zone = ZoneId.of("Asia/Kolkata");
+		LocalDate today = LocalDate.now(zone);
+		Date startDate = Date.from(today.atStartOfDay(zone).toInstant());
+		Date endDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+		boolean team = isSuperadmin(dashboardRequest);
+		String ownerFilter = team ? "LD.superadminId = :ownerId" : "LD.createdBy = :ownerId";
+		String ownerId = team ? dashboardRequest.getSuperadminId() : dashboardRequest.getCreatedBy();
+		List<String> wonStatuses = List.of(Status.WON.name(), "ASSIGNED");
+
+		List<Object[]> rows = leadDetailsDao.getEntityManager()
+				.createQuery("SELECT COALESCE(LD.leadOrigine, 'OTHER'), "
+						+ "SUM(CASE WHEN LD.createdAt >= :startDate AND LD.createdAt < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate THEN CASE WHEN LD.upgradeRootId IS NULL THEN 1 ELSE 0 END ELSE 0 END), "
+						+ "SUM(CASE WHEN LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate "
+						+ "     THEN CASE WHEN LD.upgradeRootId IS NOT NULL THEN COALESCE(LD.upgradeReceivedMargin, 0) WHEN LD.actualAmount < LD.bookingAmount THEN LD.actualAmount ELSE LD.bookingAmount END ELSE 0 END) "
+						+ "FROM LeadDetails LD WHERE " + ownerFilter
+						+ " AND ((LD.createdAt >= :startDate AND LD.createdAt < :endDate) "
+						+ "     OR (LD.status IN :wonStatuses AND LD.changeStatusDate >= :startDate AND LD.changeStatusDate < :endDate)) "
+						+ "GROUP BY COALESCE(LD.leadOrigine, 'OTHER')", Object[].class)
+				.setParameter("ownerId", ownerId)
+				.setParameter("wonStatuses", wonStatuses)
+				.setParameter("startDate", startDate)
+				.setParameter("endDate", endDate)
+				.getResultList();
+
+		List<DashboardRequestObject> sources = new ArrayList<>();
+		for (Object[] row : rows) {
+			long leads = nz(row[1]);
+			long won = nz(row[2]);
+			DashboardRequestObject item = new DashboardRequestObject();
+			item.setSource(row[0] == null ? "OTHER" : row[0].toString());
+			item.setLeads(leads);
+			item.setWon(won);
+			item.setConvPct(pct(won, leads));
+			item.setRevenue(nz(row[3]));
+			sources.add(item);
+		}
+		sources.sort((a, b) -> Long.compare(b.getLeads(), a.getLeads()));
+		return sources;
+	}
 
 }
