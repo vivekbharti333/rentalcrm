@@ -247,8 +247,24 @@ public class DashboardHelper {
 		Date startDate = Date.from(today.atStartOfDay(zone).toInstant());
 		Date endDate = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
 		Date now = new Date();
-		boolean allData = dashboardRequest != null && Boolean.TRUE.equals(dashboardRequest.getAllData());
-		String roleFilter = allData ? "" : "AND U.roleType IN :roleTypes ";
+		// Role-driven visibility for the Agent Leaderboard, decided server-side from
+		// the logged-in user's roleType (the client-sent allData flag is ignored):
+		// SUPERADMIN sees every role; ADMIN / TEAM_LEADER see sales executives and
+		// team leaders; SALE(S)_EXECUTIVE (or any other role) sees only sales executives.
+		String loggedInRole = dashboardRequest == null ? null : dashboardRequest.getRoleType();
+		boolean superadmin = loggedInRole != null && RoleType.SUPERADMIN.name().equalsIgnoreCase(loggedInRole);
+		boolean manager = loggedInRole != null && (RoleType.ADMIN.name().equalsIgnoreCase(loggedInRole)
+				|| RoleType.TEAM_LEADER.name().equalsIgnoreCase(loggedInRole));
+		List<String> visibleRoleTypes;
+		if (superadmin) {
+			visibleRoleTypes = null; // no role filter -> all data
+		} else if (manager) {
+			visibleRoleTypes = List.of("SALE_EXECUTIVE", "SALE EXECUTIVE", "SALES_EXECUTIVE", "TEAM_LEADER",
+					"TEAM LEADER");
+		} else {
+			visibleRoleTypes = List.of("SALE_EXECUTIVE", "SALE EXECUTIVE", "SALES_EXECUTIVE");
+		}
+		String roleFilter = visibleRoleTypes == null ? "" : "AND U.roleType IN :roleTypes ";
 		List<String> wonStatuses = List.of(Status.WON.name(), "ASSIGNED");
 		List<String> closedStatuses = List.of(Status.WON.name(), "ASSIGNED", "LOST");
 
@@ -281,8 +297,8 @@ public class DashboardHelper {
 				.setParameter("startDate", startDate)
 				.setParameter("endDate", endDate)
 				.setParameter("now", now);
-		if (!allData) {
-			summaryQuery.setParameter("roleTypes", List.of("SALE_EXECUTIVE", "SALE EXECUTIVE"));
+		if (visibleRoleTypes != null) {
+			summaryQuery.setParameter("roleTypes", visibleRoleTypes);
 		}
 		List<Object[]> groupedResults = summaryQuery.getResultList();
 
