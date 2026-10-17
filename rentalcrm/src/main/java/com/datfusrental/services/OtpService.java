@@ -83,7 +83,7 @@ public class OtpService {
 			OtpDetails otpDetails = otpHelper.getOtpDetailsByReqObj(otpRequest);
 			otpDetails = otpHelper.saveOtpDetails(otpDetails);
 			
-			this.sendWhatsAppPassMessage("+91"+user.getAlternateMobile(), otpDetails.getOtp());
+			this.sendWhatsAppPassMessage("+91"+user.getMobileNo(), otpDetails.getOtp());
 
 			otpRequest.setLoginId(user.getLoginId());
 			otpRequest.setOtp(null);
@@ -185,7 +185,7 @@ public class OtpService {
 	    }
 
 	    // Use the same lookup key as generateOtp; the alternate mobile is only the delivery address.
-	    OtpDetails otpDetails = otpHelper.getOtpDetailsByMobile(otpRequest.getCustomerMobile());
+	    OtpDetails otpDetails = otpHelper.getOtpDetailsByMobile(user.getMobileNo());
 
 	    if (otpDetails == null) {
 	        otpRequest.setRespCode(Constant.BAD_REQUEST_CODE);

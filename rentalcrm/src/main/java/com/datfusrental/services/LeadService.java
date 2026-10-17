@@ -662,15 +662,12 @@ public class LeadService {
 	    	
 	        boolean isPickupDatePassed = this.isPickupDateLessThanToday(existingLead.getPickupDateTime());
 
-	        System.out.println(isPickupDatePassed);
-
-	        if (isPickupDatePassed) {
+	        if (isPickupDatePassed && (!"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType()))) {
 	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
 	            leadRequest.setRespMesg("Can not Update. PickupDate Passed");
 	            return leadRequest;
 	        }
 	    
-
 	    	if(existingLead.getVendorId() != null && existingLead.getStatus().equalsIgnoreCase("ASSIGNED")) {
 
 	    		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
@@ -680,8 +677,7 @@ public class LeadService {
 	    				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
 	
 	    				vendorHelper.UpdateVendorDetails(vendorDetails);
-	    				
-	    				
+	    						
 	    				//save transaction details
 						leadRequest.setCompanyAmount(existingLead.getPayToCompany());
 						leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
