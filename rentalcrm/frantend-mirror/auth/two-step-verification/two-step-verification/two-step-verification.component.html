@@ -1,0 +1,55 @@
+<div class="account-content">
+    <div class="login-wrapper bg-img">
+        <div class="login-content">
+            <div class="login-userset">
+                <div class="login-userset">
+                    <div class="login-logo logo-normal">
+                        <img src="assets/img/newLogo.webp" alt="img">
+                    </div>
+                </div>
+                <a [routerLink] = "routes.adminDashboard" class="login-logo logo-white">
+                    <img src="assets/img/newLogo.webp"  alt="">
+                </a>
+                <div class="card-body">
+                    <p-toast></p-toast>
+                </div>
+                <div class="login-userheading">
+                    <h3>Verify OTP</h3>
+                    <h4 class="verfy-mail-content">We sent a 6 digit OTP to your registered mobile number on WhatsApp. Enter the code below.</h4>
+                </div>
+                <form class="digit-group">
+                    <div class="wallet-add">
+                        <div class="otp-box">
+                            <div class="forms-block text-center">
+                                <input type="text" id="digit-1" maxlength="1" inputmode="numeric" autocomplete="one-time-code"
+                                    [value]="otpDigits[0]" (input)="onDigitInput(0, $event)" (keydown)="onDigitKeydown(0, $event)">
+                                <input type="text" id="digit-2" maxlength="1" inputmode="numeric"
+                                    [value]="otpDigits[1]" (input)="onDigitInput(1, $event)" (keydown)="onDigitKeydown(1, $event)">
+                                <input type="text" id="digit-3" maxlength="1" inputmode="numeric"
+                                    [value]="otpDigits[2]" (input)="onDigitInput(2, $event)" (keydown)="onDigitKeydown(2, $event)">
+                                <input type="text" id="digit-4" maxlength="1" inputmode="numeric"
+                                    [value]="otpDigits[3]" (input)="onDigitInput(3, $event)" (keydown)="onDigitKeydown(3, $event)">
+                                <input type="text" id="digit-5" maxlength="1" inputmode="numeric"
+                                    [value]="otpDigits[4]" (input)="onDigitInput(4, $event)" (keydown)="onDigitKeydown(4, $event)">
+                                <input type="text" id="digit-6" maxlength="1" inputmode="numeric"
+                                    [value]="otpDigits[5]" (input)="onDigitInput(5, $event)" (keydown)="onDigitKeydown(5, $event)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Otp-expire text-center">
+                        <p>The OTP is valid for 5 minutes</p>
+                    </div>
+                    <div class="form-login mt-4">
+                        <button type="button" (click)="navigation()" class="btn btn-login" [disabled]="isLoading">{{ isLoading ? 'Verifying...' : 'Verify My Account' }}</button>
+                    </div>
+                </form>
+                <div class="signinform text-center">
+                    <h4>Return to <a [routerLink]="routes.signIn" class="hover-a">login</a></h4>
+                </div>
+                <div class="my-4 d-flex justify-content-center align-items-center copyright-text">
+                    <p>Copyright &copy; 2026 Rome Your Way. All rights reserved</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

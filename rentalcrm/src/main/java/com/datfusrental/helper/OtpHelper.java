@@ -1,8 +1,6 @@
 package com.datfusrental.helper;
 
 import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -41,6 +39,12 @@ public class OtpHelper {
 //        int otp = 100000 + secureRandom.nextInt(900000);
 //        return String.valueOf(otp);
 //    }
+
+	/** Generates a cryptographically secure 6 digit OTP. */
+	public static String generate6DigitOtp() {
+		int otp = 100000 + secureRandom.nextInt(900000);
+		return String.valueOf(otp);
+	}
 	
 	@Transactional
 	public OtpDetails getOtpDetailsByMobile(String customerMobile) {
@@ -60,9 +64,9 @@ public class OtpHelper {
 
 		otpDetails.setCustomerMobile(otpRequest.getCustomerMobile());
 		otpDetails.setCustomerEmailId(otpRequest.getCustomerEmailId());
-//		otpDetails.setOtp(String.valueOf(100000 + secureRandom.nextInt(900000)));
-		otpDetails.setOtp(String.valueOf(123456));
+		otpDetails.setOtp(generate6DigitOtp());
 		otpDetails.setStatus("INIT");
+		otpDetails.setOtpCount(0);
 		otpDetails.setCreatedAt(new Date());
 		otpDetails.setUpdatedAt(new Date());
 
@@ -79,21 +83,10 @@ public class OtpHelper {
 
 		Date now = new Date();
 
-		// Convert DB updatedAt to LocalDate
-		LocalDate dbDate = otpDetails.getUpdatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		// Today's date
-		LocalDate today = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		// A newly generated OTP gets its own wrong-attempt allowance.
+		otpDetails.setOtpCount(0);
 
-		// Same date → increase count
-		if (dbDate.equals(today)) {
-			otpDetails.setOtpCount(otpDetails.getOtpCount() + 1);
-		} else {
-			// New day → reset count
-			otpDetails.setOtpCount(1);
-		}
-
-//		otpDetails.setOtp(String.valueOf(100000 + secureRandom.nextInt(900000)));
-		otpDetails.setOtp(String.valueOf(123456));
+		otpDetails.setOtp(generate6DigitOtp());
 		otpDetails.setStatus("INIT");
 		otpDetails.setUpdatedAt(now);
 

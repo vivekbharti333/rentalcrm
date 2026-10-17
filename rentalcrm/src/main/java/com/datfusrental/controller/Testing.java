@@ -54,8 +54,8 @@ public class Testing {
 
 	public void sendemail() {
 
-        final String username = "no-reply.india@cefinternational.org";
-        final String password = "Cef@123#Account";
+        final String username = "n";
+        final String password = "Ce";
 
         Properties prop = new Properties();
 		prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -73,7 +73,7 @@ public class Testing {
         try {
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("no-reply.india@cefinternational.org"));
+            message.setFrom(new InternetAddress(""));
             message.setRecipients(
                     Message.RecipientType.TO,
                     InternetAddress.parse("vivekbharti333@gmail.com, info@datfuslab.com")

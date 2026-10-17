@@ -19,12 +19,14 @@ import com.datfusrental.entities.User;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AddressHelper;
+import com.datfusrental.helper.OtpHelper;
 import com.datfusrental.helper.UserHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
 import com.datfusrental.object.request.AddressRequestObject;
 import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.request.UserRequestObject;
+import com.datfusrental.entities.OtpDetails;
 
 
 @Service
@@ -34,6 +36,9 @@ public class UserService {
 
 	@Autowired
 	private UserHelper userHelper;
+
+	@Autowired
+	private OtpHelper otpHelper;
 
 	@Autowired
 	private AddressService addressService;
@@ -321,16 +326,32 @@ public class UserService {
 	public UserRequestObject changeUserPassword(Request<UserRequestObject> userRequestObject)throws BizException, Exception {
 		UserRequestObject userRequest = userRequestObject.getPayload();
 		userHelper.validateUserRequest(userRequest);
-		
-		System.out.println(userRequest.getLoginId()+" , "+userRequest.getPassword());
+
+		if (userRequest.getLoginId() == null || userRequest.getLoginId().isBlank()
+				|| userRequest.getPassword() == null || userRequest.getPassword().isBlank()) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Login id and password are required");
+		}
 
 		User user = userHelper.getUserDetailsByLoginId(userRequest.getLoginId());
 		if (user != null) {
+
+			// generateOtp and verifyOtp store and retrieve the OTP by login id.
+			OtpDetails otpDetails = otpHelper.getOtpDetailsByMobile(userRequest.getLoginId());
+			if (otpDetails == null || !"VERIFIED".equalsIgnoreCase(otpDetails.getStatus())) {
+				throw new BizException(Constant.BAD_REQUEST_CODE, "OTP not verified. Please verify OTP first");
+			}
+
 			String password = BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt());
 			user.setPassword(password);
+			// doLogin checks the BCrypt hash stored in salt.
+			user.setSalt(password);
 //			userDetails.setIsPassChanged("YES");
 			user = userHelper.UpdateUserDetails(user);
-			
+
+			// Mark the OTP as used so the same verification cannot reset the password twice.
+			otpDetails.setStatus("USED");
+			otpHelper.updateOtpDetails(otpDetails);
+
 			userRequest.setStatus(user.getStatus());
 			userRequest.setRespCode(Constant.SUCCESS_CODE);
 			userRequest.setRespMesg(Constant.UPDATED_SUCCESS);

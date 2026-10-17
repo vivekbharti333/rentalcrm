@@ -64,22 +64,59 @@ public class SendWhatsAppTextMessageHelper {
 		template.put("language", language);
 
 		// ---- Body Parameters ----
-		List<Map<String, Object>> parameters = new ArrayList<>();
+		List<Map<String, Object>> components = new ArrayList<>();
 
-		if (whatsAppMessageRequest.getMsgBodyVariable() != null) {
+		if (whatsAppMessageRequest.getMsgBodyVariable() != null
+				&& !whatsAppMessageRequest.getMsgBodyVariable().isEmpty()) {
+			List<Map<String, Object>> parameters = new ArrayList<>();
+
 			whatsAppMessageRequest.getMsgBodyVariable().forEach(var -> {
 				Map<String, Object> param = new HashMap<>();
 				param.put("type", "text");
 				param.put("text", var.getBodyVariable());
 				parameters.add(param);
 			});
+
+			Map<String, Object> bodyComponent = new HashMap<>();
+			bodyComponent.put("type", "body");
+			bodyComponent.put("parameters", parameters);
+
+			components.add(bodyComponent);
 		}
 
-		Map<String, Object> bodyComponent = new HashMap<>();
-		bodyComponent.put("type", "body");
-		bodyComponent.put("parameters", parameters);
+		// ---- Button Parameters ----
+		if (whatsAppMessageRequest.getButtonVariable() != null
+				&& !whatsAppMessageRequest.getButtonVariable().isEmpty()) {
 
-		template.put("components", List.of(bodyComponent));
+			for (int i = 0; i < whatsAppMessageRequest.getButtonVariable().size(); i++) {
+
+				com.datfusrental.whatsapp.request.TemplateButtonVariableRequest btn =
+						whatsAppMessageRequest.getButtonVariable().get(i);
+
+				Map<String, Object> buttonComponent = new HashMap<>();
+				buttonComponent.put("type", "button");
+				buttonComponent.put("sub_type", btn.getType());
+				buttonComponent.put("index", String.valueOf(i));
+
+				List<Map<String, Object>> buttonParameters = new ArrayList<>();
+				Map<String, Object> parameter = new HashMap<>();
+
+				if ("url".equalsIgnoreCase(btn.getType()) || "phone_number".equalsIgnoreCase(btn.getType())) {
+					parameter.put("type", "text");
+					parameter.put("text", btn.getValue());
+				} else if ("quick_reply".equalsIgnoreCase(btn.getType())) {
+					parameter.put("type", "payload");
+					parameter.put("payload", btn.getValue());
+				}
+
+				buttonParameters.add(parameter);
+				buttonComponent.put("parameters", buttonParameters);
+
+				components.add(buttonComponent);
+			}
+		}
+
+		template.put("components", components);
 		root.put("template", template);
 
 		return new ObjectMapper().writeValueAsString(root);
@@ -215,6 +252,7 @@ public class SendWhatsAppTextMessageHelper {
 				System.err.println("Type            : " + errorType);
 				System.err.println("Code            : " + errorCode);
 				System.err.println("Error Sub Code  : " + errorSubCode);
+				System.err.println("Details         : " + errorNode.path("error_data").path("details").asText());
 
 				// ✅ SET ERROR INTO RESPONSE OBJECT
 				res.setErrorMessage(errorMessage);

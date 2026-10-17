@@ -9,7 +9,9 @@ public class OtpRequestObject {
 	
 	private Long id;
 	private String token;
+	private String loginId;
 	private String customerMobile;
+	private String customerName;
 	private String customerEmailId;
 	private String status;
 	private Date updatedAt;
