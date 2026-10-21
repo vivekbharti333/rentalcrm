@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.util.StringUtils;
+
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
 import com.datfusrental.entities.User;
@@ -32,12 +34,35 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
+	private String getClientIpAddress(HttpServletRequest request) {
+		String ip = request.getHeader("X-Forwarded-For");
+		if (!StringUtils.hasText(ip) || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (!StringUtils.hasText(ip) || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (!StringUtils.hasText(ip) || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		if (StringUtils.hasText(ip) && ip.contains(",")) {
+			ip = ip.split(",")[0].trim();
+		}
+		if ("0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)) {
+			ip = "127.0.0.1";
+		}
+		return ip;
+	}
 	
 	@RequestMapping(path = "doLogin", method = RequestMethod.POST)
 	public Response<LoginRequestObject> doLogin(@RequestBody Request<LoginRequestObject> loginRequestObject,
 			HttpServletRequest request) {
 		GenricResponse<LoginRequestObject> responseObj = new GenricResponse<LoginRequestObject>();
 		try {
+			LoginRequestObject loginRequest = loginRequestObject.getPayload();
+			if (!StringUtils.hasText(loginRequest.getIpAddress())) {
+				loginRequest.setIpAddress(getClientIpAddress(request));
+			}
 			LoginRequestObject response = userService.doLogin(loginRequestObject);
 			return responseObj.createSuccessResponse(response, Constant.SUCCESS_CODE);
 		} catch (BizException e) {

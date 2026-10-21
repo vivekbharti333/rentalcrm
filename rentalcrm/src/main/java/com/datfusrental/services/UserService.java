@@ -6,19 +6,19 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.datfusrental.constant.Constant;
 import com.datfusrental.entities.AddressDetails;
-import com.datfusrental.entities.LeadDetails;
-import com.datfusrental.entities.LeadDetailsHistory;
+import com.datfusrental.entities.LoginLogs;
+import com.datfusrental.entities.OtpDetails;
 import com.datfusrental.entities.User;
 import com.datfusrental.enums.Status;
 import com.datfusrental.exceptions.BizException;
 import com.datfusrental.helper.AddressHelper;
+import com.datfusrental.helper.LogsHelper;
 import com.datfusrental.helper.OtpHelper;
 import com.datfusrental.helper.UserHelper;
 import com.datfusrental.jwt.JwtTokenUtil;
@@ -26,7 +26,6 @@ import com.datfusrental.object.request.AddressRequestObject;
 import com.datfusrental.object.request.LoginRequestObject;
 import com.datfusrental.object.request.Request;
 import com.datfusrental.object.request.UserRequestObject;
-import com.datfusrental.entities.OtpDetails;
 
 
 @Service
@@ -51,6 +50,9 @@ public class UserService {
 	
 	@Autowired
 	private LeadService leadService;
+	
+	@Autowired
+	private LogsHelper logsHelper;
 	
 	
 //	@Autowired
@@ -77,36 +79,28 @@ public class UserService {
 	    User user = userHelper.getUserDetailsByLoginId(loginRequest.getLoginId());
 
 	    if (user == null) {
-	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        loginRequest.setRespMesg(Constant.INVALID_LOGIN);
-	        return loginRequest;
+	        return handleLoginResponse(loginRequest, Constant.BAD_REQUEST_CODE, Constant.INVALID_LOGIN, "FAILED");
 	    }
 
 	    if (user.getStatus().equalsIgnoreCase(Status.INACTIVE.name())) {
-	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        loginRequest.setRespMesg(Constant.INACTIVE_USER);
-	        return loginRequest;
+	        return handleLoginResponse(loginRequest, Constant.BAD_REQUEST_CODE, Constant.INACTIVE_USER, "FAILED");
 	    }
 
 	    boolean isValid = userHelper.checkValidityOfUser(user.getValidityExpireOn());
 	    if (!isValid) {
-	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        loginRequest.setRespMesg(Constant.EXPIRED_LOGIN);
-	        return loginRequest;
+	        return handleLoginResponse(loginRequest, Constant.BAD_REQUEST_CODE, Constant.EXPIRED_LOGIN, "FAILED");
 	    }
 
 	    // ✅ Password check
 	    if (!BCrypt.checkpw(loginRequest.getPassword(), user.getSalt())) {
-	        loginRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        loginRequest.setRespMesg(Constant.INVALID_LOGIN);
-	        return loginRequest;
+	        return handleLoginResponse(loginRequest, Constant.BAD_REQUEST_CODE, Constant.INVALID_LOGIN, "FAILED");
 	    }
 
 	    // ================= LOGIN SUCCESS =================
 	    
 	    // 🔥 Generate JWT token
 	    String token = jwtTokenUtil.generateToken(user.getLoginId());
-
+	    
 	    // Clear sensitive data
 	    loginRequest.setPassword(null);
 
@@ -128,8 +122,17 @@ public class UserService {
 	    // 🔥 IMPORTANT: set token in response
 	    loginRequest.setToken(token);
 
-	    loginRequest.setRespCode(Constant.SUCCESS_CODE);
-	    loginRequest.setRespMesg(Constant.LOGIN_SUCCESS);
+	    return handleLoginResponse(loginRequest, Constant.SUCCESS_CODE, Constant.LOGIN_SUCCESS, "SUCCESS");
+	}
+
+	private LoginRequestObject handleLoginResponse(LoginRequestObject loginRequest, int respCode,
+	        String respMesg, String status) {
+	    loginRequest.setRespCode(respCode);
+	    loginRequest.setRespMesg(respMesg);
+	    loginRequest.setStatus(status);
+
+	    LoginLogs loginLogs = logsHelper.getLoginLogsDetailsByReqObj(loginRequest);
+	    logsHelper.saveLoginLogsDetails(loginLogs);
 
 	    return loginRequest;
 	}

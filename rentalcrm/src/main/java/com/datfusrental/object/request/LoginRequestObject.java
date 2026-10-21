@@ -1,5 +1,7 @@
 package com.datfusrental.object.request;
 
+import javax.persistence.Column;
+
 import lombok.Data;
 
 @Data
@@ -24,6 +26,12 @@ public class LoginRequestObject {
 	private String teamLeaderId;
 	private String adminId;
 	private String superadminId;
+
+	//Logs
+	private String ipAddress;
+	private String isRegisteredIp;
+	private String  status;	
+	private String  reason;	
 	
 	private int respCode;
 	private String respMesg;
