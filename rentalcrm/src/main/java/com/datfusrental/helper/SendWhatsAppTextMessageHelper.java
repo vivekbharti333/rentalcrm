@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.datfusrental.constant.Constant;
@@ -25,6 +26,7 @@ import okhttp3.RequestBody;
 
 @Component
 public class SendWhatsAppTextMessageHelper {
+	private static final Logger logger = Logger.getLogger(SendWhatsAppTextMessageHelper.class);
 	
 
 	public void validateTemplateRequest(TemplateRequestObject templateRequestObject) throws BizException {
@@ -230,6 +232,7 @@ public class SendWhatsAppTextMessageHelper {
 		try (okhttp3.Response response = client.newCall(request).execute()) {
 
 			String responseBody = response.body() != null ? response.body().string() : "";
+			logger.info("WhatsApp API response: HTTP " + response.code() + ", body: " + responseBody);
 
 			ObjectMapper mapper = new ObjectMapper();
 			WhatsAppMessageResponse res = new WhatsAppMessageResponse();
