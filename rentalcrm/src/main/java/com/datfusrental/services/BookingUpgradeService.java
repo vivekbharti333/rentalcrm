@@ -138,7 +138,14 @@ public class BookingUpgradeService {
         
         
         LeadDetails next = snapshot(latest);
-        // The snapshot retains booking dates, duration and quantities. Only category and pricing come from the request.
+        // Price the upgraded schedule while preserving the original booking and headcounts.
+        if (request.getPickupDateTime() == null || request.getDropDateTime() == null
+                || !request.getDropDateTime().after(request.getPickupDateTime())) {
+            throw invalid("Drop date and time must be after pickup.");
+        }
+        next.setPickupDateTime(request.getPickupDateTime());
+        next.setDropDateTime(request.getDropDateTime());
+        next.setTotalDays(request.getTotalDays());
         next.setCategory(request.getCategory());
         next.setSuperCategory(request.getSuperCategory());
         next.setSubCategory(request.getSubCategory());
@@ -173,6 +180,21 @@ public class BookingUpgradeService {
 //                && (request.getPaymentType() == null || request.getPaymentType().trim().isEmpty())) {
 //            throw invalid("Payment type is required for the additional payment.");
 //        }
+        User splitUser = null;
+        if (Boolean.TRUE.equals(request.getIsSplit())) {
+            splitUser = userHelper.getUserDetailsByLoginId(request.getSplitLoginId());
+            String splitTenant = splitUser == null ? null : ("SUPERADMIN".equalsIgnoreCase(splitUser.getRoleType())
+                    ? splitUser.getLoginId() : splitUser.getSuperadminId());
+            if (splitUser == null || !Objects.equals(original.getSuperadminId(), splitTenant)
+                    || Objects.equals(actor.getLoginId(), splitUser.getLoginId())) {
+                throw invalid("Select another sales executive from the same company for Split Booking.");
+            }
+            if (newPayment <= 0 || bookingDifference < 0 || bookingDifference % 2 != 0 || newPayment % 2 != 0
+                    || !Objects.equals(request.getSplitBookingAmount(), bookingDifference / 2)
+                    || request.getSplitActualAmount() != newPayment / 2) {
+                throw invalid("Split amounts must be equal whole-number shares of the upgrade booking difference and new payment.");
+            }
+        }
         next.setCreatedBy(actor.getLoginId());
         next.setCreatedByName((Objects.toString(actor.getFirstName(), "") + " "
                 + Objects.toString(actor.getLastName(), "")).trim());
@@ -208,7 +230,35 @@ public class BookingUpgradeService {
         row.setUpdatedAt(new Date());
         row.setChangeStatusDate(new Date());
         row.setUpdatedBy(actor.getLoginId());
+        // Keep the full cumulative snapshot on the single upgrade-history row.
+        // The second row is an allocation, matching ordinary split reporting.
+        if (splitUser != null) {
+            row.setIsSplit(true);
+            row.setBookingAmount(bookingDifference / 2);
+            row.setActualAmount(newPayment / 2);
+        }
         dao.persist(row);
+        if (splitUser != null) {
+            LeadDetails share = new LeadDetails();
+            share.setIsSplit(true);
+            share.setBookingId(row.getId().toString());
+            share.setSuperadminId(original.getSuperadminId());
+            share.setCreatedBy(splitUser.getLoginId());
+            share.setCreatedByName((Objects.toString(splitUser.getFirstName(), "") + " "
+                    + Objects.toString(splitUser.getLastName(), "")).trim());
+            share.setPseudoName(splitUser.getPseudoName());
+            share.setAdminId(splitUser.getAdminId());
+            share.setTeamleaderId(splitUser.getTeamleaderId());
+            share.setBookingAmount(bookingDifference / 2);
+            share.setActualAmount(newPayment / 2);
+            share.setPaymentType(request.getPaymentType());
+            share.setStatus("WON");
+            share.setCreatedAt(row.getCreatedAt());
+            share.setUpdatedAt(row.getUpdatedAt());
+            share.setChangeStatusDate(row.getChangeStatusDate());
+            share.setUpdatedBy(actor.getLoginId());
+            dao.persist(share);
+        }
         dao.getEntityManager().flush();
         return row;
     }

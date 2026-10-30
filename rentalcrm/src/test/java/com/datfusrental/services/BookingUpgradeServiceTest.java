@@ -80,7 +80,7 @@ public class BookingUpgradeServiceTest extends TestCase {
                 case "createQuery":
                     return Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{TypedQuery.class}, (query, op, values) -> {
                         if (op.getName().equals("setParameter") || op.getName().equals("setLockMode")) return query;
-                        if (op.getName().equals("getResultList")) return new ArrayList<>(rows.subList(1, rows.size()));
+                        if (op.getName().equals("getResultList")) return rows.stream().filter(historyRow -> Objects.equals(historyRow.getUpgradeRootId(), original.getId())).collect(java.util.stream.Collectors.toList());
                         throw new UnsupportedOperationException(op.getName());
                     });
                 default: throw new UnsupportedOperationException(method.getName());
@@ -144,6 +144,45 @@ public class BookingUpgradeServiceTest extends TestCase {
         assertEquals(3000L, current.getBookingAmount());
         assertEquals(2000L, original.getActualAmount());
     }
+    public void testSplitPreservesFullSnapshotAndRetryDoesNotDuplicateShares() throws Exception {
+        User colleague = new User();
+        colleague.setLoginId("colleague");
+        colleague.setSuperadminId("tenant");
+        colleague.setRoleType("SALE_EXECUTIVE");
+        colleague.setFirstName("Second");
+        colleague.setLastName("Agent");
+        inject(service, "userHelper", new UserHelper() {
+            @Override public User getUserDetailsByLoginId(String id) {
+                return "colleague".equals(id) ? colleague : user.getLoginId().equals(id) ? user : null;
+            }
+        });
+        request.setIsSplit(true);
+        request.setSplitLoginId("colleague");
+        request.setActualAmount(500);
+        request.setSplitBookingAmount(500L);
+        request.setSplitActualAmount(250);
+        LeadDetails saved = service.upgrade(request);
+        assertEquals(3, rows.size());
+        assertEquals(500L, saved.getBookingAmount());
+        assertEquals(250L, saved.getActualAmount());
+        LeadDetails share = rows.get(2);
+        assertEquals("colleague", share.getCreatedBy());
+        assertEquals(saved.getId().toString(), share.getBookingId());
+        assertEquals(500L, share.getBookingAmount());
+        assertEquals(250L, share.getActualAmount());
+        assertNull(share.getUpgradeRootId());
+        LeadDetails current = (LeadDetails) service.context(1L).get("current");
+        assertEquals(2500L, current.getActualAmount());
+        assertEquals(3000L, current.getBookingAmount());
+        assertSame(saved, service.upgrade(request));
+        assertEquals(3, rows.size());
+    }
+    public void testSplitRejectsInvalidRecipientBeforeSaving() throws Exception {
+        request.setIsSplit(true);
+        request.setSplitLoginId("missing");
+        try { service.upgrade(request); fail(); } catch (BizException expected) { }
+        assertEquals(1, rows.size());
+    }
     public void testRetryDoesNotCreateDuplicate() throws Exception {
         LeadDetails saved = service.upgrade(request);
         assertSame(saved, service.upgrade(request));
@@ -172,23 +211,58 @@ public class BookingUpgradeServiceTest extends TestCase {
         assertEquals(Long.valueOf(7000), second.getUpgradeOldTotal());
         assertEquals(5000L, original.getTotalAmount());
     }
-    public void testUpgradeUsesSavedScheduleAndHeadcounts() throws Exception {
+    public void testUpgradeUsesSubmittedScheduleAndSavedHeadcounts() throws Exception {
         request.setPickupDateTime(new Date(original.getPickupDateTime().getTime() + 60000));
         request.setDropDateTime(new Date(original.getDropDateTime().getTime() + 60000));
         request.setTotalDays(4);
+        request.setUpgradeBookingAmount(10000);
         request.setQuantity(3);
         request.setKidQuantity(2);
         request.setInfantQuantity(1);
 
         LeadDetails saved = service.upgrade(request);
         LeadDetails current = (LeadDetails) service.context(1L).get("current");
-        assertEquals(original.getPickupDateTime(), current.getPickupDateTime());
-        assertEquals(original.getDropDateTime(), current.getDropDateTime());
-        assertEquals(original.getTotalDays(), current.getTotalDays());
+        assertEquals(request.getPickupDateTime(), current.getPickupDateTime());
+        assertEquals(request.getDropDateTime(), current.getDropDateTime());
+        assertEquals(4, current.getTotalDays());
         assertEquals(original.getQuantity(), current.getQuantity());
         assertEquals(original.getKidQuantity(), current.getKidQuantity());
         assertEquals(original.getInfantQuantity(), current.getInfantQuantity());
-        assertEquals(2000L, saved.getTotalAmount());
+        assertEquals(28000L, saved.getTotalAmount());
+    }
+    public void testFiveToSevenDayUpgradeAtSameDailyRate() throws Exception {
+        original.setTotalDays(5);
+        request.setCompanyRate(2000);
+        request.setVendorRate(1300);
+        request.setDeliveryAmountToCompany(1000);
+        request.setDeliveryAmountToVendor(500);
+        request.setActualAmount(4000);
+        BookingUpgradeAmounts.calculate(original, request);
+        LeadDetails before = new LeadDetails();
+        BeanUtils.copyProperties(original, before);
+        request.setTotalDays(7);
+        request.setPickupDateTime(new Date(original.getPickupDateTime().getTime() - 86400000L));
+        request.setDropDateTime(new Date(original.getDropDateTime().getTime() + 86400000L));
+        request.setActualAmount(1400);
+        request.setBalanceAmount(9600);
+        request.setUpgradeBookingAmount(1400);
+        LeadDetails saved = service.upgrade(request);
+        LeadDetails current = (LeadDetails) service.context(1L).get("current");
+        assertEquals(before, original);
+        assertEquals(7, current.getTotalDays());
+        assertEquals(request.getPickupDateTime(), current.getPickupDateTime());
+        assertEquals(request.getDropDateTime(), current.getDropDateTime());
+        assertEquals(15000L, current.getTotalAmount());
+        assertEquals(5400L, current.getBookingAmount());
+        assertEquals(5400L, current.getActualAmount());
+        assertEquals(1400L, saved.getBookingAmount());
+        assertEquals(1400L, saved.getActualAmount());
+        assertEquals(15000L, saved.getTotalAmount());
+    }
+    public void testRejectsInvalidUpgradeScheduleBeforeSaving() throws Exception {
+        request.setDropDateTime(request.getPickupDateTime());
+        try { service.upgrade(request); fail(); } catch (BizException expected) { }
+        assertEquals(1, rows.size());
     }
     public void testOtherTenantDenied() throws Exception {
         user.setSuperadminId("other");
