@@ -16,6 +16,7 @@ import com.datfusrental.object.request.LeadRequestObject;
 @Component
 public class WonLeadHelper {
 
+
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
 
@@ -83,6 +84,7 @@ public class WonLeadHelper {
 	            .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 	            .getResultList();
 	    }
+
 
 	    return results;
 	}

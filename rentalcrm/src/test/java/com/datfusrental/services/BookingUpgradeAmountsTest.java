@@ -80,10 +80,11 @@ public class BookingUpgradeAmountsTest extends TestCase {
         assertEquals(2300L, next.getBookingAmount());
         assertEquals(3800L, next.getBalanceAmount());
     }
-    public void testRejectDowngradeAndReducedPayment() {
+    public void testAllowsDowngradeButRejectsReducedPayment() {
         LeadDetails old = booking(5000, 3000, 2000, false);
-        try { BookingUpgradeAmounts.makeDifference(booking(4000, 2000, 2000, false), old); fail(); }
-        catch (IllegalArgumentException expected) { }
+        LeadDetails lower = booking(4000, 2000, 2000, false);
+        BookingUpgradeAmounts.makeDifference(lower, old);
+        assertEquals(-1000L, lower.getTotalAmount());
         try { BookingUpgradeAmounts.makeDifference(booking(7000, 4000, 1000, false), old); fail(); }
         catch (IllegalArgumentException expected) { }
     }

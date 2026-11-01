@@ -209,7 +209,7 @@ public class LeadService {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 		
-		if(leadRequest.getSelfPdType().equalsIgnoreCase("self")) {
+		if("self".equalsIgnoreCase(leadRequest.getSelfPdType())) {
 			leadRequest.setPickupHub("na");
 			leadRequest.setDropHub("na");
 		}

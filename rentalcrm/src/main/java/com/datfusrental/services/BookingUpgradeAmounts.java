@@ -53,8 +53,8 @@ public final class BookingUpgradeAmounts {
     public static void makeDifference(LeadDetails row, LeadDetails previous) {
         long oldTotal = effectiveTotal(previous);
         long newTotal = effectiveTotal(row);
-        if (newTotal <= oldTotal || row.getActualAmount() < previous.getActualAmount()) {
-            throw new IllegalArgumentException("Upgrade total must increase and cumulative paid amount cannot decrease.");
+        if (row.getActualAmount() < previous.getActualAmount()) {
+            throw new IllegalArgumentException("Cumulative paid amount cannot decrease.");
         }
         row.setUpgradeOldTotal(oldTotal);
         row.setUpgradeNewTotal(newTotal);

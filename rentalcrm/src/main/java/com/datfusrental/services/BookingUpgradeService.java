@@ -96,7 +96,7 @@ public class BookingUpgradeService {
     public LeadDetails upgrade(LeadRequestObject request) throws Exception {
         if (request == null) throw invalid("Upgrade request is required.");
         LeadDetails original = root(request.getId());
-        // Serialize upgrades to this booking without issuing an UPDATE on the old row.
+        // Serialize upgrades before inserting the new row and linking the previous record.
         dao.getEntityManager().refresh(original, LockModeType.PESSIMISTIC_WRITE);
         User actor = authorize(original);
         List<LeadDetails> upgrades = history(original.getId(), true);
@@ -259,6 +259,11 @@ public class BookingUpgradeService {
             share.setUpdatedBy(actor.getLoginId());
             dao.persist(share);
         }
+        // Link the previous record only after the new upgrade has its generated lead id.
+        String upgradeRemark = "upgrade to " + row.getId();
+        String previousRemarks = latest.getRemarks();
+        latest.setRemarks(previousRemarks == null || previousRemarks.trim().isEmpty()
+                ? upgradeRemark : previousRemarks + "\n" + upgradeRemark);
         dao.getEntityManager().flush();
         return row;
     }

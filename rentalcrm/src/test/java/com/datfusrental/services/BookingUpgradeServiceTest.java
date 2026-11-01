@@ -116,6 +116,7 @@ public class BookingUpgradeServiceTest extends TestCase {
         LeadDetails before = new LeadDetails();
         BeanUtils.copyProperties(original, before);
         LeadDetails saved = service.upgrade(request);
+        before.setRemarks("upgrade to " + saved.getId());
         assertEquals(before, original);
         assertEquals("agent", saved.getCreatedBy());
         assertEquals("Upgrade Agent", saved.getCreatedByName());
@@ -183,6 +184,43 @@ public class BookingUpgradeServiceTest extends TestCase {
         try { service.upgrade(request); fail(); } catch (BizException expected) { }
         assertEquals(1, rows.size());
     }
+    public void testUpgradeAppendsNewLeadIdToPreviousRemarksAndRetryIsIdempotent() throws Exception {
+        original.setRemarks("Customer requested an extension");
+        LeadDetails saved = service.upgrade(request);
+        String expected = "Customer requested an extension\nupgrade to " + saved.getId();
+        assertEquals(expected, original.getRemarks());
+        assertSame(saved, service.upgrade(request));
+        assertEquals(expected, original.getRemarks());
+        assertEquals(2, rows.size());
+    }
+    public void testRepeatedUpgradeLinksLatestRecordToNewLeadId() throws Exception {
+        LeadDetails first = service.upgrade(request);
+        first.setRemarks("First upgrade note");
+        String originalRemarks = original.getRemarks();
+        request.setUpgradeRequestId(UUID.randomUUID().toString());
+        request.setUpgradePreviousId(first.getId());
+        request.setUpgradeExpectedUpdatedAt(first.getUpdatedAt().getTime());
+        request.setCompanyRate(8000);
+        request.setUpgradeBookingAmount(2000);
+        LeadDetails second = service.upgrade(request);
+        assertEquals("First upgrade note\nupgrade to " + second.getId(), first.getRemarks());
+        assertEquals(originalRemarks, original.getRemarks());
+    }
+    public void testAllowsDowngradeAndUnchangedTotal() throws Exception {
+        for (long price : new long[]{4000, 5000}) {
+            setUp();
+            try {
+                request.setCompanyRate(price);
+                request.setVendorRate(price - 3000);
+                request.setUpgradeBookingAmount(1000);
+                LeadDetails saved = service.upgrade(request);
+                LeadDetails current = (LeadDetails) service.context(1L).get("current");
+                assertEquals(price, current.getTotalAmount());
+                assertEquals("upgrade to " + saved.getId(), original.getRemarks());
+                assertEquals(2, rows.size());
+            } finally { tearDown(); }
+        }
+    }
     public void testRetryDoesNotCreateDuplicate() throws Exception {
         LeadDetails saved = service.upgrade(request);
         assertSame(saved, service.upgrade(request));
@@ -248,6 +286,7 @@ public class BookingUpgradeServiceTest extends TestCase {
         request.setUpgradeBookingAmount(1400);
         LeadDetails saved = service.upgrade(request);
         LeadDetails current = (LeadDetails) service.context(1L).get("current");
+        before.setRemarks("upgrade to " + saved.getId());
         assertEquals(before, original);
         assertEquals(7, current.getTotalDays());
         assertEquals(request.getPickupDateTime(), current.getPickupDateTime());
@@ -275,6 +314,7 @@ public class BookingUpgradeServiceTest extends TestCase {
         LeadDetails before = new LeadDetails();
         BeanUtils.copyProperties(original, before);
         LeadDetails saved = service.upgrade(request);
+        before.setRemarks("upgrade to " + saved.getId());
         assertEquals(before, original);
         assertEquals("agent", saved.getCreatedBy());
         assertEquals("ASSIGNED", original.getStatus());

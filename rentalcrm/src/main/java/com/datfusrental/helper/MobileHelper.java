@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.persistence.TemporalType;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,6 +29,16 @@ import com.datfusrental.object.request.LeadRequestObject;
 
 @Component
 public class MobileHelper {
+
+    private static final Pattern UPGRADED_REMARK = Pattern.compile(
+            "(?im)^\\h*upgrade to\\h+[0-9]+\\h*$");
+
+    private List<LeadDetails> excludeUpgradedRecords(List<LeadDetails> records) {
+        List<LeadDetails> visible = new ArrayList<>(records);
+        visible.removeIf(lead -> lead.getRemarks() != null
+                && UPGRADED_REMARK.matcher(lead.getRemarks()).find());
+        return visible;
+    }
 
 	@Autowired
 	private LeadDetailsDao leadDetailsDao;
@@ -71,13 +82,13 @@ public class MobileHelper {
 	public List<LeadDetails> getMobileInstantList(LeadRequestObject leadRequest) {
 		List<String> includeStatuses = List.of("WON");
 
-		return leadDetailsDao.getEntityManager().createQuery(
+		return excludeUpgradedRecords(leadDetailsDao.getEntityManager().createQuery(
 				"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) "
 						+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate AND LD.isSplit = false ORDER BY LD.pickupDateTime ASC",
 				LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
 				.setParameter("statuses", includeStatuses)
 				.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
+				.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,23 +111,23 @@ public class MobileHelper {
 		List<String> categoryNames = Arrays.asList("Cruises", "Watersports", "Adventure", "Yacht", "Sightseeing");
 
 		if ("ALL".equalsIgnoreCase(leadRequest.getCategoryTypeName())) {
-			return leadDetailsDao.getEntityManager().createQuery(
+			return excludeUpgradedRecords(leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
 							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime ASC",
 					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("statuses", includeStatuses)
 					.setParameter("categoryTypeName", categoryNames)
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList());
 		} else {
-			return leadDetailsDao.getEntityManager().createQuery(
+			return excludeUpgradedRecords(leadDetailsDao.getEntityManager().createQuery(
 					"SELECT LD FROM LeadDetails LD WHERE LD.superadminId = :superadminId AND LD.status IN (:statuses) AND LD.categoryTypeName IN (:categoryTypeName) "
 							+ "AND LD.pickupDateTime BETWEEN :firstDate AND :lastDate ORDER BY LD.pickupDateTime ASC",
 					LeadDetails.class).setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("statuses", includeStatuses)
 					.setParameter("categoryTypeName", leadRequest.getCategoryTypeName())
 					.setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
-					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList();
+					.setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP).getResultList());
 		}
 	}
 
@@ -150,18 +161,18 @@ public class MobileHelper {
 						+ "AND LD.pickupDateTime < :lastDate " + "AND LD.isSplit = false ORDER BY LD.pickupDateTime ASC";
 			}
 
-			return leadDetailsDao.getEntityManager().createQuery(sqlQuery, LeadDetails.class)
+			return excludeUpgradedRecords(leadDetailsDao.getEntityManager().createQuery(sqlQuery, LeadDetails.class)
 					.setParameter("superadminId", leadRequest.getSuperadminId())
 					.setParameter("firstDate", leadRequest.getFirstDate())
 					.setParameter("lastDate", this.plusOneDay(leadRequest.getLastDate()))
 					.setParameter("statuses", includeStatus).setFirstResult(Constant.FIRST_RESULT)
-					.setMaxResults(Constant.MAX_RESULT).getResultList();
+					.setMaxResults(Constant.MAX_RESULT).getResultList());
 
 		} else {
 
 			Date oneMonthBackDate = getOneMonthBackDate();
 
-			return leadDetailsDao.getEntityManager()
+			return excludeUpgradedRecords(leadDetailsDao.getEntityManager()
 					.createQuery("SELECT LD FROM LeadDetails LD " + "WHERE LD.superadminId = :superadminId "
 							+ "AND LD.status IN (:statuses) " + "AND LD.createdAt >= :firstDate "
 							+ "AND LD.isSplit = false ORDER BY LD.pickupDateTime ASC", LeadDetails.class)
@@ -170,7 +181,7 @@ public class MobileHelper {
 					.setParameter("firstDate", oneMonthBackDate)
 					.setFirstResult(Constant.FIRST_RESULT)
 					.setMaxResults(Constant.MAX_RESULT)
-					.getResultList();
+					.getResultList());
 		}
 	}
 
