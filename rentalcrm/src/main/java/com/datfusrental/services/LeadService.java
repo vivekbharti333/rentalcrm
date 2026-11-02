@@ -1142,9 +1142,13 @@ public class LeadService {
 //			return leadList;
 //		}
 	
-	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) {
+	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) throws BizException {
 
 	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+        User actor = bookingUpgradeService.authenticatedStaff();
+        leadRequest.setLoginId(actor.getLoginId());
+        leadRequest.setSuperadminId("SUPERADMIN".equalsIgnoreCase(actor.getRoleType())
+                ? actor.getLoginId() : actor.getSuperadminId());
 
 	    LocalDate today = LocalDate.now();
 	    ZoneId zone = ZoneId.systemDefault();

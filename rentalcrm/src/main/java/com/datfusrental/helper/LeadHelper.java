@@ -297,7 +297,7 @@ public class LeadHelper {
 			leadDetails.setCreatedBy(leadRequest.getCreatedBy());
 		}
 		leadDetails.setUpdatedBy(leadRequest.getUpdatedBy());
-		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+        // Ordinary edits must preserve the booking's company ownership.
 		
 		if(!hasWonEntryDate) {
 			leadDetails.setChangeStatusDate(new Date());

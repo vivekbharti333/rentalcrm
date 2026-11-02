@@ -38,7 +38,8 @@ public class WonLeadHelper {
 //	            .setParameter("firstDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 //	            .setParameter("lastDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)
 //	            .setParameter("status", Status.WON.name())
-//	            .setParameter("createdBy", leadRequest.getLoginId())
+//	            .setParameter("superadminId", leadRequest.getSuperadminId())
+//            .setParameter("createdBy", leadRequest.getLoginId())
 //	            .getResultList();
 //	    }
 
@@ -71,14 +72,15 @@ public class WonLeadHelper {
 	        results = leadDetailsDao.getEntityManager()
 	            .createQuery(
 	                "SELECT LD FROM LeadDetails LD " +
-	                "WHERE LD.createdBy = :createdBy " +
+	                "WHERE LD.superadminId = :superadminId AND LD.createdBy = :createdBy " +
 	                "AND LD.status IN :includedStatuses " +
 	                "AND LD.changeStatusDate >= :fromDate " +
 	                "AND LD.changeStatusDate < :toDate " +
 	                "AND LD.isSplit = false ORDER BY LD.changeStatusDate DESC",
 	                LeadDetails.class
 	            )
-	            .setParameter("createdBy", leadRequest.getLoginId())
+	            .setParameter("superadminId", leadRequest.getSuperadminId())
+            .setParameter("createdBy", leadRequest.getLoginId())
 	            .setParameter("includedStatuses", includedStatuses)
 	            .setParameter("fromDate", leadRequest.getFirstDate(), TemporalType.TIMESTAMP)
 	            .setParameter("toDate", leadRequest.getLastDate(), TemporalType.TIMESTAMP)

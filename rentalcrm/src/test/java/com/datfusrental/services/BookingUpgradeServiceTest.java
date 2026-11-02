@@ -303,6 +303,26 @@ public class BookingUpgradeServiceTest extends TestCase {
         try { service.upgrade(request); fail(); } catch (BizException expected) { }
         assertEquals(1, rows.size());
     }
+    public void testOrdinaryEditReplacesUntrustedSessionFields() throws Exception {
+        request.setRoleType("SUPERADMIN");
+        request.setSuperadminId("wrong-cookie-company");
+        request.setUpdatedBy("another-user");
+        service.validateOrdinaryEdit(original, request);
+        assertEquals("SALE_EXECUTIVE", request.getRoleType());
+        assertEquals("tenant", request.getSuperadminId());
+        assertEquals("agent", request.getUpdatedBy());
+        assertEquals("tenant", original.getSuperadminId());
+    }
+    public void testMissingBookingHasSpecificMessage() throws Exception {
+        request.setId(999L);
+        try { service.upgrade(request); fail(); }
+        catch (BizException expected) { assertTrue(expected.getMessage().startsWith("Booking not found.")); }
+    }
+    public void testOrdinaryEditDeniesAnotherCompany() throws Exception {
+        user.setSuperadminId("other");
+        try { service.validateOrdinaryEdit(original, request); fail(); }
+        catch (BizException expected) { assertTrue(expected.getMessage().startsWith("Access denied:")); }
+    }
     public void testOtherTenantDenied() throws Exception {
         user.setSuperadminId("other");
         try { service.upgrade(request); fail(); } catch (BizException expected) { }

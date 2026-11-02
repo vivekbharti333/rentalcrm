@@ -30,14 +30,29 @@ public class BookingUpgradeService {
 
     private BizException invalid(String message) { return new BizException(Constant.BAD_REQUEST_CODE, message); }
 
-    private User authorize(LeadDetails lead) throws BizException {
+    public User authenticatedStaff() throws BizException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = auth == null ? null : userHelper.getUserDetailsByLoginId(auth.getName());
+        if (user == null) throw invalid("Your login session is no longer valid. Please sign in again.");
+        String role = Objects.toString(user.getRoleType(), "").trim().toUpperCase(java.util.Locale.ROOT).replace(' ', '_');
+        if (!List.of("SUPERADMIN", "ADMIN", "TEAM_LEADER", "SALE_EXECUTIVE", "SALES_EXECUTIVE",
+                "CUSTOMER_EXECUTIVE").contains(role)) {
+            throw invalid("Only staff agents can access bookings.");
+        }
+        if (user.getSuperadminId() == null && !"SUPERADMIN".equalsIgnoreCase(user.getRoleType())) {
+            throw invalid("Your account has no company assigned. Please contact your administrator.");
+        }
+        return user;
+    }
+
+    private User authorize(LeadDetails lead) throws BizException {
+        User user = authenticatedStaff();
+        if (lead == null) throw invalid("Booking not found. Please refresh the list.");
         String tenant = user == null ? null : ("SUPERADMIN".equalsIgnoreCase(user.getRoleType())
                 ? user.getLoginId() : user.getSuperadminId());
         if (user == null || lead == null || tenant == null
                 || !Objects.equals(tenant, lead.getSuperadminId())) {
-            throw invalid("Booking not found or access denied.");
+            throw invalid("Access denied: this booking belongs to another company.");
         }
         String role = Objects.toString(user.getRoleType(), "").trim().toUpperCase(java.util.Locale.ROOT).replace(' ', '_');
         if (!List.of("SUPERADMIN", "ADMIN", "TEAM_LEADER", "SALE_EXECUTIVE", "SALES_EXECUTIVE",
@@ -270,7 +285,12 @@ public class BookingUpgradeService {
 
     public void validateOrdinaryEdit(LeadDetails lead, LeadRequestObject request) throws BizException {
         dao.getEntityManager().refresh(lead, LockModeType.PESSIMISTIC_WRITE);
-        authorize(lead);
+        User actor = authorize(lead);
+        // Authorization and audit fields must come from the session, never browser cookies.
+        request.setRoleType(actor.getRoleType());
+        request.setLoginId(actor.getLoginId());
+        request.setUpdatedBy(actor.getLoginId());
+        request.setSuperadminId(lead.getSuperadminId());
     }
 
     public void synchronizeEditedUpgrade(LeadDetails before, LeadDetails edited) throws Exception {
