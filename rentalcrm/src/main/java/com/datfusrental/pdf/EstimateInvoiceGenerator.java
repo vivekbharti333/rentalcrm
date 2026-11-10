@@ -92,11 +92,11 @@ public class EstimateInvoiceGenerator {
 
 		double sgst = needGstInvoice ? leadDetails.getGstAmount() / 2.0 : 0;
 
-		long taxableAmount = leadDetails.getTotalAmount() - leadDetails.getGstAmount();
+		long taxableAmount = leadDetails.getTotalAmount();
 
-		if (taxableAmount < 0) {
-			taxableAmount = 0;
-		}
+		long totalAmountForInvoice = needGstInvoice
+				? leadDetails.getTotalAmount() + leadDetails.getGstAmount()
+				: leadDetails.getTotalAmount();
 
 		long advancePaid = amountForInvoice(needGstInvoice, leadDetails.getBookingAmountWithGst(),
 				leadDetails.getBookingAmount());
@@ -202,7 +202,7 @@ public class EstimateInvoiceGenerator {
 
 		html = replaceValue(html, "{{gstAmount}}", formatAmount(leadDetails.getGstAmount()));
 
-		html = replaceValue(html, "{{totalAmount}}", formatAmount(leadDetails.getTotalAmount()));
+		html = replaceValue(html, "{{totalAmount}}", formatAmount(totalAmountForInvoice));
 
 		html = replaceValue(html, "{{advancePaid}}", formatAmount(advancePaid));
 
