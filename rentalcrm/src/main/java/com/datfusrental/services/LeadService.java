@@ -48,37 +48,34 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whatsapp.parameter.BookingConformationVariable;
 
-
 @Service
 public class LeadService {
-	
-	
+
 	private Date startOfDay(LocalDate date, ZoneId zone) {
-	    return Date.from(date.atStartOfDay(zone).toInstant());
+		return Date.from(date.atStartOfDay(zone).toInstant());
 	}
 
 	private Date endOfDay(LocalDate date, ZoneId zone) {
-	    return Date.from(date.atTime(23, 59, 59).atZone(zone).toInstant());
+		return Date.from(date.atTime(23, 59, 59).atZone(zone).toInstant());
 	}
-
 
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Autowired
 	private LeadHelper leadHelper;
-	
+
 	@Autowired
 	private UserHelper userHelper;
 
-    @Autowired
-    private BookingUpgradeService bookingUpgradeService;
-	
+	@Autowired
+	private BookingUpgradeService bookingUpgradeService;
+
 	@Autowired
 	private VendorHelper vendorHelper;
-	
+
 	@Autowired
 	private LocationHelper locationHelper;
-	
+
 	@Autowired
 	private LocationDetailsDao locationDetailsDao;
 
@@ -90,13 +87,13 @@ public class LeadService {
 
 	@Autowired
 	private WonLeadHelper wonLeadHelper;
-	
+
 	@Autowired
 	private WebsiteLeadHelper websiteLeadHelper;
-	
+
 	@Autowired
 	private LeadDetailsHistoryHelper leadDetailsHistoryHelper;
-	
+
 	@Autowired
 	EntityDiffUtil entityDiffUtil;
 
@@ -105,64 +102,66 @@ public class LeadService {
 
 	@Autowired
 	private DropWonLeadService dropWonLeadService;
-	
+
 	@Autowired
 	private AssignedLeadHelper assignedLeadHelper;
-	
+
 	@Autowired
 	private TransactionHelper transactionHelper;
-	
+
 	@Autowired
 	private CashfreePaymentGateways cashfreePaymentGateways;
-	
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	@Autowired
 	private SendWhatsAppTextMessageHelper sendTextMessageHelper;
-	
+
 	@Autowired
 	private BookingConformationVariable bookingConformationVariable;
 
-	private LeadRequestObject sendBookingConfirmationIfWon(LeadRequestObject leadRequest,
-			LeadDetails leadDetails) throws Exception {
+	private LeadRequestObject sendBookingConfirmationIfWon(LeadRequestObject leadRequest, LeadDetails leadDetails)
+			throws Exception {
 
 		if (!Status.WON.name().equalsIgnoreCase(leadRequest.getStatus())) {
 			return leadRequest;
 		}
 
 		String categoryTypeName = leadDetails.getCategoryTypeName();
-		boolean isVehicleBooking = "Car".equalsIgnoreCase(categoryTypeName) || "Bike".equalsIgnoreCase(categoryTypeName);
+		boolean isVehicleBooking = "Car".equalsIgnoreCase(categoryTypeName)
+				|| "Bike".equalsIgnoreCase(categoryTypeName);
 
 		if (isVehicleBooking) {
-			leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest, leadDetails);
+			leadRequest = bookingConformationVariable.setMessageVaribaleForVehicleBookingConfirmation(leadRequest,
+					leadDetails);
 		} else {
-			leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest, leadDetails);
+			leadRequest = bookingConformationVariable.setMessageVaribaleForActivityBookingConfirmation(leadRequest,
+					leadDetails);
 		}
 
 		String templateParameter = sendTextMessageHelper.getTextTemplateParameterButton(leadRequest);
-		WhatsAppMessageResponse sendMessageResponse = sendTextMessageHelper.callSendTemplateTextMessage(templateParameter);
+		WhatsAppMessageResponse sendMessageResponse = sendTextMessageHelper
+				.callSendTemplateTextMessage(templateParameter);
 
 		logger.info("Whats App Response : " + sendMessageResponse);
 		return leadRequest;
 	}
-	
+
 	public boolean isPickupDateLessThanToday(Date pickupDateTime) {
 
-	    if (pickupDateTime == null) {
-	        return false; // or throw exception based on your logic
-	    }
+		if (pickupDateTime == null) {
+			return false; // or throw exception based on your logic
+		}
 
-	    // Convert Date → LocalDate (Asia/Kolkata)
-	    LocalDate pickupDate = pickupDateTime.toInstant()
-	            .atZone(ZoneId.of("Asia/Kolkata"))
-	            .toLocalDate();
+		// Convert Date → LocalDate (Asia/Kolkata)
+		LocalDate pickupDate = pickupDateTime.toInstant().atZone(ZoneId.of("Asia/Kolkata")).toLocalDate();
 
-	    // Today's date
-	    LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+		// Today's date
+		LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
 
-	    // Compare only date
-	    return pickupDate.isBefore(today);
+		// Compare only date
+		return pickupDate.isBefore(today);
 	}
 
 //	@Transactional
@@ -201,15 +200,15 @@ public class LeadService {
 //			return leadRequest;
 //		}
 //	}
-	
+
 	@Transactional
 	public LeadRequestObject changeLeadStatus(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
 
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
-		
-		if("self".equalsIgnoreCase(leadRequest.getSelfPdType())) {
+
+		if ("self".equalsIgnoreCase(leadRequest.getSelfPdType())) {
 			leadRequest.setPickupHub("na");
 			leadRequest.setDropHub("na");
 		}
@@ -219,7 +218,6 @@ public class LeadService {
 		if (leadDetails != null) {
 			LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
-
 			VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadDetails.getVendorId());
 
 			if (vendorDetails != null) {
@@ -227,35 +225,41 @@ public class LeadService {
 				if (leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
 						&& !leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
 
-					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - leadDetails.getPayToCompany());
-					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadDetails.getPayToVendor());
+					vendorDetails.setCompanyWalletAmount(
+							vendorDetails.getCompanyWalletAmount() - leadDetails.getPayToCompany());
+					vendorDetails
+							.setUserWalletAmount(vendorDetails.getUserWalletAmount() - leadDetails.getPayToVendor());
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
-					
-					//save transaction details
+
+					// save transaction details
 					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
 					leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
 					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
 					leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
-					
-					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+
+					TransactionDetails transactionDetails = transactionHelper
+							.getTransactionDetailsByReqObj(leadRequest);
 					transactionHelper.saveTransactionDetails(transactionDetails);
-					
 
-				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED") && leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
+				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
+						&& leadRequest.getStatus().equalsIgnoreCase("ASSIGNED")) {
 
-					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() + leadDetails.getPayToCompany());
-					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
+					vendorDetails.setCompanyWalletAmount(
+							vendorDetails.getCompanyWalletAmount() + leadDetails.getPayToCompany());
+					vendorDetails
+							.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
-					
-					//save transaction details
+
+					// save transaction details
 					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
 					leadRequest.setCompanyTransactionType(TransactionType.CREDIT.name());
 					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
 					leadRequest.setVendorTransactionType(TransactionType.CREDIT.name());
-					
-					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+
+					TransactionDetails transactionDetails = transactionHelper
+							.getTransactionDetailsByReqObj(leadRequest);
 					transactionHelper.saveTransactionDetails(transactionDetails);
 				}
 			} else {
@@ -265,8 +269,8 @@ public class LeadService {
 			leadDetails.setPaymentType(leadRequest.getPaymentType());
 			leadDetails.setNotes(leadRequest.getNotes());
 			leadDetails.setStatus(leadRequest.getStatus());
-			
-			if(!"WON".equalsIgnoreCase(leadDetails.getStatus())) {
+
+			if (!"WON".equalsIgnoreCase(leadDetails.getStatus())) {
 				leadDetails.setChangeStatusDate(new Date());
 			}
 //			leadDetails.setChangeStatusDate(new Date());
@@ -285,37 +289,36 @@ public class LeadService {
 			return leadRequest;
 		}
 	}
-	
-	
+
 	@Transactional
 	public LeadRequestObject changeSecondStatus(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
 
-			LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
-			if (leadDetails != null) {
-				LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
+		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
+		if (leadDetails != null) {
+			LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
-				leadDetails.setSecondStatus(leadRequest.getSecondStatus());
-				leadHelper.updateLeadDetails(leadDetails);
-				leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
+			leadDetails.setSecondStatus(leadRequest.getSecondStatus());
+			leadHelper.updateLeadDetails(leadDetails);
+			leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 
-				leadRequest.setRespCode(Constant.SUCCESS_CODE);
-				leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getSecondStatus());
-				return leadRequest;
-			} else {
-				leadRequest.setRespCode(Constant.NOT_EXISTS);
-				leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-				return leadRequest;
-			}
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg("Successfully Updated to " + leadRequest.getSecondStatus());
+			return leadRequest;
+		} else {
+			leadRequest.setRespCode(Constant.NOT_EXISTS);
+			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return leadRequest;
+		}
 //		} else {
 //			leadRequest.setRespCode(Constant.INVALID_TOKEN_CODE);
 //			leadRequest.setRespMesg(Constant.INVALID_TOKEN);
 //			return leadRequest;
 //		}
 	}
-	
+
 //	@Transactional
 //	public LeadRequestObject assignLeadToVendor(Request<LeadRequestObject> leadRequestObject)
 //			throws BizException, Exception {
@@ -347,15 +350,14 @@ public class LeadService {
 //			return leadRequest;
 //		}
 //	}
-	
-	
+
 	@Transactional
 	public LeadRequestObject assignLeadToVendor(Request<LeadRequestObject> leadRequestObject)
 			throws BizException, Exception {
 
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
-		
+
 		LeadDetails leadDetails = leadHelper.getLeadDetailsById(leadRequest.getId());
 
 		if (leadDetails == null) {
@@ -364,16 +366,14 @@ public class LeadService {
 			return leadRequest;
 		}
 		LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
-		
-		
-		 boolean isPickupDatePassed = this.isPickupDateLessThanToday(leadDetails.getPickupDateTime());
 
-	        if (isPickupDatePassed) {
-	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	            leadRequest.setRespMesg("Can not Update. PickupDate Passed");
-	            return leadRequest;
-	        }
-	    
+		boolean isPickupDatePassed = this.isPickupDateLessThanToday(leadDetails.getPickupDateTime());
+
+		if (isPickupDatePassed) {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg("Can not Update. PickupDate Passed");
+			return leadRequest;
+		}
 
 		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(leadRequest.getVendorId());
 
@@ -409,7 +409,7 @@ public class LeadService {
 	public LeadRequestObject registerLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		leadHelper.validateLeadRequest(leadRequest);
-		
+
 		// Preserve supplied hubs; self mode only needs defaults for missing locations.
 		if ("self".equalsIgnoreCase(leadRequest.getSelfPdType())) {
 			if (StringUtils.isBlank(leadRequest.getPickupHub())) {
@@ -433,70 +433,69 @@ public class LeadService {
 
 		LeadDetails existsLeadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
 		if (existsLeadDetails == null) {
-			
-			
-			System.out.println(leadRequest.getRequestedFor()+" req");
-			System.out.println(leadRequest.getCreatedBy()+" crea");
-				if("KNOWLAIRITY ".equalsIgnoreCase(leadRequest.getRequestedFor())) {
-				
+
+			if ("KNOWLAIRITY ".equalsIgnoreCase(leadRequest.getRequestedFor())) {
+
 				User userDetails = StringUtils.isNotBlank(leadRequest.getCreatedBy())
-						? userHelper.getUserDetailsByAlternateMobileNo(leadRequest.getCreatedBy()) : null;
-				if(userDetails != null) {
+						? userHelper.getUserDetailsByAlternateMobileNo(leadRequest.getCreatedBy())
+						: null;
+				if (userDetails != null) {
 					leadRequest.setCreatedBy(userDetails.getLoginId());
 					leadRequest.setAdminId(userDetails.getAdminId());
 					leadRequest.setTeamleaderId(userDetails.getTeamleaderId());
-					leadRequest.setCreatedByName(userDetails.getFirstName()+" "+userDetails.getLastName());
+					leadRequest.setCreatedByName(userDetails.getFirstName() + " " + userDetails.getLastName());
 					leadRequest.setSuperadminId("1234567890");
 				}
-				
+
 			}
-			
+
 			// Lead Details
 			LeadDetails leadDetails = leadHelper.getLeadDetailsByReqObj(leadRequest);
 			leadDetails = leadHelper.saveLeadDetails(leadDetails);
-			
-			//Save Other Location
-			if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")){
-				
-				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherPickLocation());
+
+			// Save Other Location
+			if (!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")) {
+
+				LocationDetails existsLocationDetails = locationHelper
+						.getLocationDetailsByType(leadRequest.getOtherPickLocation());
 				if (existsLocationDetails == null) {
-					
+
 					LocationDetails locationDetails = new LocationDetails();
 					locationDetails.setLocation(leadRequest.getOtherPickLocation());
-					
+
 					locationDetails.setLocationType("PICK");
 					locationDetails.setStatus(Status.PENDING.name());
 					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
 					locationDetails.setCreatedAt(new Date());
 					locationDetails.setUpdatedAt(new Date());
-					
+
 					locationDetailsDao.persist(locationDetails);
-					
+
 				}
-				
+
 			}
-			if(!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")){
-				
-				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherDropLocation());
+			if (!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")) {
+
+				LocationDetails existsLocationDetails = locationHelper
+						.getLocationDetailsByType(leadRequest.getOtherDropLocation());
 				if (existsLocationDetails == null) {
 					LocationDetails locationDetails = new LocationDetails();
 					locationDetails.setLocation(leadRequest.getOtherDropLocation());
-					
+
 					locationDetails.setLocationType("PICK");
 					locationDetails.setStatus(Status.PENDING.name());
 					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
 					locationDetails.setCreatedAt(new Date());
 					locationDetails.setUpdatedAt(new Date());
-					
+
 					locationDetailsDao.persist(locationDetails);
 				}
 			}
-			//Payment Gateways
-			if(leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
+			// Payment Gateways
+			if (leadRequest.getLeadOrigine().equalsIgnoreCase("WEBSITE")) {
 				leadRequest.setPaymentUrl(cashfreePaymentGateways.getCashfreePaymentLink(leadRequest));
 			}
-			
-			
+
 			leadRequest = sendBookingConfirmationIfWon(leadRequest, leadDetails);
 
 			// history
@@ -515,244 +514,240 @@ public class LeadService {
 		}
 
 	}
-	
+
 	@Transactional
-	public LeadRequestObject updatePaymentDetails(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
-	    leadHelper.validateLeadRequest(leadRequest);
+	public LeadRequestObject updatePaymentDetails(Request<LeadRequestObject> leadRequestObject)
+			throws BizException, Exception {
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
 
-	    LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
-	    if (leadDetails != null) {
-	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
+		LeadDetails leadDetails = leadHelper.getLeadDetailsByBookingId(leadRequest.getBookingId());
+		if (leadDetails != null) {
+			LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
-	        // 1) Get order ID using payment link ID
-	        String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId(), leadRequest);
+			// 1) Get order ID using payment link ID
+			String orderId = cashfreePaymentGateways.getCashFreePaymentOrderIdByLinkIdStatus(leadRequest.getBookingId(),
+					leadRequest);
 
-	        if (orderId == null) {
-	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	            leadRequest.setRespMesg("No order found for this payment link.");
-	            return leadRequest;
-	        }
+			if (orderId == null) {
+				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				leadRequest.setRespMesg("No order found for this payment link.");
+				return leadRequest;
+			}
 
-	        
-	        String responseBody = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId,leadRequest);
+			String responseBody = cashfreePaymentGateways.getCashFreePaymentStatusByOrderId(orderId, leadRequest);
 
-	        if (responseBody == null) {
-	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	            leadRequest.setRespMesg("Unable to fetch payment status.");
-	            return leadRequest;
-	        }
+			if (responseBody == null) {
+				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				leadRequest.setRespMesg("Unable to fetch payment status.");
+				return leadRequest;
+			}
 
-	        // Extract payment_status from responseBody
-	        String paymentStatus = null;
-	        try {
-	            JsonNode rootArray = objectMapper.readTree(responseBody);
-	            if (rootArray.isArray() && rootArray.size() > 0) {
-	                JsonNode firstPayment = rootArray.get(0);
-	                if (firstPayment.has("payment_status")) {
-	                    paymentStatus = firstPayment.get("payment_status").asText();
-	                }
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
+			// Extract payment_status from responseBody
+			String paymentStatus = null;
+			try {
+				JsonNode rootArray = objectMapper.readTree(responseBody);
+				if (rootArray.isArray() && rootArray.size() > 0) {
+					JsonNode firstPayment = rootArray.get(0);
+					if (firstPayment.has("payment_status")) {
+						paymentStatus = firstPayment.get("payment_status").asText();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-	        if (paymentStatus == null) {
-	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	            leadRequest.setRespMesg("Payment status not found.");
-	            return leadRequest;
-	        }
+			if (paymentStatus == null) {
+				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				leadRequest.setRespMesg("Payment status not found.");
+				return leadRequest;
+			}
 
-	        // Update lead status
-	        if ("SUCCESS".equalsIgnoreCase(paymentStatus) || "PAID".equalsIgnoreCase(paymentStatus)) {
-	            leadDetails.setStatus("WON");
-	        } else {
-	            leadDetails.setStatus(paymentStatus);
-	        }
+			// Update lead status
+			if ("SUCCESS".equalsIgnoreCase(paymentStatus) || "PAID".equalsIgnoreCase(paymentStatus)) {
+				leadDetails.setStatus("WON");
+			} else {
+				leadDetails.setStatus(paymentStatus);
+			}
 
-	        leadDetails.setUpdatedAt(new Date());
-	        leadHelper.updateLeadDetails(leadDetails);
-	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
-	        
-	        leadRequest.setPgResponseBody(responseBody);
+			leadDetails.setUpdatedAt(new Date());
+			leadHelper.updateLeadDetails(leadDetails);
+			leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 
-	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
-	        leadRequest.setRespMesg("Your Payment is " + paymentStatus);
-	        return leadRequest;
+			leadRequest.setPgResponseBody(responseBody);
 
-	    } else {
-	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        leadRequest.setRespMesg("Invalid booking id or Payment");
-	        return leadRequest;
-	    }
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg("Your Payment is " + paymentStatus);
+			return leadRequest;
+
+		} else {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg("Invalid booking id or Payment");
+			return leadRequest;
+		}
 	}
-
 
 	@Transactional
 	public LeadRequestObject updateLead(Request<LeadRequestObject> leadRequestObject) throws BizException, Exception {
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
-	    leadHelper.validateLeadRequest(leadRequest);
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		leadHelper.validateLeadRequest(leadRequest);
 
-	    LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
+		LeadDetails existingLead = leadHelper.getLeadDetailsById(leadRequest.getId());
 
-	    if (existingLead == null) {
-	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-	        return leadRequest;
-	    }
+		if (existingLead == null) {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return leadRequest;
+		}
 
-        bookingUpgradeService.validateOrdinaryEdit(existingLead, leadRequest);
+		bookingUpgradeService.validateOrdinaryEdit(existingLead, leadRequest);
 
-	    if ("ASSIGNED".equalsIgnoreCase(existingLead.getStatus())
-	            && !"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType())) {
-	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        leadRequest.setRespMesg("Only SUPERADMIN can update an assigned lead.");
-	        return leadRequest;
-	    }
-	    
+		if ("ASSIGNED".equalsIgnoreCase(existingLead.getStatus())
+				&& !"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType())) {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg("Only SUPERADMIN can update an assigned lead.");
+			return leadRequest;
+		}
 
-	    //For Split Amount
-	    if(leadRequest.getIsSplit()) {
-	    	User user = userHelper.getUserDetailsByLoginId(leadRequest.getSplitLoginId());
-	    	if(user != null) {
+		// For Split Amount
+		if (leadRequest.getIsSplit()) {
+			User user = userHelper.getUserDetailsByLoginId(leadRequest.getSplitLoginId());
+			if (user != null) {
 //	    		user.setUserWalletAmount(leadRequest.getSplitAmount());
 //	    		userHelper.UpdateUserDetails(user);
-	    		
-	    		LeadDetails leadDetails = new LeadDetails();
-	    		leadDetails.setIsSplit(leadRequest.getIsSplit());
-	    		leadDetails.setBookingId(leadRequest.getId().toString());	
-	    		leadDetails.setPayToCompany(leadRequest.getPayToCompany());
-	    		leadDetails.setPayToVendor(leadRequest.getPayToVendor());
 
-	    		
-	    		leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
-	    		leadDetails.setTotalAmount(leadRequest.getTotalAmount());
-	    		leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
-	    		
-	    		leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
-	    		leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
-	    		
-	    		leadDetails.setBookingAmount(leadRequest.getSplitBookingAmount());
-	    		leadDetails.setActualAmount(leadRequest.getSplitActualAmount());
-	    		leadDetails.setPaymentType(leadRequest.getPaymentType());
-	    		
-	    		leadDetails.setDiscountType(leadRequest.getDiscountType());
-	    		leadDetails.setDiscount(leadRequest.getDiscount());
-	    		
-	    		leadDetails.setCreatedAt(new Date());
-	    		leadDetails.setUpdatedAt(new Date());
-	    		leadDetails.setChangeStatusDate(new Date());
-	    		
-	    		leadDetails.setStatus("WON");
-	    		
-	    		leadDetails.setPseudoName(user.getPseudoName());
-	    		leadDetails.setCreatedBy(leadRequest.getSplitLoginId());
-	    		leadDetails.setCreatedByName(user.getFirstName()+ " "+user.getLastName());
-	    		leadDetails.setPseudoName(user.getPseudoName());
-	    		leadDetails.setTeamleaderId(user.getTeamleaderId());
-	    		leadDetails.setAdminId(user.getAdminId());
-	    		leadDetails.setSuperadminId(leadRequest.getSuperadminId());
-	    		
-	    		leadHelper.saveLeadDetails(leadDetails);
-	    	}
-	    }
+				LeadDetails leadDetails = new LeadDetails();
+				leadDetails.setIsSplit(leadRequest.getIsSplit());
+				leadDetails.setBookingId(leadRequest.getId().toString());
+				leadDetails.setPayToCompany(leadRequest.getPayToCompany());
+				leadDetails.setPayToVendor(leadRequest.getPayToVendor());
 
-	    if (existingLead != null) {
-	        LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(existingLead);
-	    	
-	        boolean isPickupDatePassed = this.isPickupDateLessThanToday(existingLead.getPickupDateTime());
+				leadDetails.setBalanceAmount(leadRequest.getBalanceAmount());
+				leadDetails.setTotalAmount(leadRequest.getTotalAmount());
+				leadDetails.setSecurityAmount(leadRequest.getSecurityAmount());
 
-	        if (isPickupDatePassed && (!"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType()))) {
-	            leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	            leadRequest.setRespMesg("Can not Update. PickupDate Passed");
-	            return leadRequest;
-	        }
-	    
-	    	if(existingLead.getVendorId() != null && existingLead.getStatus().equalsIgnoreCase("ASSIGNED")) {
+				leadDetails.setDeliveryAmountToCompany(leadRequest.getDeliveryAmountToCompany());
+				leadDetails.setDeliveryAmountToVendor(leadRequest.getDeliveryAmountToVendor());
 
-	    		VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
-	    			if(vendorDetails != null) {
+				leadDetails.setBookingAmount(leadRequest.getSplitBookingAmount());
+				leadDetails.setActualAmount(leadRequest.getSplitActualAmount());
+				leadDetails.setPaymentType(leadRequest.getPaymentType());
 
-	    				vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - existingLead.getPayToCompany());
-	    				vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
-	
-	    				vendorHelper.UpdateVendorDetails(vendorDetails);
-	    						
-	    				//save transaction details
-						leadRequest.setCompanyAmount(existingLead.getPayToCompany());
-						leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
-						leadRequest.setVendorAmount(existingLead.getPayToVendor());
-						leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
-						
-						TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
-						transactionHelper.saveTransactionDetails(transactionDetails);
-	    			}
+				leadDetails.setDiscountType(leadRequest.getDiscountType());
+				leadDetails.setDiscount(leadRequest.getDiscount());
 
-	    	}
+				leadDetails.setCreatedAt(new Date());
+				leadDetails.setUpdatedAt(new Date());
+				leadDetails.setChangeStatusDate(new Date());
 
-	        existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
-            bookingUpgradeService.synchronizeEditedUpgrade(oldLead, existingLead);
-	        existingLead = leadHelper.updateLeadDetails(existingLead);
-	        leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
-	        
-	        
-	      //Save Other Location
-			if(!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")){
-				
-				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherPickLocation());
+				leadDetails.setStatus("WON");
+
+				leadDetails.setPseudoName(user.getPseudoName());
+				leadDetails.setCreatedBy(leadRequest.getSplitLoginId());
+				leadDetails.setCreatedByName(user.getFirstName() + " " + user.getLastName());
+				leadDetails.setPseudoName(user.getPseudoName());
+				leadDetails.setTeamleaderId(user.getTeamleaderId());
+				leadDetails.setAdminId(user.getAdminId());
+				leadDetails.setSuperadminId(leadRequest.getSuperadminId());
+
+				leadHelper.saveLeadDetails(leadDetails);
+			}
+		}
+
+		if (existingLead != null) {
+			LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(existingLead);
+
+			boolean isPickupDatePassed = this.isPickupDateLessThanToday(existingLead.getPickupDateTime());
+
+			if (isPickupDatePassed && (!"SUPERADMIN".equalsIgnoreCase(leadRequest.getRoleType()))) {
+				leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+				leadRequest.setRespMesg("Can not Update. PickupDate Passed");
+				return leadRequest;
+			}
+
+			if (existingLead.getVendorId() != null && existingLead.getStatus().equalsIgnoreCase("ASSIGNED")) {
+
+				VendorDetails vendorDetails = vendorHelper.getVendorDetailsById(existingLead.getVendorId());
+				if (vendorDetails != null) {
+
+					vendorDetails.setCompanyWalletAmount(vendorDetails.getCompanyWalletAmount() - existingLead.getPayToCompany());
+					vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() - existingLead.getPayToVendor());
+					vendorHelper.UpdateVendorDetails(vendorDetails);
+
+					// save transaction details
+					leadRequest.setCompanyAmount(existingLead.getPayToCompany());
+					leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
+					leadRequest.setVendorAmount(existingLead.getPayToVendor());
+					leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
+
+					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+					transactionHelper.saveTransactionDetails(transactionDetails);
+				}
+
+			}
+
+			existingLead = leadHelper.getUpdatedLeadDetailsByReqObj(leadRequest, existingLead);
+			bookingUpgradeService.synchronizeEditedUpgrade(oldLead, existingLead);
+			existingLead = leadHelper.updateLeadDetails(existingLead);
+			leadDetailsHistoryHelper.updateLeadHistory(oldLead, existingLead, leadRequest);
+
+			// Save Other Location
+			if (!leadRequest.getOtherPickLocation().equalsIgnoreCase("N/A")) {
+
+				LocationDetails existsLocationDetails = locationHelper
+						.getLocationDetailsByType(leadRequest.getOtherPickLocation());
 				if (existsLocationDetails == null) {
-					
+
 					LocationDetails locationDetails = new LocationDetails();
 					locationDetails.setLocation(leadRequest.getOtherPickLocation());
-					
+
 					locationDetails.setLocationType("PICK");
 					locationDetails.setStatus(Status.PENDING.name());
 					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
 					locationDetails.setCreatedAt(new Date());
 					locationDetails.setUpdatedAt(new Date());
-					
+
 					locationDetailsDao.persist(locationDetails);
-					
+
 				}
-				
+
 			}
-			if(!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")){
-				
+			if (!leadRequest.getOtherDropLocation().equalsIgnoreCase("N/A")) {
+
 				LocationDetails existsLocationDetails = locationHelper.getLocationDetailsByType(leadRequest.getOtherDropLocation());
 				if (existsLocationDetails == null) {
 					LocationDetails locationDetails = new LocationDetails();
 					locationDetails.setLocation(leadRequest.getOtherDropLocation());
-					
+
 					locationDetails.setLocationType("PICK");
 					locationDetails.setStatus(Status.PENDING.name());
 					locationDetails.setSuperadminId(leadRequest.getSuperadminId());
 					locationDetails.setCreatedAt(new Date());
 					locationDetails.setUpdatedAt(new Date());
-					
+
 					locationDetailsDao.persist(locationDetails);
 				}
 			}
-			
-			
+
 			leadRequest = sendBookingConfirmationIfWon(leadRequest, existingLead);
 
-	        leadRequest.setRespCode(Constant.SUCCESS_CODE);
-	        leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
-	        return leadRequest;
-	    } else {
-	        leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
-	        leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
-	        return leadRequest;
-	    }
+			leadRequest.setRespCode(Constant.SUCCESS_CODE);
+			leadRequest.setRespMesg(Constant.UPDATED_SUCCESS);
+			return leadRequest;
+		} else {
+			leadRequest.setRespCode(Constant.BAD_REQUEST_CODE);
+			leadRequest.setRespMesg(Constant.NOT_EXIST_MSG);
+			return leadRequest;
+		}
 	}
-	
+
 	public List<LeadDetailsHistory> getLeadHistoryById(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
 		List<LeadDetailsHistory> leadHistoryList = leadHelper.getLeadHistoryById(leadRequest);
 		return leadHistoryList;
 	}
-	
+
 	public List<LeadDetails> getLeadListByStatus(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
@@ -773,44 +768,27 @@ public class LeadService {
 		return leadList;
 	}
 
-//	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
-//		LeadRequestObject leadRequest = leadRequestObject.getPayload();
-//		
-//		LocalDate today = LocalDate.now();
-//	    ZoneId zone = ZoneId.systemDefault();
-//		
-//		leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
-//        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-//        
-//		List<LeadDetails> leadList = leadHelper.getAllHotLeadList(leadRequest);
-//		return leadList;
-//	}
-	
+
 	public List<LeadDetails> getAllHotLeadList(Request<LeadRequestObject> leadRequestObject) {
 
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    LocalDate today = LocalDate.now(ZoneId.systemDefault());
-	    ZoneId zone = ZoneId.systemDefault();
+		LocalDate today = LocalDate.now(ZoneId.systemDefault());
+		ZoneId zone = ZoneId.systemDefault();
 
-	    // today range [00:00, next day 00:00)
-	    leadRequest.setFirstDate(
-	        Date.from(today.atStartOfDay(zone).toInstant())
-	    );
-	    leadRequest.setLastDate(
-	        Date.from(today.plusDays(1).atStartOfDay(zone).toInstant())
-	    );
+		// today range [00:00, next day 00:00)
+		leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+		leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
 
-	    return leadHelper.getAllHotLeadList(leadRequest);
+		return leadHelper.getAllHotLeadList(leadRequest);
 	}
 
-	
 	public List<LeadDetails> getFollowupLeadList(Request<LeadRequestObject> leadRequestObject) {
 
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
 
 //	    switch (leadRequest.getRequestedFor().toUpperCase()) {
 //
@@ -842,126 +820,129 @@ public class LeadService {
 //	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
 //	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
 //	    }
-	    
-	    switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	    case "FOLLOWUP_ONE":
-	        // Yesterday
-	        leadRequest.setFirstDate(startOfDay(today.minusDays(1), zone));
-	        leadRequest.setLastDate(endOfDay(today.minusDays(1), zone));
-	        break;
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	    case "FOLLOWUP_TWO":
-	        // Day before yesterday
-	        leadRequest.setFirstDate(startOfDay(today.minusDays(2), zone));
-	        leadRequest.setLastDate(endOfDay(today.minusDays(2), zone));
-	        break;
+		case "FOLLOWUP_ONE":
+			// Yesterday
+			leadRequest.setFirstDate(startOfDay(today.minusDays(1), zone));
+			leadRequest.setLastDate(endOfDay(today.minusDays(1), zone));
+			break;
 
-	    case "FOLLOWUP_THREE":
-	        // 3 days ago
-	        leadRequest.setFirstDate(startOfDay(today.minusDays(3), zone));
-	        leadRequest.setLastDate(endOfDay(today.minusDays(3), zone));
-	        break;
+		case "FOLLOWUP_TWO":
+			// Day before yesterday
+			leadRequest.setFirstDate(startOfDay(today.minusDays(2), zone));
+			leadRequest.setLastDate(endOfDay(today.minusDays(2), zone));
+			break;
 
-	    case "FOLLOWUP_END":
-	        // Older than 3 days
-	        leadRequest.setFirstDate(startOfDay(today.minusYears(10), zone));
-	        leadRequest.setLastDate(endOfDay(today.minusDays(3), zone));
-	        break;
+		case "FOLLOWUP_THREE":
+			// 3 days ago
+			leadRequest.setFirstDate(startOfDay(today.minusDays(3), zone));
+			leadRequest.setLastDate(endOfDay(today.minusDays(3), zone));
+			break;
 
-	    default:
-	        leadRequest.setFirstDate(startOfDay(today, zone));
-	        leadRequest.setLastDate(endOfDay(today, zone));
-	}
+		case "FOLLOWUP_END":
+			// Older than 3 days
+			leadRequest.setFirstDate(startOfDay(today.minusYears(10), zone));
+			leadRequest.setLastDate(endOfDay(today.minusDays(3), zone));
+			break;
 
-	    
-	    System.out.println(leadRequest.getFirstDate());
-	    System.out.println(leadRequest.getLastDate());
-	    return leadHelper.getFollowupLeadList(leadRequest);
+		default:
+			leadRequest.setFirstDate(startOfDay(today, zone));
+			leadRequest.setLastDate(endOfDay(today, zone));
+		}
+
+		System.out.println(leadRequest.getFirstDate());
+		System.out.println(leadRequest.getLastDate());
+		return leadHelper.getFollowupLeadList(leadRequest);
 	}
 
 	public List<LeadDetails> getPickupLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
-	    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
+		Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
 
-	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	        case "TODAY_PICKUP":
-	            // 2 days ago
-	            leadRequest.setFirstDate(firstDate);
-	            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	            break;
+		case "TODAY_PICKUP":
+			// 2 days ago
+			leadRequest.setFirstDate(firstDate);
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "TOMORROW_PICKUP":
-	            // 3 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-	            break;
+		case "TOMORROW_PICKUP":
+			// 3 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "AFTER_TOMORROW_PICKUP":
-	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
-	            break;
+		case "AFTER_TOMORROW_PICKUP":
+			// 4 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "END_PICKUP":
-	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(400).atStartOfDay(zone).toInstant()));
-	            break;
+		case "END_PICKUP":
+			// 4 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(400).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "CUSTOM":
-	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	        default:
+		case "CUSTOM":
+			leadRequest.setFirstDate(Date.from(
+					leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(
+					leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+		default:
 //	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
 //	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	    }
+		}
 
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupLeadList(leadRequest);
 		return leadList;
 	}
-	
+
 	public List<LeadDetails> getPickupWonLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
-	    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
+		Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
 
-	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	        case "TODAY_PICKUP":
-	            // 2 days ago
-	            leadRequest.setFirstDate(firstDate);
-	            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	            break;
+		case "TODAY_PICKUP":
+			// 2 days ago
+			leadRequest.setFirstDate(firstDate);
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "TOMORROW_PICKUP":
-	            // 3 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-	            break;
+		case "TOMORROW_PICKUP":
+			// 3 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "AFTER_TOMORROW_PICKUP":
-	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
-	            break;
+		case "AFTER_TOMORROW_PICKUP":
+			// 4 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "CUSTOM":
-	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	        default:
+		case "CUSTOM":
+			leadRequest.setFirstDate(Date.from(
+					leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(
+					leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+		default:
 //	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
 //	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	    }
+		}
 
-	    System.out.println("First Date : " + leadRequest.getFirstDate());
-	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+		System.out.println("First Date : " + leadRequest.getFirstDate());
+		System.out.println("Last Date  : " + leadRequest.getLastDate());
 
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupWonLeadList(leadRequest);
 		return leadList;
@@ -988,7 +969,7 @@ public class LeadService {
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getDropLeadList(leadRequest);
 		return leadList;
 	}
-	
+
 	public List<LeadDetails> getDropWonLeadList(Request<LeadRequestObject> leadRequestObject) {
 //<<<<<<< HEAD
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
@@ -1015,7 +996,7 @@ public class LeadService {
 
 		return dropWonLeadService.getDropWonLeadList(leadRequestObject);
 	}
-	
+
 	public List<LeadDetails> getDropListForCallConfirm(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 		LocalDate today = LocalDate.now();
@@ -1052,56 +1033,55 @@ public class LeadService {
 	}
 
 	public List<LeadDetails> getLeadByStatus(Request<LeadRequestObject> leadRequestObject) {
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    switch (leadRequest.getRequestedFor().toUpperCase()) {
-	        case "TODAY":
-	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
-	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-	            break;
-	        case "TOMORROW":
-	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
-	            break;
-	        case "MONTH":
-	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
-	            leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
-	            break;
-	        case "CUSTOM":
-	            ZoneId zone = ZoneId.systemDefault();
-	            LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
-	            LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
-	            leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
-	            break;
-	        default:
-	            leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
-	            leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
-	    }
-	    return assignedLeadHelper.getLeadByStatus(leadRequest);
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
+		case "TODAY":
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+			break;
+		case "TOMORROW":
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_TO_NEXT_DATE.name()));
+			break;
+		case "MONTH":
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.MONTH_FIRST_DATE.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.MONTH_LAST_DATE.name()));
+			break;
+		case "CUSTOM":
+			ZoneId zone = ZoneId.systemDefault();
+			LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
+			LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
+			leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
+		default:
+			leadRequest.setFirstDate(getDate.driveDate(RequestFor.TODAY.name()));
+			leadRequest.setLastDate(getDate.driveDate(RequestFor.NEXT_DATE.name()));
+		}
+		return assignedLeadHelper.getLeadByStatus(leadRequest);
 	}
-	
+
 	public List<LeadDetails> getEnquiryList(Request<LeadRequestObject> leadRequestObject) {
 
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
 
-	    if ("CUSTOM".equalsIgnoreCase(leadRequest.getRequestedFor())) {
-	        LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
-	        LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
-	        leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
-	        leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
-	    } else {
-	        leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
-	        leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	    }
+		if ("CUSTOM".equalsIgnoreCase(leadRequest.getRequestedFor())) {
+			LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
+			LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
+			leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
+		} else {
+			leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+		}
 
-	    return leadByStatusHelper.getEnquiryList(leadRequest);
+		return leadByStatusHelper.getEnquiryList(leadRequest);
 	}
-	
-	
+
 //	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) {
 //			LeadRequestObject leadRequest = leadRequestObject.getPayload();
 //
@@ -1141,84 +1121,58 @@ public class LeadService {
 //			List<LeadDetails> leadList = wonLeadHelper.getWonLeadList(leadRequest);
 //			return leadList;
 //		}
-	
+
 	public List<LeadDetails> getWonLeadList(Request<LeadRequestObject> leadRequestObject) throws BizException {
 
-	    LeadRequestObject leadRequest = leadRequestObject.getPayload();
-        User actor = bookingUpgradeService.authenticatedStaff();
-        leadRequest.setLoginId(actor.getLoginId());
-        leadRequest.setSuperadminId("SUPERADMIN".equalsIgnoreCase(actor.getRoleType())
-                ? actor.getLoginId() : actor.getSuperadminId());
+		LeadRequestObject leadRequest = leadRequestObject.getPayload();
+		User actor = bookingUpgradeService.authenticatedStaff();
+		leadRequest.setLoginId(actor.getLoginId());
+		leadRequest.setSuperadminId(
+				"SUPERADMIN".equalsIgnoreCase(actor.getRoleType()) ? actor.getLoginId() : actor.getSuperadminId());
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
 
-	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	        case "TODAY_WON":
-	            // Today (00:00 today → 00:00 tomorrow)
-	            leadRequest.setFirstDate(
-	                Date.from(today.atStartOfDay(zone).toInstant())
-	            );
-	            leadRequest.setLastDate(
-	                Date.from(today.plusDays(1).atStartOfDay(zone).toInstant())
-	            );
-	            break;
+		case "TODAY_WON":
+			// Today (00:00 today → 00:00 tomorrow)
+			leadRequest.setFirstDate(Date.from(today.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "YESTERDAY_WON":
-	            // Yesterday (00:00 yesterday → 00:00 today)
-	            leadRequest.setFirstDate(
-	                Date.from(today.minusDays(1).atStartOfDay(zone).toInstant())
-	            );
-	            leadRequest.setLastDate(
-	                Date.from(today.atStartOfDay(zone).toInstant())
-	            );
-	            break;
+		case "YESTERDAY_WON":
+			// Yesterday (00:00 yesterday → 00:00 today)
+			leadRequest.setFirstDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "BEFORE_YESTERDAY_WON":
-	            // Day before yesterday
-	            leadRequest.setFirstDate(
-	                Date.from(today.minusDays(2).atStartOfDay(zone).toInstant())
-	            );
-	            leadRequest.setLastDate(
-	                Date.from(today.minusDays(1).atStartOfDay(zone).toInstant())
-	            );
-	            break;
+		case "BEFORE_YESTERDAY_WON":
+			// Day before yesterday
+			leadRequest.setFirstDate(Date.from(today.minusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.minusDays(1).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "CUSTOM":
-	            // Custom range (inclusive of both dates)
-	            LocalDate customStart = leadRequest.getFirstDate()
-	                    .toInstant()
-	                    .atZone(zone)
-	                    .toLocalDate();
+		case "CUSTOM":
+			// Custom range (inclusive of both dates)
+			LocalDate customStart = leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate();
 
-	            LocalDate customEnd = leadRequest.getLastDate()
-	                    .toInstant()
-	                    .atZone(zone)
-	                    .toLocalDate();
+			LocalDate customEnd = leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate();
 
-	            leadRequest.setFirstDate(
-	                Date.from(customStart.atStartOfDay(zone).toInstant())
-	            );
-	            leadRequest.setLastDate(
-	                Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant())
-	            );
-	            break;
+			leadRequest.setFirstDate(Date.from(customStart.atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(customEnd.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
 
-	        default:
-	            throw new IllegalArgumentException(
-	                "Invalid requestedFor value: " + leadRequest.getRequestedFor()
-	            );
-	    }
+		default:
+			throw new IllegalArgumentException("Invalid requestedFor value: " + leadRequest.getRequestedFor());
+		}
 
-	    System.out.println("First Date : " + leadRequest.getFirstDate());
-	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+		System.out.println("First Date : " + leadRequest.getFirstDate());
+		System.out.println("Last Date  : " + leadRequest.getLastDate());
 
-	    return wonLeadHelper.getWonLeadList(leadRequest);
+		return wonLeadHelper.getWonLeadList(leadRequest);
 	}
 
-
-	
 	public List<LeadDetails> getWebsiteLeadList(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
@@ -1226,16 +1180,14 @@ public class LeadService {
 		return leadList;
 	}
 
-
-
 	@Transactional
 	public int updateStatusToLost() {
 
-	    LocalDate today = LocalDate.now(ZoneId.systemDefault());
-	    LocalDateTime endOfPrevDay = today.minusDays(1).atTime(23, 59, 59);
+		LocalDate today = LocalDate.now(ZoneId.systemDefault());
+		LocalDateTime endOfPrevDay = today.minusDays(1).atTime(23, 59, 59);
 
-	    Date cutoffDate = Date.from(endOfPrevDay.atZone(ZoneId.systemDefault()).toInstant());
-	    return leadByStatusHelper.updateStatusToLost(cutoffDate);
+		Date cutoffDate = Date.from(endOfPrevDay.atZone(ZoneId.systemDefault()).toInstant());
+		return leadByStatusHelper.updateStatusToLost(cutoffDate);
 	}
 
 	public List<LeadDetails> getBookingDetailsByBookingId(Request<LeadRequestObject> leadRequestObject) {
@@ -1260,10 +1212,8 @@ public class LeadService {
 				? StringUtils.trimToEmpty(leadRequest.getPickupConfirmed()).toUpperCase()
 				: StringUtils.trimToEmpty(leadRequest.getDropConfirmed()).toUpperCase();
 
-		if (!Constant.CONFIRMED.equals(requestedStatus)
-				&& !Constant.NOT_CONFIRMED.equals(requestedStatus)) {
-			throw new BizException(Constant.BAD_REQUEST_CODE,
-					"Confirmation status must be CONFIRMED or NOT_CONFIRMED");
+		if (!Constant.CONFIRMED.equals(requestedStatus) && !Constant.NOT_CONFIRMED.equals(requestedStatus)) {
+			throw new BizException(Constant.BAD_REQUEST_CODE, "Confirmation status must be CONFIRMED or NOT_CONFIRMED");
 		}
 
 		String notes = StringUtils.trimToEmpty(leadRequest.getPickDropConfirmedNotes());
@@ -1278,12 +1228,10 @@ public class LeadService {
 		}
 		LeadDetails oldLead = leadDetailsHistoryHelper.snapshot(leadDetails);
 
-		String existingStatus = "PICKUP".equals(requestedFor)
-				? leadDetails.getPickupConfirmed()
+		String existingStatus = "PICKUP".equals(requestedFor) ? leadDetails.getPickupConfirmed()
 				: leadDetails.getDropConfirmed();
 		if (Constant.CONFIRMED.equalsIgnoreCase(existingStatus)) {
-			throw new BizException(Constant.ALREADY_EXISTS,
-					requestedFor + " is already confirmed");
+			throw new BizException(Constant.ALREADY_EXISTS, requestedFor + " is already confirmed");
 		}
 
 		if ("PICKUP".equals(requestedFor)) {
@@ -1300,56 +1248,53 @@ public class LeadService {
 		leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
 
 		leadRequest.setRespCode(Constant.SUCCESS_CODE);
-		leadRequest.setRespMesg(Constant.CONFIRMED.equals(requestedStatus)
-				? requestedFor + " confirmed successfully"
+		leadRequest.setRespMesg(Constant.CONFIRMED.equals(requestedStatus) ? requestedFor + " confirmed successfully"
 				: requestedFor + " marked as not confirmed");
 		return leadRequest;
 	}
 
-
 	public List<LeadDetails> getPickupListForCallConfirm(Request<LeadRequestObject> leadRequestObject) {
 		LeadRequestObject leadRequest = leadRequestObject.getPayload();
 
-	    LocalDate today = LocalDate.now();
-	    ZoneId zone = ZoneId.systemDefault();
-	    Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
+		LocalDate today = LocalDate.now();
+		ZoneId zone = ZoneId.systemDefault();
+		Date firstDate = Date.from(today.atStartOfDay(zone).toInstant());
 
-	    switch (leadRequest.getRequestedFor().toUpperCase()) {
+		switch (leadRequest.getRequestedFor().toUpperCase()) {
 
-	        case "TODAY_PICKUP":
-	            // 2 days ago
-	            leadRequest.setFirstDate(firstDate);
-	            leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	            break;
+		case "TODAY_PICKUP":
+			// 2 days ago
+			leadRequest.setFirstDate(firstDate);
+			leadRequest.setLastDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "TOMORROW_PICKUP":
-	            // 3 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-	            break;
+		case "TOMORROW_PICKUP":
+			// 3 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(1).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "AFTER_TOMORROW_PICKUP":
-	            // 4 days ago
-	            leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
-	            break;
+		case "AFTER_TOMORROW_PICKUP":
+			// 4 days ago
+			leadRequest.setFirstDate(Date.from(today.plusDays(2).atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(today.plusDays(3).atStartOfDay(zone).toInstant()));
+			break;
 
-	        case "CUSTOM":
-	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	        default:
+		case "CUSTOM":
+			leadRequest.setFirstDate(Date.from(
+					leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+			leadRequest.setLastDate(Date.from(
+					leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
+		default:
 //	            leadRequest.setFirstDate(Date.from(leadRequest.getFirstDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
 //	            leadRequest.setLastDate(Date.from(leadRequest.getLastDate().toInstant().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()));
-	    }
+		}
 
-	    System.out.println("First Date : " + leadRequest.getFirstDate());
-	    System.out.println("Last Date  : " + leadRequest.getLastDate());
+		System.out.println("First Date : " + leadRequest.getFirstDate());
+		System.out.println("Last Date  : " + leadRequest.getLastDate());
 
 		List<LeadDetails> leadList = leadByPickAndDropHelper.getPickupListForCallConfirm(leadRequest);
 		return leadList;
 	}
-
-
-
 
 }
