@@ -26,9 +26,12 @@ public class TransactionDetails {
 	@Column(name = "booking_id")
 	private String bookingId;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "pickup_date_time")
-	private Date pickupDateTime;
+	@Column(name = "lead_id")
+	private Long leadId;
+	
+//	@Temporal(TemporalType.TIMESTAMP)
+//	@Column(name = "pickup_date_time")
+//	private Date pickupDateTime;
 	
 	@Column(name = "customer_mobile")
 	private String customerMobile;

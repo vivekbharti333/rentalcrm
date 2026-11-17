@@ -232,14 +232,13 @@ public class LeadService {
 
 					vendorHelper.UpdateVendorDetails(vendorDetails);
 
-					// save transaction details
-					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
+					//Transaction history
 					leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
-					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
 					leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
-
-					TransactionDetails transactionDetails = transactionHelper
-							.getTransactionDetailsByReqObj(leadRequest);
+					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+					
+					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest, leadDetails, vendorDetails);
 					transactionHelper.saveTransactionDetails(transactionDetails);
 
 				} else if (!leadDetails.getStatus().equalsIgnoreCase("ASSIGNED")
@@ -253,13 +252,13 @@ public class LeadService {
 					vendorHelper.UpdateVendorDetails(vendorDetails);
 
 					// save transaction details
-					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
+					//Transaction history
 					leadRequest.setCompanyTransactionType(TransactionType.CREDIT.name());
-					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+					leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
 					leadRequest.setVendorTransactionType(TransactionType.CREDIT.name());
-
-					TransactionDetails transactionDetails = transactionHelper
-							.getTransactionDetailsByReqObj(leadRequest);
+					leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+					
+					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest, leadDetails, vendorDetails);
 					transactionHelper.saveTransactionDetails(transactionDetails);
 				}
 			} else {
@@ -388,7 +387,6 @@ public class LeadService {
 		leadDetails.setVendorId(leadRequest.getVendorId());
 		leadDetails.setStatus("ASSIGNED");
 		leadDetails.setVendorName(vendorName);
-//		leadDetails.setChangeStatusDate(new Date());
 
 		leadHelper.updateLeadDetails(leadDetails);
 		leadDetailsHistoryHelper.updateLeadHistory(oldLead, leadDetails, leadRequest);
@@ -397,7 +395,18 @@ public class LeadService {
 		vendorDetails.setUserWalletAmount(vendorDetails.getUserWalletAmount() + leadDetails.getPayToVendor());
 
 		vendorHelper.UpdateVendorDetails(vendorDetails);
-
+		
+		
+		//Transaction history
+		leadRequest.setCompanyTransactionType(TransactionType.CREDIT.name());
+		leadRequest.setCompanyAmount(leadDetails.getPayToCompany());
+		leadRequest.setVendorTransactionType(TransactionType.CREDIT.name());
+		leadRequest.setVendorAmount(leadDetails.getPayToVendor());
+		
+		TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest, leadDetails, vendorDetails);
+		transactionHelper.saveTransactionDetails(transactionDetails);
+		
+		
 		leadRequest.setVendorName(vendorName);
 		leadRequest.setRespCode(Constant.SUCCESS_CODE);
 		leadRequest.setRespMesg("Successfully Assigned to " + vendorName);
@@ -675,12 +684,12 @@ public class LeadService {
 					vendorHelper.UpdateVendorDetails(vendorDetails);
 
 					// save transaction details
-					leadRequest.setCompanyAmount(existingLead.getPayToCompany());
 					leadRequest.setCompanyTransactionType(TransactionType.DEBIT.name());
-					leadRequest.setVendorAmount(existingLead.getPayToVendor());
+					leadRequest.setCompanyAmount(existingLead.getPayToCompany());
 					leadRequest.setVendorTransactionType(TransactionType.DEBIT.name());
-
-					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest);
+					leadRequest.setVendorAmount(existingLead.getPayToVendor());
+					
+					TransactionDetails transactionDetails = transactionHelper.getTransactionDetailsByReqObj(leadRequest, existingLead, vendorDetails);
 					transactionHelper.saveTransactionDetails(transactionDetails);
 				}
 

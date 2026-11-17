@@ -297,7 +297,7 @@ public class UserHelper {
 //		List<String> excludedRoleTypes = new ArrayList<String>();
 //		if(userRequest.getRoleType().equalsIgnoreCase(RoleType.SUPERADMIN.name())) {
 //			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name());
-//			
+//			  
 //		}else if(userRequest.getRoleType().equalsIgnoreCase(RoleType.ADMIN.name())) {
 //			excludedRoleTypes = Arrays.asList(RoleType.SUPERADMIN.name(), RoleType.SUPERADMIN.name());
 //			
